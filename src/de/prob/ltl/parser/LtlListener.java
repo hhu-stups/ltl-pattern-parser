@@ -20,4 +20,7 @@ public interface LtlListener extends ParseTreeListener {
 
 	void enterUnaryExpression(LtlParser.UnaryExpressionContext ctx);
 	void exitUnaryExpression(LtlParser.UnaryExpressionContext ctx);
+
+	void enterBinaryExpression(LtlParser.BinaryExpressionContext ctx);
+	void exitBinaryExpression(LtlParser.BinaryExpressionContext ctx);
 }

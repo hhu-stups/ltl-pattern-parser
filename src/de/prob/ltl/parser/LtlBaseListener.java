@@ -24,6 +24,9 @@ public class LtlBaseListener implements LtlListener {
 	@Override public void enterUnaryExpression(LtlParser.UnaryExpressionContext ctx) { }
 	@Override public void exitUnaryExpression(LtlParser.UnaryExpressionContext ctx) { }
 
+	@Override public void enterBinaryExpression(LtlParser.BinaryExpressionContext ctx) { }
+	@Override public void exitBinaryExpression(LtlParser.BinaryExpressionContext ctx) { }
+
 	@Override public void enterEveryRule(ParserRuleContext ctx) { }
 	@Override public void exitEveryRule(ParserRuleContext ctx) { }
 	@Override public void visitTerminal(TerminalNode node) { }

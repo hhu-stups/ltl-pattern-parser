@@ -2,6 +2,7 @@ package de.prob.ltl;
 
 import de.prob.ltl.parser.LtlBaseVisitor;
 import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.LtlParser.BinaryExpressionContext;
 import de.prob.ltl.parser.LtlParser.ConstantExpressionContext;
 import de.prob.ltl.parser.LtlParser.UnaryExpressionContext;
 
@@ -27,6 +28,17 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 		builder.append(LtlParser.tokenNames[ctx.unary_op.getType()].toLowerCase());
 		builder.append('(');
 		visit(ctx.getChild(1));
+		builder.append(')');
+		return null;
+	}
+
+	@Override
+	public Void visitBinaryExpression(BinaryExpressionContext ctx) {
+		builder.append(LtlParser.tokenNames[ctx.binary_op.getType()].toLowerCase());
+		builder.append('(');
+		visit(ctx.getChild(0));
+		builder.append(',');
+		visit(ctx.getChild(2));
 		builder.append(')');
 		return null;
 	}

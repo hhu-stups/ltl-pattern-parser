@@ -48,4 +48,14 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 		}
 	}
 
+	@Test
+	public void testBinaryOp() throws Exception {
+		for (String input : new String[] {
+				"true&false",
+				"true & false",
+				"true or false", "true => false"}){
+			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
 }

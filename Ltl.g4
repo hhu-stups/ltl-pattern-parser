@@ -16,6 +16,11 @@ CURRENT			: 'current';
 // Unary operators
 NOT				: ('not' | '!'); 
 
+// Binary operators
+AND				: ('and' | '&');
+OR				: ('or' | '|');
+IMPLIES			: ('=>');
+
 // Others
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
@@ -24,7 +29,8 @@ WS				: [ \t\r\n]+ -> skip;
 /* -- Rules -- */
 start 		: expression;
 
-expression	: unary_op=NOT expression								# unaryExpression
+expression	: expression  binary_op=(AND | OR | IMPLIES) expression	# binaryExpression			  
+			| unary_op=NOT expression								# unaryExpression
 			| LEFT_PAREN expression RIGHT_PAREN						# parenthesisExpression
 			| constant												# constantExpression
 			;
