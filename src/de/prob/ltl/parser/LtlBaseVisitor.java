@@ -14,4 +14,6 @@ public class LtlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Lt
 	@Override public T visitStart(LtlParser.StartContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitConstantExpression(LtlParser.ConstantExpressionContext ctx) { return visitChildren(ctx); }
+
+	@Override public T visitUnaryExpression(LtlParser.UnaryExpressionContext ctx) { return visitChildren(ctx); }
 }

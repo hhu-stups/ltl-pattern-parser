@@ -21,6 +21,9 @@ public class LtlBaseListener implements LtlListener {
 	@Override public void enterConstantExpression(LtlParser.ConstantExpressionContext ctx) { }
 	@Override public void exitConstantExpression(LtlParser.ConstantExpressionContext ctx) { }
 
+	@Override public void enterUnaryExpression(LtlParser.UnaryExpressionContext ctx) { }
+	@Override public void exitUnaryExpression(LtlParser.UnaryExpressionContext ctx) { }
+
 	@Override public void enterEveryRule(ParserRuleContext ctx) { }
 	@Override public void exitEveryRule(ParserRuleContext ctx) { }
 	@Override public void visitTerminal(TerminalNode node) { }

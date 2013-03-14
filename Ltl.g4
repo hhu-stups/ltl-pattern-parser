@@ -13,6 +13,9 @@ SINK			: 'sink';
 DEADLOCK		: 'deadlock';
 CURRENT			: 'current';
 
+// Unary operators
+NOT				: ('not' | '!'); 
+
 // Others
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
@@ -21,7 +24,8 @@ WS				: [ \t\r\n]+ -> skip;
 /* -- Rules -- */
 start 		: expression;
 
-expression	: LEFT_PAREN expression RIGHT_PAREN						# parenthesisExpression
+expression	: unary_op=NOT expression								# unaryExpression
+			| LEFT_PAREN expression RIGHT_PAREN						# parenthesisExpression
 			| constant												# constantExpression
 			;
 

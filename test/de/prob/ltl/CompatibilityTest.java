@@ -37,4 +37,15 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 		}
 	}
 
+	@Test
+	public void testUnaryOp() throws Exception {
+		for (String input : new String[] {
+				"nottrue",
+				"not true",
+				"not \n true",
+				"not \t true", "not \r true" }){
+			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
 }
