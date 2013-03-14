@@ -1,0 +1,15 @@
+LEFT_PAREN=6
+RIGHT_PAREN=7
+WS=8
+DEADLOCK=4
+FALSE=2
+SINK=3
+TRUE=1
+CURRENT=5
+'true'=1
+'deadlock'=4
+'false'=2
+'('=6
+'current'=5
+'sink'=3
+')'=7
