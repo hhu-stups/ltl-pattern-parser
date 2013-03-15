@@ -43,7 +43,14 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 				"nottrue",
 				"not true",
 				"not \n true",
-				"not \t true", "not \r true" }){
+				"not \t true",
+				"not \r true",
+				"Xtrue",
+				"X (false)" ,
+				"F true",
+				"G(false)",
+				"H true",
+				"O(false)", "Y(false)" }){
 			assertEquals(parseOld(input), parse(input));
 		}
 	}
@@ -53,7 +60,12 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 		for (String input : new String[] {
 				"true&false",
 				"true & false",
-				"true or false", "true => false"}){
+				"true or false",
+				"true => false",
+				"(true)U false",
+				"sink W (deadlock)",
+				"trueRfalse",
+				"sink S (deadlock)", "trueTfalse"}){
 			assertEquals(parseOld(input), parse(input));
 		}
 	}

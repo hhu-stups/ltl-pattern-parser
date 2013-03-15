@@ -18,11 +18,17 @@ public class LtlBaseListener implements LtlListener {
 	@Override public void enterStart(LtlParser.StartContext ctx) { }
 	@Override public void exitStart(LtlParser.StartContext ctx) { }
 
+	@Override public void enterBinary_op(LtlParser.Binary_opContext ctx) { }
+	@Override public void exitBinary_op(LtlParser.Binary_opContext ctx) { }
+
 	@Override public void enterConstantExpression(LtlParser.ConstantExpressionContext ctx) { }
 	@Override public void exitConstantExpression(LtlParser.ConstantExpressionContext ctx) { }
 
 	@Override public void enterUnaryExpression(LtlParser.UnaryExpressionContext ctx) { }
 	@Override public void exitUnaryExpression(LtlParser.UnaryExpressionContext ctx) { }
+
+	@Override public void enterUnary_op(LtlParser.Unary_opContext ctx) { }
+	@Override public void exitUnary_op(LtlParser.Unary_opContext ctx) { }
 
 	@Override public void enterBinaryExpression(LtlParser.BinaryExpressionContext ctx) { }
 	@Override public void exitBinaryExpression(LtlParser.BinaryExpressionContext ctx) { }

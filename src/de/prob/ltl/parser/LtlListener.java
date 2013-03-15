@@ -15,11 +15,17 @@ public interface LtlListener extends ParseTreeListener {
 	void enterStart(LtlParser.StartContext ctx);
 	void exitStart(LtlParser.StartContext ctx);
 
+	void enterBinary_op(LtlParser.Binary_opContext ctx);
+	void exitBinary_op(LtlParser.Binary_opContext ctx);
+
 	void enterConstantExpression(LtlParser.ConstantExpressionContext ctx);
 	void exitConstantExpression(LtlParser.ConstantExpressionContext ctx);
 
 	void enterUnaryExpression(LtlParser.UnaryExpressionContext ctx);
 	void exitUnaryExpression(LtlParser.UnaryExpressionContext ctx);
+
+	void enterUnary_op(LtlParser.Unary_opContext ctx);
+	void exitUnary_op(LtlParser.Unary_opContext ctx);
 
 	void enterBinaryExpression(LtlParser.BinaryExpressionContext ctx);
 	void exitBinaryExpression(LtlParser.BinaryExpressionContext ctx);

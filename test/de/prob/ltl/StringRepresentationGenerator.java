@@ -1,5 +1,8 @@
 package de.prob.ltl;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import de.prob.ltl.parser.LtlBaseVisitor;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.BinaryExpressionContext;
@@ -25,7 +28,12 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 
 	@Override
 	public Void visitUnaryExpression(UnaryExpressionContext ctx) {
-		builder.append(LtlParser.tokenNames[ctx.unary_op.getType()].toLowerCase());
+		ParseTree op = ctx.unary_op().getChild(0);
+		if (op instanceof TerminalNode) {
+			builder.append(LtlParser.tokenNames[((TerminalNode)op).getSymbol().getType()].toLowerCase());
+		} else {
+			throw new RuntimeException("Child of unary_op has to be a terminal node");
+		}
 		builder.append('(');
 		visit(ctx.getChild(1));
 		builder.append(')');
@@ -34,7 +42,12 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 
 	@Override
 	public Void visitBinaryExpression(BinaryExpressionContext ctx) {
-		builder.append(LtlParser.tokenNames[ctx.binary_op.getType()].toLowerCase());
+		ParseTree op = ctx.binary_op().getChild(0);
+		if (op instanceof TerminalNode) {
+			builder.append(LtlParser.tokenNames[((TerminalNode)op).getSymbol().getType()].toLowerCase());
+		} else {
+			throw new RuntimeException("Child of binary_op has to be a terminal node");
+		}
 		builder.append('(');
 		visit(ctx.getChild(0));
 		builder.append(',');

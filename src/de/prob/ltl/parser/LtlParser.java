@@ -17,16 +17,21 @@ public class LtlParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		TRUE=1, FALSE=2, SINK=3, DEADLOCK=4, CURRENT=5, NOT=6, AND=7, OR=8, IMPLIES=9, 
-		LEFT_PAREN=10, RIGHT_PAREN=11, WS=12;
+		TRUE=1, FALSE=2, SINK=3, DEADLOCK=4, CURRENT=5, NOT=6, GLOBALLY=7, FINALLY=8, 
+		NEXT=9, HISTORICALLY=10, ONCE=11, YESTERDAY=12, AND=13, OR=14, IMPLIES=15, 
+		UNTIL=16, WEAKUNTIL=17, RELEASE=18, SINCE=19, TRIGGER=20, LEFT_PAREN=21, 
+		RIGHT_PAREN=22, WS=23;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'true'", "'false'", "'sink'", "'deadlock'", "'current'", 
-		"NOT", "AND", "OR", "IMPLIES", "'('", "')'", "WS"
+		"NOT", "GLOBALLY", "FINALLY", "NEXT", "HISTORICALLY", "ONCE", "YESTERDAY", 
+		"AND", "OR", "IMPLIES", "UNTIL", "WEAKUNTIL", "RELEASE", "SINCE", "TRIGGER", 
+		"'('", "')'", "WS"
 	};
 	public static final int
-		RULE_start = 0, RULE_expression = 1, RULE_constant = 2;
+		RULE_start = 0, RULE_expression = 1, RULE_unary_op = 2, RULE_binary_op = 3, 
+		RULE_constant = 4;
 	public static final String[] ruleNames = {
-		"start", "expression", "constant"
+		"start", "expression", "unary_op", "binary_op", "constant"
 	};
 
 	@Override
@@ -74,7 +79,7 @@ public class LtlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(6); expression(0);
+			setState(10); expression(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -125,11 +130,12 @@ public class LtlParser extends Parser {
 		}
 	}
 	public static class UnaryExpressionContext extends ExpressionContext {
-		public Token unary_op;
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public TerminalNode NOT() { return getToken(LtlParser.NOT, 0); }
+		public Unary_opContext unary_op() {
+			return getRuleContext(Unary_opContext.class,0);
+		}
 		public UnaryExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -165,16 +171,15 @@ public class LtlParser extends Parser {
 		}
 	}
 	public static class BinaryExpressionContext extends ExpressionContext {
-		public Token binary_op;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
-		public TerminalNode IMPLIES() { return getToken(LtlParser.IMPLIES, 0); }
-		public TerminalNode AND() { return getToken(LtlParser.AND, 0); }
-		public TerminalNode OR() { return getToken(LtlParser.OR, 0); }
+		public Binary_opContext binary_op() {
+			return getRuleContext(Binary_opContext.class,0);
+		}
 		public BinaryExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -198,21 +203,26 @@ public class LtlParser extends Parser {
 		ExpressionContext _prevctx = _localctx;
 		int _startState = 2;
 		enterRecursionRule(_localctx, RULE_expression);
-		int _la;
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(16);
+			setState(21);
 			switch (_input.LA(1)) {
 			case NOT:
+			case GLOBALLY:
+			case FINALLY:
+			case NEXT:
+			case HISTORICALLY:
+			case ONCE:
+			case YESTERDAY:
 				{
 				_localctx = new UnaryExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(9); ((UnaryExpressionContext)_localctx).unary_op = match(NOT);
-				setState(10); expression(3);
+				setState(13); unary_op();
+				setState(14); expression(3);
 				}
 				break;
 			case LEFT_PAREN:
@@ -220,9 +230,9 @@ public class LtlParser extends Parser {
 				_localctx = new ParenthesisExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(11); match(LEFT_PAREN);
-				setState(12); expression(0);
-				setState(13); match(RIGHT_PAREN);
+				setState(16); match(LEFT_PAREN);
+				setState(17); expression(0);
+				setState(18); match(RIGHT_PAREN);
 				}
 				break;
 			case TRUE:
@@ -234,14 +244,14 @@ public class LtlParser extends Parser {
 				_localctx = new ConstantExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(15); constant();
+				setState(20); constant();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(23);
+			setState(29);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
 			while ( _alt!=2 && _alt!=-1 ) {
@@ -252,20 +262,14 @@ public class LtlParser extends Parser {
 					{
 					_localctx = new BinaryExpressionContext(new ExpressionContext(_parentctx, _parentState, _p));
 					pushNewRecursionContext(_localctx, _startState, RULE_expression);
-					setState(18);
+					setState(23);
 					if (!(4 >= _localctx._p)) throw new FailedPredicateException(this, "4 >= $_p");
-					setState(19);
-					((BinaryExpressionContext)_localctx).binary_op = _input.LT(1);
-					_la = _input.LA(1);
-					if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << AND) | (1L << OR) | (1L << IMPLIES))) != 0)) ) {
-						((BinaryExpressionContext)_localctx).binary_op = (Token)_errHandler.recoverInline(this);
-					}
-					consume();
-					setState(20); expression(5);
+					setState(24); binary_op();
+					setState(25); expression(0);
 					}
 					} 
 				}
-				setState(25);
+				setState(31);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
 			}
@@ -278,6 +282,113 @@ public class LtlParser extends Parser {
 		}
 		finally {
 			unrollRecursionContexts(_parentctx);
+		}
+		return _localctx;
+	}
+
+	public static class Unary_opContext extends ParserRuleContext {
+		public TerminalNode NEXT() { return getToken(LtlParser.NEXT, 0); }
+		public TerminalNode ONCE() { return getToken(LtlParser.ONCE, 0); }
+		public TerminalNode NOT() { return getToken(LtlParser.NOT, 0); }
+		public TerminalNode FINALLY() { return getToken(LtlParser.FINALLY, 0); }
+		public TerminalNode GLOBALLY() { return getToken(LtlParser.GLOBALLY, 0); }
+		public TerminalNode YESTERDAY() { return getToken(LtlParser.YESTERDAY, 0); }
+		public TerminalNode HISTORICALLY() { return getToken(LtlParser.HISTORICALLY, 0); }
+		public Unary_opContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_unary_op; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof LtlListener ) ((LtlListener)listener).enterUnary_op(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof LtlListener ) ((LtlListener)listener).exitUnary_op(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LtlVisitor ) return ((LtlVisitor<? extends T>)visitor).visitUnary_op(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Unary_opContext unary_op() throws RecognitionException {
+		Unary_opContext _localctx = new Unary_opContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_unary_op);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(32);
+			_la = _input.LA(1);
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << GLOBALLY) | (1L << FINALLY) | (1L << NEXT) | (1L << HISTORICALLY) | (1L << ONCE) | (1L << YESTERDAY))) != 0)) ) {
+			_errHandler.recoverInline(this);
+			}
+			consume();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class Binary_opContext extends ParserRuleContext {
+		public TerminalNode IMPLIES() { return getToken(LtlParser.IMPLIES, 0); }
+		public TerminalNode SINCE() { return getToken(LtlParser.SINCE, 0); }
+		public TerminalNode AND() { return getToken(LtlParser.AND, 0); }
+		public TerminalNode RELEASE() { return getToken(LtlParser.RELEASE, 0); }
+		public TerminalNode UNTIL() { return getToken(LtlParser.UNTIL, 0); }
+		public TerminalNode TRIGGER() { return getToken(LtlParser.TRIGGER, 0); }
+		public TerminalNode WEAKUNTIL() { return getToken(LtlParser.WEAKUNTIL, 0); }
+		public TerminalNode OR() { return getToken(LtlParser.OR, 0); }
+		public Binary_opContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_binary_op; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof LtlListener ) ((LtlListener)listener).enterBinary_op(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof LtlListener ) ((LtlListener)listener).exitBinary_op(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LtlVisitor ) return ((LtlVisitor<? extends T>)visitor).visitBinary_op(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Binary_opContext binary_op() throws RecognitionException {
+		Binary_opContext _localctx = new Binary_opContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_binary_op);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(34);
+			_la = _input.LA(1);
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << AND) | (1L << OR) | (1L << IMPLIES) | (1L << UNTIL) | (1L << WEAKUNTIL) | (1L << RELEASE) | (1L << SINCE) | (1L << TRIGGER))) != 0)) ) {
+			_errHandler.recoverInline(this);
+			}
+			consume();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
 		}
 		return _localctx;
 	}
@@ -309,12 +420,12 @@ public class LtlParser extends Parser {
 
 	public final ConstantContext constant() throws RecognitionException {
 		ConstantContext _localctx = new ConstantContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_constant);
+		enterRule(_localctx, 8, RULE_constant);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(26);
+			setState(36);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRUE) | (1L << FALSE) | (1L << SINK) | (1L << DEADLOCK) | (1L << CURRENT))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -347,14 +458,16 @@ public class LtlParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\2\3\16\37\4\2\t\2\4\3\t\3\4\4\t\4\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
-		"\3\3\5\3\23\n\3\3\3\3\3\3\3\7\3\30\n\3\f\3\16\3\33\13\3\3\4\3\4\3\4\2"+
-		"\5\2\4\6\2\4\3\t\13\3\3\7\36\2\b\3\2\2\2\4\22\3\2\2\2\6\34\3\2\2\2\b\t"+
-		"\5\4\3\2\t\3\3\2\2\2\n\13\b\3\1\2\13\f\7\b\2\2\f\23\5\4\3\2\r\16\7\f\2"+
-		"\2\16\17\5\4\3\2\17\20\7\r\2\2\20\23\3\2\2\2\21\23\5\6\4\2\22\n\3\2\2"+
-		"\2\22\r\3\2\2\2\22\21\3\2\2\2\23\31\3\2\2\2\24\25\6\3\2\3\25\26\t\2\2"+
-		"\2\26\30\5\4\3\2\27\24\3\2\2\2\30\33\3\2\2\2\31\27\3\2\2\2\31\32\3\2\2"+
-		"\2\32\5\3\2\2\2\33\31\3\2\2\2\34\35\t\3\2\2\35\7\3\2\2\2\4\22\31";
+		"\2\3\31)\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\5\3\30\n\3\3\3\3\3\3\3\3\3\7\3\36\n\3\f\3\16\3"+
+		"!\13\3\3\4\3\4\3\5\3\5\3\6\3\6\3\6\2\7\2\4\6\b\n\2\5\3\b\16\3\17\26\3"+
+		"\3\7&\2\f\3\2\2\2\4\27\3\2\2\2\6\"\3\2\2\2\b$\3\2\2\2\n&\3\2\2\2\f\r\5"+
+		"\4\3\2\r\3\3\2\2\2\16\17\b\3\1\2\17\20\5\6\4\2\20\21\5\4\3\2\21\30\3\2"+
+		"\2\2\22\23\7\27\2\2\23\24\5\4\3\2\24\25\7\30\2\2\25\30\3\2\2\2\26\30\5"+
+		"\n\6\2\27\16\3\2\2\2\27\22\3\2\2\2\27\26\3\2\2\2\30\37\3\2\2\2\31\32\6"+
+		"\3\2\3\32\33\5\b\5\2\33\34\5\4\3\2\34\36\3\2\2\2\35\31\3\2\2\2\36!\3\2"+
+		"\2\2\37\35\3\2\2\2\37 \3\2\2\2 \5\3\2\2\2!\37\3\2\2\2\"#\t\2\2\2#\7\3"+
+		"\2\2\2$%\t\3\2\2%\t\3\2\2\2&\'\t\4\2\2\'\13\3\2\2\2\4\27\37";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {
