@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.prob.parserbase.ProBParserBase;
 import de.prob.parserbase.UnparsedParserBase;
 import de.prob.prolog.term.PrologTerm;
 
@@ -16,8 +17,13 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception{
-		parserBase = new UnparsedParserBase("expr", "pred", "trans");
+		parserBase = new UnparsedParserBase("expression", "predicate", "transition_predicate");
 		oldParser = new de.be4.ltl.core.parser.LtlParser(parserBase);
+	}
+
+	@Override
+	public ProBParserBase getProBParserBase() {
+		return parserBase;
 	}
 
 	// Helper
@@ -66,6 +72,16 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 				"sink W (deadlock)",
 				"trueRfalse",
 				"sink S (deadlock)", "trueTfalse"}){
+			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
+	@Test
+	public void testPredicate() throws Exception {
+		for (String input : new String[] {
+				"{unpa rsed}",
+				"{abc} => true",
+				"not {abc & def}", "{ abc {def} ghi }"}){
 			assertEquals(parseOld(input), parse(input));
 		}
 	}

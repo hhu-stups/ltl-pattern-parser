@@ -1,9 +1,30 @@
 grammar Ltl;
 
-@header {
+@lexer::header {
 package de.prob.ltl.parser;
 }
 
+@parser::header {
+package de.prob.ltl.parser;
+import de.prob.parserbase.ProBParserBase;
+}
+
+@parser::members {
+private ProBParserBase parserBase;
+
+public LtlParser(TokenStream input, ProBParserBase parserBase) {
+	this(input);
+	this.parserBase = parserBase;
+}
+
+public ProBParserBase getParserBase() {
+	return parserBase;
+}
+
+public void setParserBase(ProBParserBase parserBase) {
+	this.parserBase = parserBase;
+}
+}
 /* -- Token -- */
 
 // Constants
@@ -32,6 +53,11 @@ RELEASE			: ('R');
 SINCE			: ('S');
 TRIGGER			: ('T');
 
+// Predicates
+LEFT_CURLY		: '{';
+RIGHT_CURLY		: '}';
+PREDICATE		: LEFT_CURLY (~('{' | '}') | PREDICATE)* RIGHT_CURLY;
+
 // Others
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
@@ -43,6 +69,7 @@ start 		: expression;
 expression	: expression  binary_op expression	# binaryExpression			  
 			| unary_op expression				# unaryExpression
 			| LEFT_PAREN expression RIGHT_PAREN	# parenthesisExpression
+			| PREDICATE							# predicateExpression 
 			| constant							# constantExpression
 			;
 			

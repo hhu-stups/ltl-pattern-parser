@@ -1,6 +1,7 @@
 // Generated from Ltl.g4 by ANTLR 4.0
 
 package de.prob.ltl.parser;
+import de.prob.parserbase.ProBParserBase;
 
 import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.runtime.Token;
@@ -26,6 +27,9 @@ public interface LtlListener extends ParseTreeListener {
 
 	void enterUnary_op(LtlParser.Unary_opContext ctx);
 	void exitUnary_op(LtlParser.Unary_opContext ctx);
+
+	void enterPredicateExpression(LtlParser.PredicateExpressionContext ctx);
+	void exitPredicateExpression(LtlParser.PredicateExpressionContext ctx);
 
 	void enterBinaryExpression(LtlParser.BinaryExpressionContext ctx);
 	void exitBinaryExpression(LtlParser.BinaryExpressionContext ctx);

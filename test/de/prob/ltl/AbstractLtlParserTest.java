@@ -9,15 +9,18 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import de.prob.ltl.parser.LtlLexer;
 import de.prob.ltl.parser.LtlParser;
+import de.prob.parserbase.ProBParserBase;
 
 
 public abstract class AbstractLtlParserTest {
+
+	public abstract ProBParserBase getProBParserBase();
 
 	// Helper
 	protected String parse(String input) {
 		final LtlParser parser = createParser(input);
 		ParseTree result = parser.start();
-		StringRepresentationGenerator generator = new StringRepresentationGenerator();
+		StringRepresentationGenerator generator = new StringRepresentationGenerator(parser);
 		generator.visit(result);
 		return generator.getGeneratedString();
 	}
@@ -40,7 +43,7 @@ public abstract class AbstractLtlParserTest {
 	}
 
 	protected LtlParser createParser(LtlLexer lexer) {
-		LtlParser parser = new LtlParser(new CommonTokenStream(lexer));
+		LtlParser parser = new LtlParser(new CommonTokenStream(lexer), getProBParserBase());
 		parser.setErrorHandler(new BailErrorStrategy());
 		return parser;
 	}

@@ -1,6 +1,7 @@
 // Generated from Ltl.g4 by ANTLR 4.0
 
 package de.prob.ltl.parser;
+import de.prob.parserbase.ProBParserBase;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -29,6 +30,9 @@ public class LtlBaseListener implements LtlListener {
 
 	@Override public void enterUnary_op(LtlParser.Unary_opContext ctx) { }
 	@Override public void exitUnary_op(LtlParser.Unary_opContext ctx) { }
+
+	@Override public void enterPredicateExpression(LtlParser.PredicateExpressionContext ctx) { }
+	@Override public void exitPredicateExpression(LtlParser.PredicateExpressionContext ctx) { }
 
 	@Override public void enterBinaryExpression(LtlParser.BinaryExpressionContext ctx) { }
 	@Override public void exitBinaryExpression(LtlParser.BinaryExpressionContext ctx) { }
