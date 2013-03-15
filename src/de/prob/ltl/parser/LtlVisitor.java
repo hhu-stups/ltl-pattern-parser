@@ -23,6 +23,8 @@ public interface LtlVisitor<T> extends ParseTreeVisitor<T> {
 
 	T visitUnary_op(LtlParser.Unary_opContext ctx);
 
+	T visitEnabledExpression(LtlParser.EnabledExpressionContext ctx);
+
 	T visitPredicateExpression(LtlParser.PredicateExpressionContext ctx);
 
 	T visitBinaryExpression(LtlParser.BinaryExpressionContext ctx);

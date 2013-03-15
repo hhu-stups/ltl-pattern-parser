@@ -34,6 +34,9 @@ public class LtlBaseListener implements LtlListener {
 	@Override public void enterUnary_op(LtlParser.Unary_opContext ctx) { }
 	@Override public void exitUnary_op(LtlParser.Unary_opContext ctx) { }
 
+	@Override public void enterEnabledExpression(LtlParser.EnabledExpressionContext ctx) { }
+	@Override public void exitEnabledExpression(LtlParser.EnabledExpressionContext ctx) { }
+
 	@Override public void enterPredicateExpression(LtlParser.PredicateExpressionContext ctx) { }
 	@Override public void exitPredicateExpression(LtlParser.PredicateExpressionContext ctx) { }
 

@@ -8,6 +8,7 @@ import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.ActionExpressionContext;
 import de.prob.ltl.parser.LtlParser.BinaryExpressionContext;
 import de.prob.ltl.parser.LtlParser.ConstantExpressionContext;
+import de.prob.ltl.parser.LtlParser.EnabledExpressionContext;
 import de.prob.ltl.parser.LtlParser.PredicateExpressionContext;
 import de.prob.ltl.parser.LtlParser.UnaryExpressionContext;
 import de.prob.parserbase.ProBParseException;
@@ -110,6 +111,28 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 			builder.append(predicate);
 		}
 		builder.append(")");
+		return null;
+	}
+
+	@Override
+	public Void visitEnabledExpression(EnabledExpressionContext ctx) {
+		builder.append("ap(enabled(");
+		ProBParserBase parserBase = parser.getParserBase();
+		String predicate = ctx.getText();
+		if (parserBase != null) {
+			StructuredPrologOutput pto = new StructuredPrologOutput();
+			try {
+				parserBase.parseTransitionPredicate(pto, predicate.substring(2, predicate.length() - 1), true);
+				pto.fullstop();
+				PrologTerm term = pto.getSentences().iterator().next();
+				builder.append(term.toString());
+			} catch (UnsupportedOperationException | ProBParseException e) {
+				e.printStackTrace();
+			}
+		} else {
+			builder.append(predicate);
+		}
+		builder.append("))");
 		return null;
 	}
 

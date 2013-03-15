@@ -56,12 +56,15 @@ TRIGGER			: ('T');
 // Predicates
 LEFT_CURLY		: '{';
 RIGHT_CURLY		: '}';
-PREDICATE		: LEFT_CURLY (~('{' | '}') | PREDICATE)* RIGHT_CURLY;
+PREDICATE		: LEFT_CURLY (~('{' | '}') | PREDICATE)* RIGHT_CURLY;	// TODO: Match curly brackets
 
 // Actions / Transition predicates
 LEFT_BRACKET	: '[';
 RIGHT_BRACKET	: ']';
-ACTION			: LEFT_BRACKET (~('[' | ']') | ACTION)* RIGHT_BRACKET;
+ACTION			: LEFT_BRACKET (~('[' | ']') | ACTION)* RIGHT_BRACKET;	// TODO: Match brackets
+
+// Enabled
+ENABLED			: 'e' LEFT_PAREN (~('(' | ')'))* RIGHT_PAREN;			// TODO: Match parenthesis
 
 // Others
 LEFT_PAREN		: '(';
@@ -76,6 +79,7 @@ expression	: expression  binary_op expression	# binaryExpression
 			| LEFT_PAREN expression RIGHT_PAREN	# parenthesisExpression
 			| PREDICATE							# predicateExpression 
 			| ACTION							# actionExpression
+			| ENABLED							# enabledExpression
 			| constant							# constantExpression
 			;
 			
