@@ -58,6 +58,11 @@ LEFT_CURLY		: '{';
 RIGHT_CURLY		: '}';
 PREDICATE		: LEFT_CURLY (~('{' | '}') | PREDICATE)* RIGHT_CURLY;
 
+// Actions / Transition predicates
+LEFT_BRACKET	: '[';
+RIGHT_BRACKET	: ']';
+ACTION			: LEFT_BRACKET (~('[' | ']') | ACTION)* RIGHT_BRACKET;
+
 // Others
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
@@ -70,6 +75,7 @@ expression	: expression  binary_op expression	# binaryExpression
 			| unary_op expression				# unaryExpression
 			| LEFT_PAREN expression RIGHT_PAREN	# parenthesisExpression
 			| PREDICATE							# predicateExpression 
+			| ACTION							# actionExpression
 			| constant							# constantExpression
 			;
 			

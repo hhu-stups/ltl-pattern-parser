@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlBaseVisitor;
 import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.LtlParser.ActionExpressionContext;
 import de.prob.ltl.parser.LtlParser.BinaryExpressionContext;
 import de.prob.ltl.parser.LtlParser.ConstantExpressionContext;
 import de.prob.ltl.parser.LtlParser.PredicateExpressionContext;
@@ -77,6 +78,28 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 			StructuredPrologOutput pto = new StructuredPrologOutput();
 			try {
 				parserBase.parsePredicate(pto, predicate.substring(1, predicate.length() - 1), true);
+				pto.fullstop();
+				PrologTerm term = pto.getSentences().iterator().next();
+				builder.append(term.toString());
+			} catch (UnsupportedOperationException | ProBParseException e) {
+				e.printStackTrace();
+			}
+		} else {
+			builder.append(predicate);
+		}
+		builder.append(")");
+		return null;
+	}
+
+	@Override
+	public Void visitActionExpression(ActionExpressionContext ctx) {
+		builder.append("action(");
+		ProBParserBase parserBase = parser.getParserBase();
+		String predicate = ctx.getText();
+		if (parserBase != null) {
+			StructuredPrologOutput pto = new StructuredPrologOutput();
+			try {
+				parserBase.parseTransitionPredicate(pto, predicate.substring(1, predicate.length() - 1), true);
 				pto.fullstop();
 				PrologTerm term = pto.getSentences().iterator().next();
 				builder.append(term.toString());

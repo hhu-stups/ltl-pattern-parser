@@ -25,6 +25,9 @@ public interface LtlListener extends ParseTreeListener {
 	void enterUnaryExpression(LtlParser.UnaryExpressionContext ctx);
 	void exitUnaryExpression(LtlParser.UnaryExpressionContext ctx);
 
+	void enterActionExpression(LtlParser.ActionExpressionContext ctx);
+	void exitActionExpression(LtlParser.ActionExpressionContext ctx);
+
 	void enterUnary_op(LtlParser.Unary_opContext ctx);
 	void exitUnary_op(LtlParser.Unary_opContext ctx);
 

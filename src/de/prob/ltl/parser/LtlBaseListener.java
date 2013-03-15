@@ -28,6 +28,9 @@ public class LtlBaseListener implements LtlListener {
 	@Override public void enterUnaryExpression(LtlParser.UnaryExpressionContext ctx) { }
 	@Override public void exitUnaryExpression(LtlParser.UnaryExpressionContext ctx) { }
 
+	@Override public void enterActionExpression(LtlParser.ActionExpressionContext ctx) { }
+	@Override public void exitActionExpression(LtlParser.ActionExpressionContext ctx) { }
+
 	@Override public void enterUnary_op(LtlParser.Unary_opContext ctx) { }
 	@Override public void exitUnary_op(LtlParser.Unary_opContext ctx) { }
 

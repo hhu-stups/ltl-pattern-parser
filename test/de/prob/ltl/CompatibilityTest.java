@@ -81,7 +81,19 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 		for (String input : new String[] {
 				"{unpa rsed}",
 				"{abc} => true",
-				"not {abc & def}", "{ abc {def} ghi }"}){
+				"not {abc & def}",
+				"{ abc [def] ghi }", "{ abc {def} ghi }"}){
+			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
+	@Test
+	public void testAction() throws Exception {
+		for (String input : new String[] {
+				"[unpa rsed]",
+				"[abc] => true",
+				"not [abc & def]",
+				"[ abc [def] ghi ]", "[ abc {def} ghi ]"}){
 			assertEquals(parseOld(input), parse(input));
 		}
 	}

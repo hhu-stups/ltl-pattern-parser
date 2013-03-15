@@ -19,6 +19,8 @@ public interface LtlVisitor<T> extends ParseTreeVisitor<T> {
 
 	T visitUnaryExpression(LtlParser.UnaryExpressionContext ctx);
 
+	T visitActionExpression(LtlParser.ActionExpressionContext ctx);
+
 	T visitUnary_op(LtlParser.Unary_opContext ctx);
 
 	T visitPredicateExpression(LtlParser.PredicateExpressionContext ctx);

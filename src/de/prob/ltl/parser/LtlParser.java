@@ -21,12 +21,13 @@ public class LtlParser extends Parser {
 		TRUE=1, FALSE=2, SINK=3, DEADLOCK=4, CURRENT=5, NOT=6, GLOBALLY=7, FINALLY=8, 
 		NEXT=9, HISTORICALLY=10, ONCE=11, YESTERDAY=12, AND=13, OR=14, IMPLIES=15, 
 		UNTIL=16, WEAKUNTIL=17, RELEASE=18, SINCE=19, TRIGGER=20, LEFT_CURLY=21, 
-		RIGHT_CURLY=22, PREDICATE=23, LEFT_PAREN=24, RIGHT_PAREN=25, WS=26;
+		RIGHT_CURLY=22, PREDICATE=23, LEFT_BRACKET=24, RIGHT_BRACKET=25, ACTION=26, 
+		LEFT_PAREN=27, RIGHT_PAREN=28, WS=29;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'true'", "'false'", "'sink'", "'deadlock'", "'current'", 
 		"NOT", "GLOBALLY", "FINALLY", "NEXT", "HISTORICALLY", "ONCE", "YESTERDAY", 
 		"AND", "OR", "IMPLIES", "UNTIL", "WEAKUNTIL", "RELEASE", "SINCE", "TRIGGER", 
-		"'{'", "'}'", "PREDICATE", "'('", "')'", "WS"
+		"'{'", "'}'", "PREDICATE", "'['", "']'", "ACTION", "'('", "')'", "WS"
 	};
 	public static final int
 		RULE_start = 0, RULE_expression = 1, RULE_unary_op = 2, RULE_binary_op = 3, 
@@ -187,6 +188,23 @@ public class LtlParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class ActionExpressionContext extends ExpressionContext {
+		public TerminalNode ACTION() { return getToken(LtlParser.ACTION, 0); }
+		public ActionExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof LtlListener ) ((LtlListener)listener).enterActionExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof LtlListener ) ((LtlListener)listener).exitActionExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LtlVisitor ) return ((LtlVisitor<? extends T>)visitor).visitActionExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class PredicateExpressionContext extends ExpressionContext {
 		public TerminalNode PREDICATE() { return getToken(LtlParser.PREDICATE, 0); }
 		public PredicateExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
@@ -241,7 +259,7 @@ public class LtlParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(22);
+			setState(23);
 			switch (_input.LA(1)) {
 			case NOT:
 			case GLOBALLY:
@@ -256,7 +274,7 @@ public class LtlParser extends Parser {
 				_prevctx = _localctx;
 
 				setState(13); unary_op();
-				setState(14); expression(4);
+				setState(14); expression(5);
 				}
 				break;
 			case LEFT_PAREN:
@@ -277,6 +295,14 @@ public class LtlParser extends Parser {
 				setState(20); match(PREDICATE);
 				}
 				break;
+			case ACTION:
+				{
+				_localctx = new ActionExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(21); match(ACTION);
+				}
+				break;
 			case TRUE:
 			case FALSE:
 			case SINK:
@@ -286,14 +312,14 @@ public class LtlParser extends Parser {
 				_localctx = new ConstantExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(21); constant();
+				setState(22); constant();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(30);
+			setState(31);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
 			while ( _alt!=2 && _alt!=-1 ) {
@@ -304,14 +330,14 @@ public class LtlParser extends Parser {
 					{
 					_localctx = new BinaryExpressionContext(new ExpressionContext(_parentctx, _parentState, _p));
 					pushNewRecursionContext(_localctx, _startState, RULE_expression);
-					setState(24);
-					if (!(5 >= _localctx._p)) throw new FailedPredicateException(this, "5 >= $_p");
-					setState(25); binary_op();
-					setState(26); expression(0);
+					setState(25);
+					if (!(6 >= _localctx._p)) throw new FailedPredicateException(this, "6 >= $_p");
+					setState(26); binary_op();
+					setState(27); expression(0);
 					}
 					} 
 				}
-				setState(32);
+				setState(33);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
 			}
@@ -362,7 +388,7 @@ public class LtlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(33);
+			setState(34);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << GLOBALLY) | (1L << FINALLY) | (1L << NEXT) | (1L << HISTORICALLY) | (1L << ONCE) | (1L << YESTERDAY))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -416,7 +442,7 @@ public class LtlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(35);
+			setState(36);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << AND) | (1L << OR) | (1L << IMPLIES) | (1L << UNTIL) | (1L << WEAKUNTIL) | (1L << RELEASE) | (1L << SINCE) | (1L << TRIGGER))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -467,7 +493,7 @@ public class LtlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(37);
+			setState(38);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRUE) | (1L << FALSE) | (1L << SINK) | (1L << DEADLOCK) | (1L << CURRENT))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -494,23 +520,23 @@ public class LtlParser extends Parser {
 	}
 	private boolean expression_sempred(ExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 0: return 5 >= _localctx._p;
+		case 0: return 6 >= _localctx._p;
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\2\3\34*\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\3\3\3\3\3\3\3"+
-		"\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\31\n\3\3\3\3\3\3\3\3\3\7\3\37\n\3\f\3\16"+
-		"\3\"\13\3\3\4\3\4\3\5\3\5\3\6\3\6\3\6\2\7\2\4\6\b\n\2\5\3\b\16\3\17\26"+
-		"\3\3\7(\2\f\3\2\2\2\4\30\3\2\2\2\6#\3\2\2\2\b%\3\2\2\2\n\'\3\2\2\2\f\r"+
-		"\5\4\3\2\r\3\3\2\2\2\16\17\b\3\1\2\17\20\5\6\4\2\20\21\5\4\3\2\21\31\3"+
-		"\2\2\2\22\23\7\32\2\2\23\24\5\4\3\2\24\25\7\33\2\2\25\31\3\2\2\2\26\31"+
-		"\7\31\2\2\27\31\5\n\6\2\30\16\3\2\2\2\30\22\3\2\2\2\30\26\3\2\2\2\30\27"+
-		"\3\2\2\2\31 \3\2\2\2\32\33\6\3\2\3\33\34\5\b\5\2\34\35\5\4\3\2\35\37\3"+
-		"\2\2\2\36\32\3\2\2\2\37\"\3\2\2\2 \36\3\2\2\2 !\3\2\2\2!\5\3\2\2\2\" "+
-		"\3\2\2\2#$\t\2\2\2$\7\3\2\2\2%&\t\3\2\2&\t\3\2\2\2\'(\t\4\2\2(\13\3\2"+
-		"\2\2\4\30 ";
+		"\2\3\37+\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\32\n\3\3\3\3\3\3\3\3\3\7\3 \n\3\f\3"+
+		"\16\3#\13\3\3\4\3\4\3\5\3\5\3\6\3\6\3\6\2\7\2\4\6\b\n\2\5\3\b\16\3\17"+
+		"\26\3\3\7*\2\f\3\2\2\2\4\31\3\2\2\2\6$\3\2\2\2\b&\3\2\2\2\n(\3\2\2\2\f"+
+		"\r\5\4\3\2\r\3\3\2\2\2\16\17\b\3\1\2\17\20\5\6\4\2\20\21\5\4\3\2\21\32"+
+		"\3\2\2\2\22\23\7\35\2\2\23\24\5\4\3\2\24\25\7\36\2\2\25\32\3\2\2\2\26"+
+		"\32\7\31\2\2\27\32\7\34\2\2\30\32\5\n\6\2\31\16\3\2\2\2\31\22\3\2\2\2"+
+		"\31\26\3\2\2\2\31\27\3\2\2\2\31\30\3\2\2\2\32!\3\2\2\2\33\34\6\3\2\3\34"+
+		"\35\5\b\5\2\35\36\5\4\3\2\36 \3\2\2\2\37\33\3\2\2\2 #\3\2\2\2!\37\3\2"+
+		"\2\2!\"\3\2\2\2\"\5\3\2\2\2#!\3\2\2\2$%\t\2\2\2%\7\3\2\2\2&\'\t\3\2\2"+
+		"\'\t\3\2\2\2()\t\4\2\2)\13\3\2\2\2\4\31!";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {
