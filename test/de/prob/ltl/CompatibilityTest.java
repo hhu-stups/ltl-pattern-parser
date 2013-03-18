@@ -102,7 +102,7 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 	public void testEnabled() throws Exception {
 		for (String input : new String[] {
 				"e(bla)",
-				//"e(a (b) c)",	// TODO Match parenthesis
+				"e(a (b) c)",
 				"e([ abc [def] ghi ])", "e( abc {def} ghi )"}){
 			assertEquals(parseOld(input), parse(input));
 		}
