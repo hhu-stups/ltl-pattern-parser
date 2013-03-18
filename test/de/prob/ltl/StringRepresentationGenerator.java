@@ -13,18 +13,16 @@ import de.prob.ltl.parser.LtlParser.PredicateExpressionContext;
 import de.prob.ltl.parser.LtlParser.UnaryExpressionContext;
 import de.prob.parserbase.ProBParseException;
 import de.prob.parserbase.ProBParserBase;
-import de.prob.parserbase.UnparsedParserBase;
-import de.prob.prolog.output.PrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.PrologTerm;
 
 public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 
 	private final StringBuilder builder = new StringBuilder();
-	private final LtlParser parser;
+	private final ProBParserBase parserBase;
 
-	public StringRepresentationGenerator(LtlParser parser) {
-		this.parser = parser;
+	public StringRepresentationGenerator(ProBParserBase parserBase) {
+		this.parserBase = parserBase;
 	}
 
 	@Override
@@ -73,7 +71,6 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 	@Override
 	public Void visitPredicateExpression(PredicateExpressionContext ctx) {
 		builder.append("ap(");
-		ProBParserBase parserBase = parser.getParserBase();
 		String predicate = ctx.getText();
 		if (parserBase != null) {
 			StructuredPrologOutput pto = new StructuredPrologOutput();
@@ -95,7 +92,6 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 	@Override
 	public Void visitActionExpression(ActionExpressionContext ctx) {
 		builder.append("action(");
-		ProBParserBase parserBase = parser.getParserBase();
 		String predicate = ctx.getText();
 		if (parserBase != null) {
 			StructuredPrologOutput pto = new StructuredPrologOutput();
@@ -117,7 +113,6 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 	@Override
 	public Void visitEnabledExpression(EnabledExpressionContext ctx) {
 		builder.append("ap(enabled(");
-		ProBParserBase parserBase = parser.getParserBase();
 		String predicate = ctx.getText();
 		if (parserBase != null) {
 			StructuredPrologOutput pto = new StructuredPrologOutput();

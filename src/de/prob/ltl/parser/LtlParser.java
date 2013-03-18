@@ -1,7 +1,6 @@
 // Generated from Ltl.g4 by ANTLR 4.0
 
 package de.prob.ltl.parser;
-import de.prob.parserbase.ProBParserBase;
 
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -48,22 +47,6 @@ public class LtlParser extends Parser {
 
 	@Override
 	public ATN getATN() { return _ATN; }
-
-
-	private ProBParserBase parserBase;
-
-	public LtlParser(TokenStream input, ProBParserBase parserBase) {
-		this(input);
-		this.parserBase = parserBase;
-	}
-
-	public ProBParserBase getParserBase() {
-		return parserBase;
-	}
-
-	public void setParserBase(ProBParserBase parserBase) {
-		this.parserBase = parserBase;
-	}
 
 	public LtlParser(TokenStream input) {
 		super(input);

@@ -1,30 +1,9 @@
 grammar Ltl;
 
-@lexer::header {
+@header {
 package de.prob.ltl.parser;
 }
 
-@parser::header {
-package de.prob.ltl.parser;
-import de.prob.parserbase.ProBParserBase;
-}
-
-@parser::members {
-private ProBParserBase parserBase;
-
-public LtlParser(TokenStream input, ProBParserBase parserBase) {
-	this(input);
-	this.parserBase = parserBase;
-}
-
-public ProBParserBase getParserBase() {
-	return parserBase;
-}
-
-public void setParserBase(ProBParserBase parserBase) {
-	this.parserBase = parserBase;
-}
-}
 /* -- Token -- */
 
 // Constants

@@ -1,7 +1,6 @@
 // Generated from Ltl.g4 by ANTLR 4.0
 
 package de.prob.ltl.parser;
-import de.prob.parserbase.ProBParserBase;
 
 import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.runtime.Token;

@@ -20,7 +20,7 @@ public abstract class AbstractLtlParserTest {
 	protected String parse(String input) {
 		final LtlParser parser = createParser(input);
 		ParseTree result = parser.start();
-		StringRepresentationGenerator generator = new StringRepresentationGenerator(parser);
+		StringRepresentationGenerator generator = new StringRepresentationGenerator(getProBParserBase());
 		generator.visit(result);
 		return generator.getGeneratedString();
 	}
@@ -43,7 +43,7 @@ public abstract class AbstractLtlParserTest {
 	}
 
 	protected LtlParser createParser(LtlLexer lexer) {
-		LtlParser parser = new LtlParser(new CommonTokenStream(lexer), getProBParserBase());
+		LtlParser parser = new LtlParser(new CommonTokenStream(lexer));
 		parser.setErrorHandler(new BailErrorStrategy());
 		return parser;
 	}
