@@ -55,31 +55,19 @@ WS				: [ \t\r\n]+ -> skip;
 /* -- Rules -- */
 start 		: expression;
 
-expression	: expression  binary_op expression	# binaryExpression			  
-			| unary_op expression				# unaryExpression
-			| LEFT_PAREN expression RIGHT_PAREN	# parenthesisExpression
-			| PREDICATE							# predicateExpression 
-			| ACTION							# actionExpression
-			| ENABLED							# enabledExpression
-			| constant							# constantExpression
+expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpression
+			| NOT expression																# negateExpression
+			| expression AND expression														# andExpression	
+			| expression OR expression														# orExpression	
+			| expression IMPLIES expression													# impliesExpression		
+			| expression binary_op=(UNTIL | WEAKUNTIL | RELEASE | SINCE | TRIGGER) expression		# binaryExpression			  
+			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY) expression		# unaryExpression
+			| PREDICATE																		# predicateExpression 
+			| ACTION																		# actionExpression
+			| ENABLED																		# enabledExpression
+			| constant																		# constantExpression
 			;
 			
-unary_op	: NOT 
-			| GLOBALLY 
-			| FINALLY 
-			| NEXT 
-			| HISTORICALLY 
-			| ONCE 
-			| YESTERDAY;
-			
-binary_op	: AND 
-			| OR 
-			| IMPLIES 
-			| UNTIL 
-			| WEAKUNTIL 
-			| RELEASE 
-			| SINCE 
-			| TRIGGER;
 
 constant	: TRUE 
 			| FALSE 

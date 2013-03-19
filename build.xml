@@ -21,7 +21,13 @@
     </target>
  
     <target name="showtree" depends="generate">
-        <input message="Enter formula to test:" addproperty="test.content" />
+    	<condition property="test.content.default" value="">
+    		<not>
+    			<available file="test.script" />
+    		</not>
+    	</condition>
+    	<loadfile property="test.content.default" srcfile="test.script" failonerror="false" />
+        <input message="Enter formula to test:" addproperty="test.content" defaultvalue="${test.content.default}" />
     	<echo file="test.script" append="false" message="${test.content}" />
         <java classname="org.antlr.v4.runtime.misc.TestRig" classpathref="classpath" fork="true">
             <arg value="${package}.Ltl" />

@@ -108,4 +108,48 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 		}
 	}
 
+	@Test
+	public void testPrecedenceNotAndOr() throws Exception {
+		for (String input : new String[] {
+				"true",
+				"not true",
+				"true & false",
+				"not true & false",
+				"not true & not false",
+				"not not true & not false",
+				"true & false & true",
+				"true & false or sink",
+				//"true or false & true",
+		"true or false or true"}){
+			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
+	@Test
+	public void testPrecedenceImplies() throws Exception {
+		for (String input : new String[] {
+				"true=>false",
+				"not true => not false",
+				"true & true => true or false",
+				"true or not true => not true & false",
+				"true => false => sink", "true => false => sink => deadlock"}){
+			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
+	@Test
+	public void testPrecedenceBinaryOp() throws Exception {
+		for (String input : new String[] {
+				//"true U false",
+				//"sink R GF false",
+				//"true & false W false",
+				//"false W true & false"
+				//"true => false & sink W sink or true",
+				//"true U false R sink",
+				//"true S false & sink T deadlock", "true S false or sink T deadlock "
+		}){
+			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
 }

@@ -6,9 +6,13 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import de.prob.ltl.parser.LtlBaseVisitor;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.ActionExpressionContext;
+import de.prob.ltl.parser.LtlParser.AndExpressionContext;
 import de.prob.ltl.parser.LtlParser.BinaryExpressionContext;
 import de.prob.ltl.parser.LtlParser.ConstantExpressionContext;
 import de.prob.ltl.parser.LtlParser.EnabledExpressionContext;
+import de.prob.ltl.parser.LtlParser.ImpliesExpressionContext;
+import de.prob.ltl.parser.LtlParser.NegateExpressionContext;
+import de.prob.ltl.parser.LtlParser.OrExpressionContext;
 import de.prob.ltl.parser.LtlParser.PredicateExpressionContext;
 import de.prob.ltl.parser.LtlParser.UnaryExpressionContext;
 import de.prob.parserbase.ProBParseException;
@@ -40,12 +44,7 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 
 	@Override
 	public Void visitUnaryExpression(UnaryExpressionContext ctx) {
-		ParseTree op = ctx.unary_op().getChild(0);
-		if (op instanceof TerminalNode) {
-			builder.append(LtlParser.tokenNames[((TerminalNode)op).getSymbol().getType()].toLowerCase());
-		} else {
-			throw new RuntimeException("Child of unary_op has to be a terminal node");
-		}
+		builder.append(LtlParser.tokenNames[ctx.unary_op.getType()].toLowerCase());
 		builder.append('(');
 		visit(ctx.getChild(1));
 		builder.append(')');
@@ -54,12 +53,7 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 
 	@Override
 	public Void visitBinaryExpression(BinaryExpressionContext ctx) {
-		ParseTree op = ctx.binary_op().getChild(0);
-		if (op instanceof TerminalNode) {
-			builder.append(LtlParser.tokenNames[((TerminalNode)op).getSymbol().getType()].toLowerCase());
-		} else {
-			throw new RuntimeException("Child of binary_op has to be a terminal node");
-		}
+		builder.append(LtlParser.tokenNames[ctx.binary_op.getType()].toLowerCase());
 		builder.append('(');
 		visit(ctx.getChild(0));
 		builder.append(',');
@@ -128,6 +122,47 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 			builder.append(predicate);
 		}
 		builder.append("))");
+		return null;
+	}
+
+
+
+	@Override
+	public Void visitNegateExpression(NegateExpressionContext ctx) {
+		builder.append("not(");
+		visit(ctx.getChild(1));
+		builder.append(')');
+		return null;
+	}
+
+	@Override
+	public Void visitAndExpression(AndExpressionContext ctx) {
+		builder.append("and");
+		builder.append('(');
+		visit(ctx.getChild(0));
+		builder.append(',');
+		visit(ctx.getChild(2));
+		builder.append(')');
+		return null;
+	}
+
+	@Override
+	public Void visitOrExpression(OrExpressionContext ctx) {
+		builder.append("or(");
+		visit(ctx.getChild(0));
+		builder.append(',');
+		visit(ctx.getChild(2));
+		builder.append(')');
+		return null;
+	}
+
+	@Override
+	public Void visitImpliesExpression(ImpliesExpressionContext ctx) {
+		builder.append("implies(");
+		visit(ctx.getChild(0));
+		builder.append(',');
+		visit(ctx.getChild(2));
+		builder.append(')');
 		return null;
 	}
 
