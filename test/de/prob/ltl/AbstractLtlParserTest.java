@@ -18,7 +18,14 @@ public abstract class AbstractLtlParserTest {
 
 	// Helper
 	protected String parse(String input) {
+		return parse(input, false);
+	}
+
+	protected String parse(String input, boolean hideErrors) {
 		final LtlParser parser = createParser(input);
+		if (hideErrors) {
+			parser.removeErrorListeners();
+		}
 		ParseTree result = parser.start();
 		StringRepresentationGenerator generator = new StringRepresentationGenerator(getProBParserBase());
 		generator.visit(result);

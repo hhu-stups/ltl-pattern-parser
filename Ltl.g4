@@ -4,6 +4,29 @@ grammar Ltl;
 package de.prob.ltl.parser;
 }
 
+/* -- Rules -- */
+start 		: expression;
+
+expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpression
+			| NOT expression																# notExpression
+			| expression AND expression														# andExpression	
+			| expression OR expression														# orExpression	
+			| expression IMPLIES expression													# impliesExpression		
+			| expression binary_op=(UNTIL | WEAKUNTIL | RELEASE | SINCE | TRIGGER) expression		# binaryExpression			  
+			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY) expression		# unaryExpression
+			| PREDICATE																		# predicateExpression 
+			| ACTION																		# actionExpression
+			| ENABLED																		# enabledExpression
+			| constant																		# constantExpression
+			;
+			
+
+constant	: TRUE 
+			| FALSE 
+			| SINK 
+			| DEADLOCK 
+			| CURRENT;
+
 /* -- Token -- */
 
 // Constants
@@ -51,26 +74,3 @@ ENABLED_PAREN	: LEFT_PAREN (~('(' | ')') | ENABLED_PAREN)* RIGHT_PAREN;
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
 WS				: [ \t\r\n]+ -> skip;
-
-/* -- Rules -- */
-start 		: expression;
-
-expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpression
-			| NOT expression																# negateExpression
-			| expression AND expression														# andExpression	
-			| expression OR expression														# orExpression	
-			| expression IMPLIES expression													# impliesExpression		
-			| expression binary_op=(UNTIL | WEAKUNTIL | RELEASE | SINCE | TRIGGER) expression		# binaryExpression			  
-			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY) expression		# unaryExpression
-			| PREDICATE																		# predicateExpression 
-			| ACTION																		# actionExpression
-			| ENABLED																		# enabledExpression
-			| constant																		# constantExpression
-			;
-			
-
-constant	: TRUE 
-			| FALSE 
-			| SINK 
-			| DEADLOCK 
-			| CURRENT;
