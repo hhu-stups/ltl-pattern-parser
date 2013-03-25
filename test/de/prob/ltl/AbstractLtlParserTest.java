@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.junit.Assert;
 
 import de.prob.ltl.parser.LtlLexer;
 import de.prob.ltl.parser.LtlParser;
@@ -17,6 +18,14 @@ public abstract class AbstractLtlParserTest {
 	public abstract ProBParserBase getProBParserBase();
 
 	// Helper
+	public void throwsRuntimeException(String input) {
+		try {
+			parse(input, true);
+			Assert.fail("RuntimeException should have been thrown.");
+		} catch(RuntimeException e) {
+		}
+	}
+
 	protected String parse(String input) {
 		return parse(input, false);
 	}

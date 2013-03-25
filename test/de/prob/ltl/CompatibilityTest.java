@@ -1,6 +1,6 @@
 package de.prob.ltl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,18 +46,31 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 	@Test
 	public void testUnaryOp() throws Exception {
 		for (String input : new String[] {
-				"nottrue",
 				"not true",
 				"not \n true",
 				"not \t true",
 				"not \r true",
-				"Xtrue",
 				"X (false)" ,
 				"F true",
 				"G(false)",
 				"H true",
-				"O(false)", "Y(false)" }){
+				"O(false)",
+				"Y(false)",
+				"GF true",
+				"G F true",
+				"GFGF(false)", "XFGHOY false"}){
 			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
+	@Test
+	public void testUnaryOpIncompatible() throws Exception {
+		for (String input : new String[] {
+				"nottrue",
+				"Xtrue",
+				"GFtrue", "G Ftrue", }){
+			throwsRuntimeException(input);
+			parseOld(input);
 		}
 	}
 
@@ -69,10 +82,17 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 				"true or false",
 				"true => false",
 				"(true)U false",
-				"sink W (deadlock)",
-				"trueRfalse",
-				"sink S (deadlock)", "trueTfalse"}){
+				"sink W (deadlock)", "sink S (deadlock)"}){
 			assertEquals(parseOld(input), parse(input));
+		}
+	}
+
+	@Test
+	public void testBinaryOpIncompatible() throws Exception {
+		for (String input : new String[] {
+				"trueRfalse", "trueTfalse"}){
+			throwsRuntimeException(input);
+			parseOld(input);
 		}
 	}
 
@@ -118,11 +138,16 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 				"not true & not false",
 				"not not true & not false",
 				"true & false & true",
-				"true & false or sink",
-				//"true or false & true",
-		"true or false or true"}){
+				"true & false or sink", "true or false or true"}){
 			assertEquals(parseOld(input), parse(input));
 		}
+	}
+
+	@Test
+	public void testPrecedenceNotAndOrIncompatible() throws Exception {
+		String input = "true or false & true";
+		assertEquals("or(true,and(false,true))", parse(input));
+		assertEquals("and(or(true,false),true)", parseOld(input));
 	}
 
 	@Test
@@ -137,19 +162,20 @@ public class CompatibilityTest extends AbstractLtlParserTest {
 		}
 	}
 
-	@Test
+	/*@Test
 	public void testPrecedenceBinaryOp() throws Exception {
 		for (String input : new String[] {
-				//"true U false",
-				//"sink R GF false",
+				"true U false",
+				"sink R GF false",
 				//"true & false W false",
-				//"false W true & false"
+				//"false W true & false",
 				//"true => false & sink W sink or true",
-				//"true U false R sink",
+				"true U false R sink",
+				"true R false U sink"
 				//"true S false & sink T deadlock", "true S false or sink T deadlock "
 		}){
 			assertEquals(parseOld(input), parse(input));
 		}
-	}
+	}*/
 
 }

@@ -13,7 +13,7 @@ expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpressio
 			| expression OR expression														# orExpression	
 			| expression IMPLIES expression													# impliesExpression		
 			| expression binary_op=(UNTIL | WEAKUNTIL | RELEASE | SINCE | TRIGGER) expression		# binaryExpression			  
-			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY) expression		# unaryExpression
+			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY | UNARY_COMBINED) expression		# unaryExpression
 			| PREDICATE																		# predicateExpression 
 			| ACTION																		# actionExpression
 			| ENABLED																		# enabledExpression
@@ -44,6 +44,7 @@ NEXT			: ('X');
 HISTORICALLY	: ('H');
 ONCE			: ('O');
 YESTERDAY		: ('Y');
+UNARY_COMBINED 	: [GFXHOY]+;
 
 // Binary operators
 AND				: ('and' | '&');
@@ -73,4 +74,6 @@ ENABLED_PAREN	: LEFT_PAREN (~('(' | ')') | ENABLED_PAREN)* RIGHT_PAREN;
 // Others
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
+
+IDENTIFIER		: [a-zA-Z]+;
 WS				: [ \t\r\n]+ -> skip;

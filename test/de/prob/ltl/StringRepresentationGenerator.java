@@ -1,6 +1,7 @@
 package de.prob.ltl;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlBaseVisitor;
 import de.prob.ltl.parser.LtlLexer;
@@ -57,8 +58,45 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 
 	@Override
 	public Void visitUnaryExpression(UnaryExpressionContext ctx) {
-		String name = LtlLexer.ruleNames[ctx.unary_op.getType() - 1];
-		return unaryOp(name.toLowerCase(), ctx.expression());
+		TerminalNode combined = ctx.UNARY_COMBINED();
+
+		if (combined != null) {
+			String value = combined.getText();
+
+			for (int i = 0; i < value.length(); i++) {
+				int type = 0;
+				switch (value.charAt(i)) {
+				case 'G':
+					type = LtlLexer.GLOBALLY;
+					break;
+				case 'F':
+					type = LtlLexer.FINALLY;
+					break;
+				case 'X':
+					type = LtlLexer.NEXT;
+					break;
+				case 'H':
+					type = LtlLexer.HISTORICALLY;
+					break;
+				case 'O':
+					type = LtlLexer.ONCE;
+					break;
+				case 'Y':
+					type = LtlLexer.YESTERDAY;
+					break;
+				}
+				builder.append(LtlLexer.ruleNames[type - 1].toLowerCase());
+				builder.append('(');
+			}
+			visit(ctx.expression());
+			for (int i = 0; i < value.length(); i++) {
+				builder.append(')');
+			}
+		} else {
+			String name = LtlLexer.ruleNames[ctx.unary_op.getType() - 1];
+			unaryOp(name.toLowerCase(), ctx.expression());
+		}
+		return null;
 	}
 
 	@Override
