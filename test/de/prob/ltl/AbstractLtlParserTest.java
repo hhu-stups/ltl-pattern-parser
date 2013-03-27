@@ -21,7 +21,7 @@ public abstract class AbstractLtlParserTest {
 	public void throwsRuntimeException(String input) {
 		try {
 			parse(input, true);
-			Assert.fail("RuntimeException should have been thrown.");
+			Assert.fail("RuntimeException should have been thrown. (Input: \""+ input +"\")");
 		} catch(RuntimeException e) {
 		}
 	}

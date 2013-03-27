@@ -5,7 +5,7 @@ package de.prob.ltl.parser;
 }
 
 /* -- Rules -- */
-start 		: expression;
+start 		: expression EOF;
 
 expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpression
 			| NOT expression																# notExpression
@@ -36,8 +36,7 @@ SINK			: 'sink';
 DEADLOCK		: 'deadlock';
 CURRENT			: 'current';
 
-// Unary operators
-NOT				: ('not' | '!'); 
+// Unary Ltl operators
 GLOBALLY		: ('G');
 FINALLY			: ('F');
 NEXT			: ('X');
@@ -46,15 +45,18 @@ ONCE			: ('O');
 YESTERDAY		: ('Y');
 UNARY_COMBINED 	: [GFXHOY]+;
 
-// Binary operators
-AND				: ('and' | '&');
-OR				: ('or' | '|');
-IMPLIES			: ('=>');
+// Binary Ltl operators
 UNTIL			: ('U');
 WEAKUNTIL		: ('W');
 RELEASE			: ('R');
 SINCE			: ('S');
 TRIGGER			: ('T');
+
+// Boolean operators
+NOT				: ('not' | '!'); 
+AND				: ('and' | '&');
+OR				: ('or' | '|');
+IMPLIES			: ('=>');
 
 // Predicates
 LEFT_CURLY		: '{';
