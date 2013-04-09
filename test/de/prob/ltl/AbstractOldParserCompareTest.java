@@ -36,9 +36,11 @@ public class AbstractOldParserCompareTest extends AbstractLtlParserTest {
 		return term.toString();
 	}
 
-	public void assertEquals(String expected, String input) throws Exception {
-		Assert.assertEquals(expected, parse(input));
-		Assert.assertEquals(expected, parseOld(input));
+	public void assertEquals(String expected, String ... inputs) throws Exception {
+		for (String input : inputs) {
+			Assert.assertEquals(expected, parse(input));
+			Assert.assertEquals(expected, parseOld(input));
+		}
 	}
 
 	public void throwsException(String expected, String input, ExceptionCause cause) {

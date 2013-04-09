@@ -9,11 +9,11 @@ start 		: expression EOF;
 
 expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpression
 			| NOT expression																# notExpression
+			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY | UNARY_COMBINED) expression		# unaryExpression
 			| expression AND expression														# andExpression	
 			| expression OR expression														# orExpression	
 			| expression IMPLIES expression													# impliesExpression		
 			| expression binary_op=(UNTIL | WEAKUNTIL | RELEASE | SINCE | TRIGGER) expression		# binaryExpression			  
-			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY | UNARY_COMBINED) expression		# unaryExpression
 			| PREDICATE																		# predicateExpression 
 			| ACTION																		# actionExpression
 			| ENABLED																		# enabledExpression
