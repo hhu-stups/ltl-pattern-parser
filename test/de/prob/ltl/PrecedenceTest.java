@@ -43,6 +43,9 @@ public class PrecedenceTest extends AbstractOldParserCompareTest {
 		incompatiblePrecedence("or(and(ap(sink),ap(deadlock)),and(true,false))",
 				"sink & deadlock or true & false",
 				"(sink & deadlock) or (true & false)");
+		incompatiblePrecedence("or(or(ap(sink),and(ap(deadlock),true)),false)",
+				"sink or deadlock & true or false",
+				"(sink or (deadlock & true)) or false");
 
 		// implies
 		assertEquals("implies(and(true,false),ap(sink))",
@@ -76,6 +79,67 @@ public class PrecedenceTest extends AbstractOldParserCompareTest {
 		assertEquals("and(globally(finally(true)),false)",
 				"GF true & false",
 				"(GF true) & false");
+	}
+
+	@Test
+	public void testOr() throws Exception {
+		// (), constant
+		assertEquals("or(true,false)",
+				"true or false",
+				"(true or false)",
+				"(true) or (false)");
+
+		// not
+		assertEquals("or(not(true),not(false))",
+				"not true or not false",
+				"(not true) or (not false)");
+		assertEquals("or(not(not(true)),not(false))",
+				"not not true or not false",
+				"(not (not true)) or (not false)");
+		assertEquals("not(or(not(true),not(false)))",
+				"not (not true or not false)",
+				"not ((not true) or (not false))");
+
+		// or
+		assertEquals("or(or(true,false),ap(sink))",
+				"true or false or sink",
+				"((true or false) or sink)");
+		assertEquals("or(or(or(true,false),ap(sink)),ap(deadlock))",
+				"true or false or sink or deadlock",
+				"(((true or false) or sink) or deadlock)");
+
+		// implies
+		assertEquals("implies(or(true,false),ap(sink))",
+				"true or false => sink",
+				"(true or false) => sink");
+		assertEquals("implies(ap(sink),or(true,false))",
+				"sink => true or false",
+				"sink => (true or false)");
+		assertEquals("implies(or(ap(sink),ap(deadlock)),or(true,false))",
+				"sink or deadlock => true or false",
+				"(sink or deadlock) => (true or false)");
+
+		// Binary Ltl
+		incompatiblePrecedence("until(or(true,false),ap(sink))",
+				"true or false U sink",
+				"(true or false) U sink");
+		incompatiblePrecedence("release(ap(sink),or(true,false))",
+				"sink R true or false",
+				"sink R (true or false)");
+		incompatiblePrecedence("trigger(or(ap(sink),ap(deadlock)),or(true,false))",
+				"sink or deadlock T true or false",
+				"(sink or deadlock) T (true or false)");
+
+		// Unary Ltl
+		assertEquals("or(globally(true),finally(false))",
+				"G true or F false",
+				"(G true) or (F false)");
+		assertEquals("or(globally(true),false)",
+				"G true or false",
+				"(G true) or false");
+		assertEquals("or(globally(finally(true)),false)",
+				"GF true or false",
+				"(GF true) or false");
 	}
 
 	// Helper
