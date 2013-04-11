@@ -12,8 +12,8 @@ expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpressio
 			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY | UNARY_COMBINED) expression		# unaryExpression
 			| expression AND expression														# andExpression	
 			| expression OR expression														# orExpression	
-			| expression IMPLIES expression													# impliesExpression		
 			| expression binary_op=(UNTIL | WEAKUNTIL | RELEASE | SINCE | TRIGGER) expression		# binaryExpression			  
+			| expression IMPLIES expression													# impliesExpression		
 			| PREDICATE																		# predicateExpression 
 			| ACTION																		# actionExpression
 			| ENABLED																		# enabledExpression
