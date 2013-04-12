@@ -206,6 +206,70 @@ public class PrecedenceTest extends AbstractOldParserCompareTest {
 				"(GF true) => false");
 	}
 
+	@Test
+	public void testBinaryLtl() throws Exception {
+		// (), constant
+		assertEquals("until(true,false)",
+				"true U false",
+				"(true U false)",
+				"(true) U (false)");
+
+		// not
+		assertEquals("release(not(true),not(false))",
+				"not true R not false",
+				"(not true) R (not false)");
+		assertEquals("weakuntil(not(not(true)),not(false))",
+				"not not true W not false",
+				"(not (not true)) W (not false)");
+		assertEquals("not(since(not(true),not(false)))",
+				"not (not true S not false)",
+				"not ((not true) S (not false))");
+
+		// Binary Ltl
+		assertEquals("until(until(true,false),ap(sink))",
+				"true U false U sink",
+				"((true U false) U sink)");
+		assertEquals("until(until(until(true,false),ap(sink)),ap(deadlock))",
+				"true U false U sink U deadlock",
+				"(((true U false) U sink) U deadlock)");
+
+		// or
+		incompatiblePrecedence("trigger(true,or(false,ap(sink)))",
+				"true T false or sink",
+				"true T (false or sink)");
+		incompatiblePrecedence("trigger(or(ap(sink),true),false)",
+				"sink or true T false",
+				"(sink or true) T false");
+		incompatiblePrecedence("until(until(ap(sink),or(ap(deadlock),true)),false)",
+				"sink U deadlock or true U false",
+				"(sink U (deadlock or true)) U false");
+		incompatiblePrecedence("until(or(ap(sink),ap(deadlock)),or(true,false))",
+				"sink or deadlock U true or false",
+				"(sink or deadlock) U (true or false)");
+
+		// implies
+		assertEquals("implies(until(true,false),ap(sink))",
+				"true U false => sink",
+				"(true U false) => sink");
+		assertEquals("implies(ap(sink),until(true,false))",
+				"sink => true U false",
+				"sink => (true U false)");
+		assertEquals("implies(until(ap(sink),ap(deadlock)),until(true,false))",
+				"sink U deadlock => true U false",
+				"(sink U deadlock) => (true U false)");
+
+		// Unary Ltl
+		assertEquals("until(globally(true),finally(false))",
+				"G true U F false",
+				"(G true) U (F false)");
+		assertEquals("until(globally(true),false)",
+				"G true U false",
+				"(G true) U false");
+		assertEquals("until(globally(finally(true)),false)",
+				"GF true U false",
+				"(GF true) U false");
+	}
+
 	// Helper
 	public void incompatiblePrecedence(String expected, String incompatibleInput, String equivInput) throws Exception {
 		Assert.assertEquals(expected, parse(incompatibleInput));
