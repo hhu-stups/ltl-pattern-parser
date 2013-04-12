@@ -59,15 +59,15 @@ public class PrecedenceTest extends AbstractOldParserCompareTest {
 				"(sink & deadlock) => (true & false)");
 
 		// Binary Ltl
-		incompatiblePrecedence("until(and(true,false),ap(sink))",
+		assertEquals("and(true,until(false,ap(sink)))",
 				"true & false U sink",
-				"(true & false) U sink");
-		incompatiblePrecedence("release(ap(sink),and(true,false))",
+				"true & (false U sink)");
+		assertEquals("and(release(ap(sink),true),false)",
 				"sink R true & false",
-				"sink R (true & false)");
-		incompatiblePrecedence("trigger(and(ap(sink),ap(deadlock)),and(true,false))",
+				"(sink R true) & false");
+		assertEquals("and(and(ap(sink),trigger(ap(deadlock),true)),false)",
 				"sink & deadlock T true & false",
-				"(sink & deadlock) T (true & false)");
+				"(sink & (deadlock T true)) & false");
 
 		// Unary Ltl
 		assertEquals("and(globally(true),finally(false))",
@@ -120,15 +120,15 @@ public class PrecedenceTest extends AbstractOldParserCompareTest {
 				"(sink or deadlock) => (true or false)");
 
 		// Binary Ltl
-		incompatiblePrecedence("until(or(true,false),ap(sink))",
+		assertEquals("or(true,until(false,ap(sink)))",
 				"true or false U sink",
-				"(true or false) U sink");
-		incompatiblePrecedence("release(ap(sink),or(true,false))",
+				"true or (false U sink)");
+		assertEquals("or(release(ap(sink),true),false)",
 				"sink R true or false",
-				"sink R (true or false)");
-		incompatiblePrecedence("trigger(or(ap(sink),ap(deadlock)),or(true,false))",
+				"(sink R true) or false");
+		assertEquals("or(or(ap(sink),trigger(ap(deadlock),true)),false)",
 				"sink or deadlock T true or false",
-				"(sink or deadlock) T (true or false)");
+				"(sink or (deadlock T true)) or false");
 
 		// Unary Ltl
 		assertEquals("or(globally(true),finally(false))",
@@ -234,18 +234,18 @@ public class PrecedenceTest extends AbstractOldParserCompareTest {
 				"(((true U false) U sink) U deadlock)");
 
 		// or
-		incompatiblePrecedence("trigger(true,or(false,ap(sink)))",
+		assertEquals("or(trigger(true,false),ap(sink))",
 				"true T false or sink",
-				"true T (false or sink)");
-		incompatiblePrecedence("trigger(or(ap(sink),true),false)",
+				"(true T false) or sink");
+		assertEquals("or(ap(sink),trigger(true,false))",
 				"sink or true T false",
-				"(sink or true) T false");
-		incompatiblePrecedence("until(until(ap(sink),or(ap(deadlock),true)),false)",
+				"sink or (true T false)");
+		assertEquals("or(until(ap(sink),ap(deadlock)),until(true,false))",
 				"sink U deadlock or true U false",
-				"(sink U (deadlock or true)) U false");
-		incompatiblePrecedence("until(or(ap(sink),ap(deadlock)),or(true,false))",
+				"(sink U deadlock) or (true U false)");
+		assertEquals("or(or(ap(sink),until(ap(deadlock),true)),false)",
 				"sink or deadlock U true or false",
-				"(sink or deadlock) U (true or false)");
+				"(sink or (deadlock U true)) or false");
 
 		// implies
 		assertEquals("implies(until(true,false),ap(sink))",
@@ -277,7 +277,7 @@ public class PrecedenceTest extends AbstractOldParserCompareTest {
 		if (expected.equals(oldOutput)) {
 			Assert.fail("The old parser version output should differ from the expected output. (Input: "+incompatibleInput+")");
 		} else {
-			System.out.println("Incompatible input: " + incompatibleInput + " expected precedence: " + equivInput);
+			System.out.println("Incompatible input: " + incompatibleInput + " ## Expected precedence: " + equivInput);
 		}
 		assertEquals(expected, equivInput);
 	}

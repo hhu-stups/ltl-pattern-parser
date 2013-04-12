@@ -10,9 +10,9 @@ start 		: expression EOF;
 expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpression
 			| NOT expression																# notExpression
 			| unary_op=(GLOBALLY | FINALLY | NEXT | HISTORICALLY | ONCE | YESTERDAY | UNARY_COMBINED) expression		# unaryExpression
+			| expression binary_op=(UNTIL | WEAKUNTIL | RELEASE | SINCE | TRIGGER) expression		# binaryExpression			  
 			| expression AND expression														# andExpression	
 			| expression OR expression														# orExpression	
-			| expression binary_op=(UNTIL | WEAKUNTIL | RELEASE | SINCE | TRIGGER) expression		# binaryExpression			  
 			| expression IMPLIES expression													# impliesExpression		
 			| PREDICATE																		# predicateExpression 
 			| ACTION																		# actionExpression
