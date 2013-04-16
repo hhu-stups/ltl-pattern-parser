@@ -187,9 +187,14 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 	public Void visitPatternCallExpression(PatternCallExpressionContext ctx) {
 		builder.append("pattern_call(\"");
 		builder.append(ctx.PATTERN_ID().getText());
-		builder.append("\",");
-		visit(ctx.expression());
-		builder.append("\")");
+		builder.append("\",[");
+		for (int i = 0; i < ctx.expression().size(); i++) {
+			if (i > 0) {
+				builder.append(",");
+			}
+			visit(ctx.expression(i));
+		}
+		builder.append("])");
 		return null;
 	}
 

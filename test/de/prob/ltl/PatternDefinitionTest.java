@@ -31,7 +31,9 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 
 	@Test
 	public void testDefinition() throws Exception {
-		assertEquals("pattern_def(\"absence\",[\"a\"],globally(not(param(\"a\"))))true", "def absence(a): G not a true");
+		String def = "pattern_def(\"absence\",[\"a\"],globally(not(param(\"a\"))))";
+		String call = "pattern_call(\"absence\",[true])";
+		assertEquals(def + call, "def absence(a): G not a absence(true)");
 	}
 
 }

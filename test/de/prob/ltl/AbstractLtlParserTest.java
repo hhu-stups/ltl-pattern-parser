@@ -6,10 +6,14 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Assert;
 
 import de.prob.ltl.parser.LtlLexer;
 import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.SymbolChecker;
+import de.prob.ltl.parser.SymbolCollector;
+import de.prob.ltl.parser.SymbolTable;
 import de.prob.parserbase.ProBParserBase;
 
 
@@ -36,6 +40,13 @@ public abstract class AbstractLtlParserTest {
 			parser.removeErrorListeners();
 		}
 		ParseTree result = parser.start();
+
+		// Check symbols
+		SymbolTable symbolTable = new SymbolTable();
+		ParseTreeWalker walker = new ParseTreeWalker();
+		walker.walk(new SymbolCollector(symbolTable), result);
+		walker.walk(new SymbolChecker(symbolTable), result);
+
 		StringRepresentationGenerator generator = new StringRepresentationGenerator(getProBParserBase());
 		generator.visit(result);
 		return generator.getGeneratedString();
