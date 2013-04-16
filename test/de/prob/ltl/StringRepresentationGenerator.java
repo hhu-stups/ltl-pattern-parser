@@ -13,6 +13,9 @@ import de.prob.ltl.parser.LtlParser.EnabledExpressionContext;
 import de.prob.ltl.parser.LtlParser.ImpliesExpressionContext;
 import de.prob.ltl.parser.LtlParser.NotExpressionContext;
 import de.prob.ltl.parser.LtlParser.OrExpressionContext;
+import de.prob.ltl.parser.LtlParser.PatternCallExpressionContext;
+import de.prob.ltl.parser.LtlParser.PatternParamExpressionContext;
+import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 import de.prob.ltl.parser.LtlParser.PredicateExpressionContext;
 import de.prob.ltl.parser.LtlParser.UnaryExpressionContext;
 import de.prob.parserbase.ProBParseException;
@@ -169,6 +172,42 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 			name = String.format("ap(%s)", name);
 		}
 		builder.append(name);
+		return null;
+	}
+
+	@Override
+	public Void visitPatternParamExpression(PatternParamExpressionContext ctx) {
+		builder.append("param(\"");
+		builder.append(ctx.PATTERN_ID().getText());
+		builder.append("\")");
+		return null;
+	}
+
+	@Override
+	public Void visitPatternCallExpression(PatternCallExpressionContext ctx) {
+		builder.append("pattern_call(\"");
+		builder.append(ctx.PATTERN_ID().getText());
+		builder.append("\",");
+		visit(ctx.expression());
+		builder.append("\")");
+		return null;
+	}
+
+	@Override
+	public Void visitPattern_def(Pattern_defContext ctx) {
+		builder.append("pattern_def(\"");
+		builder.append(ctx.PATTERN_ID(0).getText());
+		builder.append("\",[\"");
+		builder.append(ctx.PATTERN_ID(1).getText());
+		builder.append("\"");
+		if (ctx.PATTERN_ID().size() == 3) {
+			builder.append(",\"");
+			builder.append(ctx.PATTERN_ID(2).getText());
+			builder.append("\"");
+		}
+		builder.append("],");
+		visit(ctx.expression());
+		builder.append(")");
 		return null;
 	}
 

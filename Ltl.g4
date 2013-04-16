@@ -5,7 +5,9 @@ package de.prob.ltl.parser;
 }
 
 /* -- Rules -- */
-start 		: expression EOF;
+start 		: pattern_def* expression pattern_def* EOF;
+
+pattern_def	: 'def' PATTERN_ID LEFT_PAREN PATTERN_ID (',' PATTERN_ID)? RIGHT_PAREN ':' expression;
 
 expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpression
 			| NOT expression																# notExpression
@@ -14,6 +16,8 @@ expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpressio
 			| expression AND expression														# andExpression	
 			| expression OR expression														# orExpression	
 			| expression IMPLIES expression													# impliesExpression		
+			| PATTERN_ID 										# patternParamExpression
+			| PATTERN_ID LEFT_PAREN expression RIGHT_PAREN 		# patternCallExpression
 			| PREDICATE																		# predicateExpression 
 			| ACTION																		# actionExpression
 			| ENABLED																		# enabledExpression
@@ -77,5 +81,6 @@ ENABLED_PAREN	: LEFT_PAREN (~('(' | ')') | ENABLED_PAREN)* RIGHT_PAREN;
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
 
+PATTERN_ID		: [a-zA-Z] [a-zA-Z0-9_]*;
 IDENTIFIER		: [a-zA-Z]+;
 WS				: [ \t\r\n]+ -> skip;
