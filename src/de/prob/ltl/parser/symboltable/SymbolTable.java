@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 public class SymbolTable {
 
 	private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
-	private Scope globalScope = new Scope(null);
+	private Scope globalScope = new Scope(null, null);
 	private Scope currentScope = globalScope;
 
 	public void define(Symbol symbol) {
@@ -19,10 +19,10 @@ public class SymbolTable {
 		return currentScope.resolve(name);
 	}
 
-	public void pushScope(ParseTree ctx) {
+	public void pushScope(ParseTree ctx, Symbol scopeSymbol) {
 		Scope scope = scopes.get(ctx);
 		if (scope == null) {
-			scope = new Scope(currentScope);
+			scope = new Scope(currentScope, scopeSymbol);
 			scopes.put(ctx, scope);
 		}
 		currentScope = scope;

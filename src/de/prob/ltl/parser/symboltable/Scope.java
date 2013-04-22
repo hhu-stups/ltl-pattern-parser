@@ -9,11 +9,13 @@ import java.util.Map;
 public class Scope {
 
 	private Scope parent = null;
+	private Symbol scopeSymbol = null;
 	private List<Scope> children = new LinkedList<Scope>();
 	private Map<String, Symbol> symbols = new HashMap<String, Symbol>();
 
-	public Scope(Scope parent) {
+	public Scope(Scope parent, Symbol scopeSymbol) {
 		this.parent = parent;
+		this.scopeSymbol = scopeSymbol;
 		if (this.parent != null) {
 			this.parent.addChildScope(this);
 		}
@@ -48,6 +50,10 @@ public class Scope {
 
 	public Scope getParent() {
 		return parent;
+	}
+
+	public Symbol getScopeSymbol() {
+		return scopeSymbol;
 	}
 
 	public List<Scope> getChildren() {

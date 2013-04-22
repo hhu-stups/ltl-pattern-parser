@@ -21,11 +21,11 @@ public class SymbolTableTest {
 		Assert.assertNotNull(table.getGlobalScope());
 
 		// Push
-		table.pushScope(dummy1);
+		table.pushScope(dummy1, null);
 		Scope scope1 = table.getCurrentScope();
 		Assert.assertNotSame(table.getGlobalScope(), scope1);
 
-		table.pushScope(dummy2);
+		table.pushScope(dummy2, null);
 		Scope scope2 = table.getCurrentScope();
 		Assert.assertNotSame(table.getGlobalScope(), scope1);
 		Assert.assertNotSame(table.getGlobalScope(), scope2);
@@ -45,7 +45,7 @@ public class SymbolTableTest {
 		Assert.assertNotNull(table.getGlobalScope());
 
 		// Push same scope again
-		table.pushScope(dummy2);
+		table.pushScope(dummy2, null);
 		Assert.assertEquals(scope2, table.getCurrentScope());
 	}
 
@@ -55,9 +55,9 @@ public class SymbolTableTest {
 		DummyParseTree dummy1 = new DummyParseTree("Dummy 1");
 		DummyParseTree dummy2 = new DummyParseTree("Dummy 2");
 
-		table.pushScope(dummy1);
+		table.pushScope(dummy1, null);
 		Scope scope1 = table.getCurrentScope();
-		table.pushScope(dummy2);
+		table.pushScope(dummy2, null);
 		Scope scope2 = table.getCurrentScope();
 
 		Assert.assertEquals(scope2, table.getCurrentScope());
@@ -91,12 +91,12 @@ public class SymbolTableTest {
 		table.define(patternF);
 
 		// Define in scope1
-		table.pushScope(dummy1);
+		table.pushScope(dummy1, null);
 		table.define(symbolB);
 		table.define(patternG);
 
 		// Define in scope2
-		table.pushScope(dummy2);
+		table.pushScope(dummy2, null);
 		table.define(symbolC);
 		table.define(patternH);
 

@@ -16,7 +16,7 @@ expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpressio
 			| expression AND expression														# andExpression	
 			| expression OR expression														# orExpression	
 			| expression IMPLIES expression													# impliesExpression		
-			| PATTERN_ID 										# patternParamExpression
+			| PATTERN_ID 															# patternVarExpression
 			| PATTERN_ID LEFT_PAREN expression (',' expression)* RIGHT_PAREN 		# patternCallExpression
 			| PREDICATE																		# predicateExpression 
 			| ACTION																		# actionExpression

@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser.PatternCallExpressionContext;
-import de.prob.ltl.parser.LtlParser.PatternParamExpressionContext;
+import de.prob.ltl.parser.LtlParser.PatternVarExpressionContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 import de.prob.ltl.parser.symboltable.PatternSymbol;
 import de.prob.ltl.parser.symboltable.Symbol;
@@ -30,7 +30,7 @@ public class SymbolChecker extends LtlBaseListener {
 	}
 
 	@Override
-	public void exitPatternParamExpression(PatternParamExpressionContext ctx) {
+	public void exitPatternVarExpression(PatternVarExpressionContext ctx) {
 		TerminalNode argNode = ctx.PATTERN_ID();
 		String name = argNode.getText();
 
@@ -49,6 +49,10 @@ public class SymbolChecker extends LtlBaseListener {
 		int args = ctx.expression().size();
 		String name = patternNode.getText() + "/" + args;
 
+		if (isRecursiveCall(name)) {
+			error(patternNode.getSymbol(), "Recusive call detected: " + name);
+		}
+
 		Symbol pattern = symbolTable.resolve(name);
 		if (pattern == null) {
 			error(patternNode.getSymbol(), "no such pattern: " + name);
@@ -56,6 +60,11 @@ public class SymbolChecker extends LtlBaseListener {
 		if (!(pattern instanceof PatternSymbol)) {
 			error(patternNode.getSymbol(), name + " is not a pattern");
 		}
+	}
+
+	private boolean isRecursiveCall(String symbolId) {
+		Symbol scopeSymbol = symbolTable.getCurrentScope().getScopeSymbol();
+		return (scopeSymbol != null && scopeSymbol.getSymbolID().equals(symbolId));
 	}
 
 	private void error(Token t, String msg) {

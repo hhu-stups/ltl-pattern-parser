@@ -25,7 +25,7 @@ public class SymbolCollector extends LtlBaseListener {
 
 		PatternSymbol pattern = new PatternSymbol(name, ids.size());
 		symbolTable.define(pattern);
-		symbolTable.pushScope(ctx);
+		symbolTable.pushScope(ctx, pattern);
 
 		for (TerminalNode id : ids) {
 			Symbol arg = new Symbol(id.getText());

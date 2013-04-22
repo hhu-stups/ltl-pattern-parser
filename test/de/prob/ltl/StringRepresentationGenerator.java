@@ -14,7 +14,7 @@ import de.prob.ltl.parser.LtlParser.ImpliesExpressionContext;
 import de.prob.ltl.parser.LtlParser.NotExpressionContext;
 import de.prob.ltl.parser.LtlParser.OrExpressionContext;
 import de.prob.ltl.parser.LtlParser.PatternCallExpressionContext;
-import de.prob.ltl.parser.LtlParser.PatternParamExpressionContext;
+import de.prob.ltl.parser.LtlParser.PatternVarExpressionContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 import de.prob.ltl.parser.LtlParser.PredicateExpressionContext;
 import de.prob.ltl.parser.LtlParser.UnaryExpressionContext;
@@ -176,8 +176,8 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 	}
 
 	@Override
-	public Void visitPatternParamExpression(PatternParamExpressionContext ctx) {
-		builder.append("param(\"");
+	public Void visitPatternVarExpression(PatternVarExpressionContext ctx) {
+		builder.append("var(\"");
 		builder.append(ctx.PATTERN_ID().getText());
 		builder.append("\")");
 		return null;
@@ -187,8 +187,10 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 	public Void visitPatternCallExpression(PatternCallExpressionContext ctx) {
 		builder.append("pattern_call(\"");
 		builder.append(ctx.PATTERN_ID().getText());
-		builder.append("\",[");
-		for (int i = 0; i < ctx.expression().size(); i++) {
+		builder.append("\",");
+		int args = ctx.expression().size();
+		builder.append(args + ",[");
+		for (int i = 0; i < args; i++) {
 			if (i > 0) {
 				builder.append(",");
 			}
@@ -202,10 +204,12 @@ public class StringRepresentationGenerator extends LtlBaseVisitor<Void>{
 	public Void visitPattern_def(Pattern_defContext ctx) {
 		builder.append("pattern_def(\"");
 		builder.append(ctx.PATTERN_ID(0).getText());
-		builder.append("\",[\"");
+		builder.append("\",");
+		int args = ctx.PATTERN_ID().size() - 1;
+		builder.append(args + ",[\"");
 		builder.append(ctx.PATTERN_ID(1).getText());
 		builder.append("\"");
-		if (ctx.PATTERN_ID().size() == 3) {
+		if (args == 2) {
 			builder.append(",\"");
 			builder.append(ctx.PATTERN_ID(2).getText());
 			builder.append("\"");
