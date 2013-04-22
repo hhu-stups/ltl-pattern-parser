@@ -1,4 +1,4 @@
-package de.prob.ltl.parser.symbol;
+package de.prob.ltl.parser.symboltable;
 
 
 public class PatternSymbol extends Symbol {
@@ -15,8 +15,8 @@ public class PatternSymbol extends Symbol {
 	}
 
 	@Override
-	public String toString() {
-		return "Pattern " + name + "/" + args + "";
+	public String getSymbolID() {
+		return name + "/" + args;
 	}
 
 }

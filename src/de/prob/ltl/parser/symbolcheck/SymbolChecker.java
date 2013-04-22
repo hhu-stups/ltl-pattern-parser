@@ -1,14 +1,15 @@
-package de.prob.ltl.parser;
+package de.prob.ltl.parser.symbolcheck;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser.PatternCallExpressionContext;
 import de.prob.ltl.parser.LtlParser.PatternParamExpressionContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
-import de.prob.ltl.parser.symbol.PatternSymbol;
-import de.prob.ltl.parser.symbol.Symbol;
-import de.prob.ltl.parser.symbol.VariableSymbol;
+import de.prob.ltl.parser.symboltable.PatternSymbol;
+import de.prob.ltl.parser.symboltable.Symbol;
+import de.prob.ltl.parser.symboltable.SymbolTable;
 
 public class SymbolChecker extends LtlBaseListener {
 
@@ -46,13 +47,13 @@ public class SymbolChecker extends LtlBaseListener {
 	public void exitPatternCallExpression(PatternCallExpressionContext ctx) {
 		TerminalNode patternNode = ctx.PATTERN_ID();
 		int args = ctx.expression().size();
-		String name = patternNode.getText();
+		String name = patternNode.getText() + "/" + args;
 
-		Symbol pattern = symbolTable.resolve(name, args);
+		Symbol pattern = symbolTable.resolve(name);
 		if (pattern == null) {
 			error(patternNode.getSymbol(), "no such pattern: " + name);
 		}
-		if (pattern instanceof VariableSymbol) {
+		if (!(pattern instanceof PatternSymbol)) {
 			error(patternNode.getSymbol(), name + " is not a pattern");
 		}
 	}

@@ -1,4 +1,4 @@
-package de.prob.ltl.parser.symbol;
+package de.prob.ltl.parser.symboltable;
 
 public class Symbol {
 
@@ -9,6 +9,10 @@ public class Symbol {
 	}
 
 	public String getName() {
+		return name;
+	}
+
+	public String getSymbolID() {
 		return name;
 	}
 

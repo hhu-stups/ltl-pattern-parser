@@ -11,9 +11,9 @@ import org.junit.Assert;
 
 import de.prob.ltl.parser.LtlLexer;
 import de.prob.ltl.parser.LtlParser;
-import de.prob.ltl.parser.SymbolChecker;
-import de.prob.ltl.parser.SymbolCollector;
-import de.prob.ltl.parser.SymbolTable;
+import de.prob.ltl.parser.symbolcheck.SymbolChecker;
+import de.prob.ltl.parser.symbolcheck.SymbolCollector;
+import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.parserbase.ProBParserBase;
 
 

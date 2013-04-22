@@ -1,13 +1,14 @@
-package de.prob.ltl.parser;
+package de.prob.ltl.parser.symbolcheck;
 
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
-import de.prob.ltl.parser.LtlParser.StartContext;
-import de.prob.ltl.parser.symbol.PatternSymbol;
-import de.prob.ltl.parser.symbol.VariableSymbol;
+import de.prob.ltl.parser.symboltable.PatternSymbol;
+import de.prob.ltl.parser.symboltable.Symbol;
+import de.prob.ltl.parser.symboltable.SymbolTable;
 
 public class SymbolCollector extends LtlBaseListener {
 
@@ -15,11 +16,6 @@ public class SymbolCollector extends LtlBaseListener {
 
 	public SymbolCollector(SymbolTable symbolTable) {
 		this.symbolTable = symbolTable;
-	}
-
-	@Override
-	public void exitStart(StartContext ctx) {
-		//symbolTable.print();
 	}
 
 	@Override
@@ -32,7 +28,7 @@ public class SymbolCollector extends LtlBaseListener {
 		symbolTable.pushScope(ctx);
 
 		for (TerminalNode id : ids) {
-			VariableSymbol arg = new VariableSymbol(id.getText());
+			Symbol arg = new Symbol(id.getText());
 			symbolTable.define(arg);
 		}
 	}
