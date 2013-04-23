@@ -8,11 +8,13 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.prob.ltl.parser.warning.ErrorManager;
+
 public class SymbolTableTest {
 
 	@Test
 	public void testPushPopScope() {
-		SymbolTable table = new SymbolTable();
+		SymbolTable table = new SymbolTable(new ErrorManager());
 		DummyParseTree dummy1 = new DummyParseTree("Dummy 1");
 		DummyParseTree dummy2 = new DummyParseTree("Dummy 2");
 		Assert.assertNotSame(dummy1, dummy2);
@@ -51,7 +53,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testSetScope() {
-		SymbolTable table = new SymbolTable();
+		SymbolTable table = new SymbolTable(new ErrorManager());
 		DummyParseTree dummy1 = new DummyParseTree("Dummy 1");
 		DummyParseTree dummy2 = new DummyParseTree("Dummy 2");
 
@@ -76,15 +78,15 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDefineResolve() {
-		SymbolTable table = new SymbolTable();
+		SymbolTable table = new SymbolTable(new ErrorManager());
 		DummyParseTree dummy1 = new DummyParseTree("Dummy 1");
 		DummyParseTree dummy2 = new DummyParseTree("Dummy 2");
-		Symbol symbolA = new Symbol("a");
-		Symbol symbolB = new Symbol("b");
-		Symbol symbolC = new Symbol("c");
-		PatternSymbol patternF = new PatternSymbol("f", 2);
-		PatternSymbol patternG = new PatternSymbol("g", 1);
-		PatternSymbol patternH = new PatternSymbol("h", 3);
+		Symbol symbolA = new Symbol("a", null);
+		Symbol symbolB = new Symbol("b", null);
+		Symbol symbolC = new Symbol("c", null);
+		PatternSymbol patternF = new PatternSymbol("f", null, 2);
+		PatternSymbol patternG = new PatternSymbol("g", null, 1);
+		PatternSymbol patternH = new PatternSymbol("h", null, 3);
 
 		// Define in global
 		table.define(symbolA);
@@ -109,10 +111,10 @@ public class SymbolTableTest {
 		Assert.assertEquals(patternF, table.resolve("f/2"));
 
 		// Redefine
-		Symbol symbolA2 = new Symbol("a");
-		PatternSymbol patternF2 = new PatternSymbol("f", 2);
-		PatternSymbol patternG2 = new PatternSymbol("g", 2);
-		PatternSymbol patternH2 = new PatternSymbol("h", 3);
+		Symbol symbolA2 = new Symbol("a", null);
+		PatternSymbol patternF2 = new PatternSymbol("f", null, 2);
+		PatternSymbol patternG2 = new PatternSymbol("g", null, 2);
+		PatternSymbol patternH2 = new PatternSymbol("h", null, 3);
 		table.define(symbolA2);
 		table.define(patternF2);
 		table.define(patternG2);

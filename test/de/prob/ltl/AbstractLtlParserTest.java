@@ -14,10 +14,13 @@ import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.symbolcheck.SymbolChecker;
 import de.prob.ltl.parser.symbolcheck.SymbolCollector;
 import de.prob.ltl.parser.symboltable.SymbolTable;
+import de.prob.ltl.parser.warning.ErrorManager;
 import de.prob.parserbase.ProBParserBase;
 
 
 public abstract class AbstractLtlParserTest {
+
+	private ErrorManager errorManager;
 
 	public abstract ProBParserBase getProBParserBase();
 
@@ -42,7 +45,8 @@ public abstract class AbstractLtlParserTest {
 		ParseTree result = parser.start();
 
 		// Check symbols
-		SymbolTable symbolTable = new SymbolTable();
+		errorManager = new ErrorManager();
+		SymbolTable symbolTable = new SymbolTable(errorManager);
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(new SymbolCollector(symbolTable), result);
 		walker.walk(new SymbolChecker(symbolTable), result);
@@ -50,6 +54,10 @@ public abstract class AbstractLtlParserTest {
 		StringRepresentationGenerator generator = new StringRepresentationGenerator(getProBParserBase());
 		generator.visit(result);
 		return generator.getGeneratedString();
+	}
+
+	public ErrorManager getErrorManager() {
+		return errorManager;
 	}
 
 	protected LtlLexer createLexer(String input) {

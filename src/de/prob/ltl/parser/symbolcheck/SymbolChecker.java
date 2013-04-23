@@ -1,6 +1,8 @@
 package de.prob.ltl.parser.symbolcheck;
 
-import org.antlr.v4.runtime.Token;
+import java.util.Iterator;
+import java.util.List;
+
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlBaseListener;
@@ -14,18 +16,27 @@ import de.prob.ltl.parser.symboltable.SymbolTable;
 public class SymbolChecker extends LtlBaseListener {
 
 	private SymbolTable symbolTable;
+	private List<Symbol> varSymbolsInScope;
 
 	public SymbolChecker(SymbolTable symbolTable) {
 		this.symbolTable = symbolTable;
+		varSymbolsInScope = getVarSymbolsInScope();
 	}
 
 	@Override
 	public void enterPattern_def(Pattern_defContext ctx) {
 		symbolTable.setCurrentScope(ctx);
+		varSymbolsInScope = getVarSymbolsInScope();
 	}
 
 	@Override
 	public void exitPattern_def(Pattern_defContext ctx) {
+		if (varSymbolsInScope.size() > 0) {
+			// Warning for unused variables
+			for (Symbol symbol : varSymbolsInScope) {
+				symbolTable.getErrorManager().addWarning("Variable not used: " + symbol.getName(), symbol);
+			}
+		}
 		symbolTable.popScope();
 	}
 
@@ -36,11 +47,12 @@ public class SymbolChecker extends LtlBaseListener {
 
 		Symbol var = symbolTable.resolve(name);
 		if (var == null) {
-			error(argNode.getSymbol(), "no such variable: " + name);
+			symbolTable.getErrorManager().throwError(argNode.getSymbol(), "no such variable: " + name);
 		}
 		if (var instanceof PatternSymbol) {
-			error(argNode.getSymbol(), name + " is not a variable");
+			symbolTable.getErrorManager().throwError(argNode.getSymbol(), name + " is not a variable");
 		}
+		varSymbolsInScope.remove(var);
 	}
 
 	@Override
@@ -50,15 +62,15 @@ public class SymbolChecker extends LtlBaseListener {
 		String name = patternNode.getText() + "/" + args;
 
 		if (isRecursiveCall(name)) {
-			error(patternNode.getSymbol(), "Recusive call detected: " + name);
+			symbolTable.getErrorManager().throwError(patternNode.getSymbol(), "Recusive call detected: " + name);
 		}
 
 		Symbol pattern = symbolTable.resolve(name);
 		if (pattern == null) {
-			error(patternNode.getSymbol(), "no such pattern: " + name);
+			symbolTable.getErrorManager().throwError(patternNode.getSymbol(), "no such pattern: " + name);
 		}
 		if (!(pattern instanceof PatternSymbol)) {
-			error(patternNode.getSymbol(), name + " is not a pattern");
+			symbolTable.getErrorManager().throwError(patternNode.getSymbol(), name + " is not a pattern");
 		}
 	}
 
@@ -67,9 +79,16 @@ public class SymbolChecker extends LtlBaseListener {
 		return (scopeSymbol != null && scopeSymbol.getSymbolID().equals(symbolId));
 	}
 
-	private void error(Token t, String msg) {
-		String output = String.format("line %d:%d %s\n", t.getLine(), t.getCharPositionInLine(), msg);
-		throw new RuntimeException(output);
-	}
+	private List<Symbol> getVarSymbolsInScope() {
+		List<Symbol> symbols = symbolTable.getCurrentScope().getSymbols();
+		Iterator<Symbol> it = symbols.iterator();
 
+		while (it.hasNext()) {
+			if (it.next() instanceof PatternSymbol) {
+				it.remove();
+			}
+		}
+
+		return symbols;
+	}
 }

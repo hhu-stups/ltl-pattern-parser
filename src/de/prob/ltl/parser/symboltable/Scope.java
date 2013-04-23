@@ -1,6 +1,5 @@
 package de.prob.ltl.parser.symboltable;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,9 +22,6 @@ public class Scope {
 
 	public void define(Symbol symbol) {
 		String symbolId = symbol.getSymbolID();
-		if (symbols.containsKey(symbolId)) {
-			// TODO: return warning (redefinition)
-		}
 		symbols.put(symbolId, symbol);
 	}
 
@@ -38,6 +34,11 @@ public class Scope {
 			return parent.resolve(name);
 		}
 		return symbol;
+	}
+
+	public Symbol resolveLocal(String name) {
+		// Look for symbol in this scope
+		return symbols.get(name);
 	}
 
 	public void addChildScope(Scope scope) {
@@ -60,8 +61,8 @@ public class Scope {
 		return children;
 	}
 
-	public Collection<Symbol> getSymbols() {
-		return symbols.values();
+	public List<Symbol> getSymbols() {
+		return new LinkedList<Symbol>(symbols.values());
 	}
 
 }

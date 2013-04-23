@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.prob.ltl.parser.warning.ErrorManager;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.parserbase.UnparsedParserBase;
 
@@ -65,6 +66,7 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 		throwsRuntimeException("def true(a): a true(true)");
 		throwsRuntimeException("def f(true): true f(false)");
 		throwsRuntimeException("def f(GF): GF f(false)");
+		throwsRuntimeException("def f(a,a): a f(false,true)");
 	}
 
 	@Test
@@ -85,6 +87,25 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 	@Test
 	public void testRecursiveDefinitionCall() throws Exception {
 		throwsRuntimeException("def f(a): f(a) or false f(true)");
+		throwsRuntimeException("def f(a): a def f(b): f(b) f(true)");
+	}
+
+	@Test
+	public void testUnusedVarWarning() throws Exception {
+		parse("def absence(a): true absence(true)");
+		ErrorManager errorManager = getErrorManager();
+		Assert.assertEquals(1, errorManager.getWarnings().size());
+
+		parse("def absence(a, b): true absence(true, false)");
+		errorManager = getErrorManager();
+		Assert.assertEquals(2, errorManager.getWarnings().size());
+	}
+
+	@Test
+	public void testRedefinedPatternWarning() throws Exception {
+		parse("def f(a): a def f(b): b f(true)");
+		ErrorManager errorManager = getErrorManager();
+		Assert.assertEquals(1, errorManager.getWarnings().size());
 	}
 
 }

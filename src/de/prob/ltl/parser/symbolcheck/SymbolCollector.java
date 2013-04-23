@@ -21,14 +21,15 @@ public class SymbolCollector extends LtlBaseListener {
 	@Override
 	public void enterPattern_def(Pattern_defContext ctx) {
 		List<TerminalNode> ids = ctx.PATTERN_ID();
-		String name = ids.remove(0).getText();
+		TerminalNode nameNode = ids.remove(0);
+		String name = nameNode.getText();
 
-		PatternSymbol pattern = new PatternSymbol(name, ids.size());
+		PatternSymbol pattern = new PatternSymbol(name, nameNode.getSymbol(), ids.size());
 		symbolTable.define(pattern);
 		symbolTable.pushScope(ctx, pattern);
 
 		for (TerminalNode id : ids) {
-			Symbol arg = new Symbol(id.getText());
+			Symbol arg = new Symbol(id.getText(), id.getSymbol());
 			symbolTable.define(arg);
 		}
 	}

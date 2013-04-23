@@ -4,14 +4,32 @@ package de.prob.ltl.parser.symboltable;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+import de.prob.ltl.parser.warning.ErrorManager;
+
 
 public class SymbolTable {
 
+	private ErrorManager errorManager;
 	private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
 	private Scope globalScope = new Scope(null, null);
 	private Scope currentScope = globalScope;
 
+	public SymbolTable(ErrorManager errorManager) {
+		this.errorManager = errorManager;
+	}
+
 	public void define(Symbol symbol) {
+		String symbolId = symbol.getSymbolID();
+		Symbol otherSymbol = currentScope.resolve(symbolId);
+
+		if (otherSymbol != null) {
+			if (otherSymbol instanceof PatternSymbol) { // Pattern redefinition
+				errorManager.addWarning(symbolId + " is already defined.", symbol);
+			} else if (currentScope.resolveLocal(symbolId) != null) { // For variables: only in same scope
+				errorManager.throwError(otherSymbol.getToken(), symbolId + " is already defined.");
+			}
+		}
+
 		currentScope.define(symbol);
 	}
 
@@ -48,6 +66,10 @@ public class SymbolTable {
 
 	public Scope getGlobalScope() {
 		return globalScope;
+	}
+
+	public ErrorManager getErrorManager() {
+		return errorManager;
 	}
 
 	public void print() {
