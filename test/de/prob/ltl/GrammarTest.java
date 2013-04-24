@@ -247,4 +247,9 @@ public class GrammarTest extends AbstractOldParserCompareTest {
 		throwsException(null, "truefalse", ExceptionCause.Unsupported);
 	}
 
+	@Test
+	public void testLinebreaks() throws Exception {
+		assertEquals("or(true,false)", "true\nor\nfalse");
+	}
+
 }

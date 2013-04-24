@@ -82,5 +82,4 @@ LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
 
 PATTERN_ID		: [a-zA-Z] [a-zA-Z0-9_]*;
-IDENTIFIER		: [a-zA-Z]+;
 WS				: [ \t\r\n]+ -> skip;

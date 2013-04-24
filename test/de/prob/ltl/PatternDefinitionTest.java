@@ -62,10 +62,21 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 
 	@Test
 	public void testForbiddenDefintion() throws Exception {
+		throwsRuntimeException("def not(a): a not(true)");
+		throwsRuntimeException("def f(not): not f(true)");
+		throwsRuntimeException("def and(a): a and(true)");
+		throwsRuntimeException("def f(and): and f(true)");
+		throwsRuntimeException("def or(a): a or(true)");
+		throwsRuntimeException("def f(or): or f(true)");
+		throwsRuntimeException("def U(a): a U(true)");
+		throwsRuntimeException("def f(U): U f(true)");
+		throwsRuntimeException("def G(a): a G(true)");
+		throwsRuntimeException("def f(G): G f(true)");
 		throwsRuntimeException("def GF(a): a GF(true)");
+		throwsRuntimeException("def f(GF): GF f(false)");
 		throwsRuntimeException("def true(a): a true(true)");
 		throwsRuntimeException("def f(true): true f(false)");
-		throwsRuntimeException("def f(GF): GF f(false)");
+
 		throwsRuntimeException("def f(a,a): a f(false,true)");
 	}
 
