@@ -4,6 +4,37 @@ grammar Ltl;
 package de.prob.ltl.parser;
 }
 
+@lexer::members {
+public static String[] getKeywords() {
+	return new String[] {
+		"def",
+		"true",
+		"false",
+		"sink",
+		"deadlock",
+		"current",
+		"true"
+	};
+}
+
+public static String[] getBooleanOperators() {
+	return new String[] {
+		"and",
+		"or",
+		"not"
+	};
+}
+
+public static String[] getBooleanOperatorsSymbols() {
+	return new String[] {
+		"&",
+		"|",
+		"!",
+		"=>"
+	};
+}
+}
+
 /* -- Rules -- */
 start 		: pattern_def* expression pattern_def* EOF;
 
