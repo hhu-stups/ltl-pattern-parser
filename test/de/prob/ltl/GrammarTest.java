@@ -252,4 +252,25 @@ public class GrammarTest extends AbstractOldParserCompareTest {
 		assertEquals("or(true,false)", "true\nor\nfalse");
 	}
 
+	@Test
+	public void testOneLineComment() throws Exception {
+		throwsException("or(true,false)", "true or false// comment", ExceptionCause.DownwardIncompatible);
+		throwsException("or(true,false)", "true// a comment\nor false", ExceptionCause.DownwardIncompatible);
+		throwsException("or(true,false)", "true//\nor false", ExceptionCause.DownwardIncompatible);
+	}
+
+	@Test
+	public void testMultiLineComment() throws Exception {
+		throwsException("or(true,false)", "true or false/* a comment */", ExceptionCause.DownwardIncompatible);
+		throwsException("or(true,false)", "/* a comment */true or false", ExceptionCause.DownwardIncompatible);
+		throwsException("or(true,false)", "true or/* a comment */ false", ExceptionCause.DownwardIncompatible);
+		throwsException("or(true,false)", "true/* a comment\n*/or false", ExceptionCause.DownwardIncompatible);
+		throwsException("or(true,false)", "true/* a\ncomment*/or false", ExceptionCause.DownwardIncompatible);
+		throwsException("or(true,false)", "true/**/or false", ExceptionCause.DownwardIncompatible);
+
+		throwsException(null, "true or false/*", ExceptionCause.Unsupported);
+		throwsException(null, "/*true or false", ExceptionCause.Unsupported);
+		throwsException(null, "true */ or false", ExceptionCause.Unsupported);
+	}
+
 }

@@ -111,6 +111,9 @@ ENABLED_PAREN	: LEFT_PAREN (~('(' | ')') | ENABLED_PAREN)* RIGHT_PAREN;
 // Others
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
+			
+COMMENT			: ('//' ~('\n')* 
+				| '/*' .*? '*/') -> skip;
 
 PATTERN_ID		: [a-zA-Z] [a-zA-Z0-9_]*;
 WS				: [ \t\r\n]+ -> skip;
