@@ -45,7 +45,7 @@ public class AbstractOldParserCompareTest extends AbstractLtlParserTest {
 
 	public void throwsException(String expected, String input, ExceptionCause cause) {
 		try {
-			Assert.assertEquals(expected, parse(input, true));
+			Assert.assertEquals(expected, parse(input));
 			if (!cause.equals(ExceptionCause.DownwardIncompatible)) {
 				Assert.fail("Exception for new parser version should have been thrown. (Input: "+input+")");
 			}

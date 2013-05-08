@@ -1,21 +1,23 @@
 package de.prob.ltl.parser.symboltable;
 
 
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
-import de.prob.ltl.parser.warning.ErrorManager;
+import de.prob.ltl.parser.LtlParser;
 
 
 public class SymbolTable {
 
-	private ErrorManager errorManager;
+	private LtlParser parser;
 	private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
 	private Scope globalScope = new Scope(null, null);
 	private Scope currentScope = globalScope;
 
-	public SymbolTable(ErrorManager errorManager) {
-		this.errorManager = errorManager;
+	public SymbolTable(LtlParser parser) {
+		this.parser = parser;
 	}
 
 	public void define(Symbol symbol) {
@@ -24,9 +26,11 @@ public class SymbolTable {
 
 		if (otherSymbol != null) {
 			if (otherSymbol instanceof PatternSymbol) { // Pattern redefinition
-				errorManager.addWarning(symbolId + " is already defined.", symbol);
+				parser.notifyWarningListeners(symbolId + " is already defined.", symbol);
 			} else if (currentScope.resolveLocal(symbolId) != null) { // For variables: only in same scope
-				errorManager.throwError(otherSymbol.getToken(), symbolId + " is already defined.");
+				String msg = symbolId + " is already defined.";
+				Token token = symbol.getToken();
+				parser.notifyErrorListeners(token, msg, new RecognitionException(msg, parser, token.getInputStream(), null));
 			}
 		}
 
@@ -68,8 +72,8 @@ public class SymbolTable {
 		return globalScope;
 	}
 
-	public ErrorManager getErrorManager() {
-		return errorManager;
+	public LtlParser getParser() {
+		return parser;
 	}
 
 	public void print() {

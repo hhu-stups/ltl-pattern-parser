@@ -1,6 +1,6 @@
 grammar Ltl;
 
-@header {
+@lexer::header {
 package de.prob.ltl.parser;
 }
 
@@ -32,6 +32,35 @@ public static String[] getBooleanOperatorsSymbols() {
 		"!",
 		"=>"
 	};
+}
+}
+
+@parser::header {
+package de.prob.ltl.parser;
+
+import de.prob.ltl.parser.symboltable.Symbol;
+import de.prob.ltl.parser.warning.WarningListener;
+}
+
+@parser::members {
+private List<WarningListener> warningListeners = new ArrayList<WarningListener>();
+
+public void addWarningListener(WarningListener listener) {
+	warningListeners.add(listener);
+}
+
+public void removeWarningListener(WarningListener listener) {
+	warningListeners.remove(listener);
+}
+
+public void removeAllWarningListeners() {
+	warningListeners.clear();
+}
+
+public void notifyWarningListeners(String message, Symbol ... symbols) {
+	for (WarningListener listener : warningListeners) {
+		listener.warning(message, symbols);
+	}
 }
 }
 

@@ -2,51 +2,58 @@ package de.prob.ltl;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Assert;
 
 import de.prob.ltl.parser.LtlLexer;
 import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.ParserFactory;
 import de.prob.ltl.parser.symbolcheck.SymbolChecker;
 import de.prob.ltl.parser.symbolcheck.SymbolCollector;
 import de.prob.ltl.parser.symboltable.SymbolTable;
-import de.prob.ltl.parser.warning.ErrorManager;
+import de.prob.ltl.parser.warning.WarningListener;
 import de.prob.parserbase.ProBParserBase;
 
 
 public abstract class AbstractLtlParserTest {
 
-	private ErrorManager errorManager;
 
 	public abstract ProBParserBase getProBParserBase();
 
 	// Helper
 	public void throwsRuntimeException(String input) {
 		try {
-			parse(input, true);
+			parse(input);
 			Assert.fail("RuntimeException should have been thrown. (Input: \""+ input +"\")");
 		} catch(RuntimeException e) {
 		}
 	}
 
-	protected String parse(String input) {
-		return parse(input, false);
-	}
-
-	protected String parse(String input, boolean hideErrors) {
-		final LtlParser parser = createParser(input);
-		if (hideErrors) {
-			parser.removeErrorListeners();
+	protected String parse(String input, WarningListener listener) {
+		final LtlParser parser = ParserFactory.createLtlParser(createLexer(input), new BailErrorStrategy());
+		if (listener != null) {
+			parser.addWarningListener(listener);
 		}
+		parser.removeErrorListeners();
+		parser.addErrorListener(new BaseErrorListener() {
+
+			@Override
+			public void syntaxError(Recognizer<?, ?> recognizer,
+					Object offendingSymbol, int line, int charPositionInLine,
+					String msg, RecognitionException e) {
+				throw e;
+			}
+
+		});
+
 		ParseTree result = parser.start();
 
-		// Check symbols
-		errorManager = new ErrorManager();
-		SymbolTable symbolTable = new SymbolTable(errorManager);
+		SymbolTable symbolTable = new SymbolTable(parser);
 		ParseTreeWalker walker = new ParseTreeWalker();
 		walker.walk(new SymbolCollector(symbolTable), result);
 		walker.walk(new SymbolChecker(symbolTable), result);
@@ -56,8 +63,8 @@ public abstract class AbstractLtlParserTest {
 		return generator.getGeneratedString();
 	}
 
-	public ErrorManager getErrorManager() {
-		return errorManager;
+	protected String parse(String input) {
+		return parse(input, null);
 	}
 
 	protected LtlLexer createLexer(String input) {
@@ -75,16 +82,6 @@ public abstract class AbstractLtlParserTest {
 		};
 		lexer.removeErrorListeners();
 		return lexer;
-	}
-
-	protected LtlParser createParser(LtlLexer lexer) {
-		LtlParser parser = new LtlParser(new CommonTokenStream(lexer));
-		parser.setErrorHandler(new BailErrorStrategy());
-		return parser;
-	}
-
-	protected LtlParser createParser(String input) {
-		return createParser(createLexer(input));
 	}
 
 }

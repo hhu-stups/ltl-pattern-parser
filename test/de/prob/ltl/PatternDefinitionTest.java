@@ -5,7 +5,8 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.prob.ltl.parser.warning.ErrorManager;
+import de.prob.ltl.parser.symboltable.Symbol;
+import de.prob.ltl.parser.warning.WarningListener;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.parserbase.UnparsedParserBase;
 
@@ -103,20 +104,31 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 
 	@Test
 	public void testUnusedVarWarning() throws Exception {
-		parse("def absence(a): true absence(true)");
-		ErrorManager errorManager = getErrorManager();
-		Assert.assertEquals(1, errorManager.getWarnings().size());
+		WarningListenerTester listener = new WarningListenerTester();
+		parse("def absence(a): true absence(true)", listener);
+		Assert.assertEquals(1, listener.warningCount);
 
-		parse("def absence(a, b): true absence(true, false)");
-		errorManager = getErrorManager();
-		Assert.assertEquals(2, errorManager.getWarnings().size());
+		listener.warningCount = 0;
+		parse("def absence(a, b): true absence(true, false)", listener);
+		Assert.assertEquals(2, listener.warningCount);
 	}
 
 	@Test
 	public void testRedefinedPatternWarning() throws Exception {
-		parse("def f(a): a def f(b): b f(true)");
-		ErrorManager errorManager = getErrorManager();
-		Assert.assertEquals(1, errorManager.getWarnings().size());
+		WarningListenerTester listener = new WarningListenerTester();
+		parse("def f(a): a def f(b): b f(true)", listener);
+		Assert.assertEquals(1, listener.warningCount);
+	}
+
+	class WarningListenerTester implements WarningListener {
+
+		int warningCount = 0;
+
+		@Override
+		public void warning(String message, Symbol... symbols) {
+			warningCount++;
+		}
+
 	}
 
 }

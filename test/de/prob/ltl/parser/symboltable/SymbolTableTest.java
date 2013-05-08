@@ -8,13 +8,13 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.prob.ltl.parser.warning.ErrorManager;
+import de.prob.ltl.parser.LtlParser;
 
 public class SymbolTableTest {
 
 	@Test
 	public void testPushPopScope() {
-		SymbolTable table = new SymbolTable(new ErrorManager());
+		SymbolTable table = new SymbolTable(null);
 		DummyParseTree dummy1 = new DummyParseTree("Dummy 1");
 		DummyParseTree dummy2 = new DummyParseTree("Dummy 2");
 		Assert.assertNotSame(dummy1, dummy2);
@@ -53,7 +53,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testSetScope() {
-		SymbolTable table = new SymbolTable(new ErrorManager());
+		SymbolTable table = new SymbolTable(null);
 		DummyParseTree dummy1 = new DummyParseTree("Dummy 1");
 		DummyParseTree dummy2 = new DummyParseTree("Dummy 2");
 
@@ -78,7 +78,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDefineResolve() {
-		SymbolTable table = new SymbolTable(new ErrorManager());
+		SymbolTable table = new SymbolTable(new LtlParser(null));
 		DummyParseTree dummy1 = new DummyParseTree("Dummy 1");
 		DummyParseTree dummy2 = new DummyParseTree("Dummy 2");
 		Symbol symbolA = new Symbol("a", null);
