@@ -38,7 +38,10 @@ public static String[] getBooleanOperatorsSymbols() {
 @parser::header {
 package de.prob.ltl.parser;
 
+import de.prob.ltl.parser.symbolcheck.SymbolChecker;
+import de.prob.ltl.parser.symbolcheck.SymbolCollector;
 import de.prob.ltl.parser.symboltable.Symbol;
+import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.ltl.parser.warning.WarningListener;
 }
 
@@ -61,6 +64,13 @@ public void notifyWarningListeners(String message, Symbol ... symbols) {
 	for (WarningListener listener : warningListeners) {
 		listener.warning(message, symbols);
 	}
+}
+
+public void semanticCheck(ParseTree ast) {
+	SymbolTable symbolTable = new SymbolTable(this);
+	ParseTreeWalker walker = new ParseTreeWalker();
+	walker.walk(new SymbolCollector(symbolTable), ast);
+	walker.walk(new SymbolChecker(symbolTable), ast);
 }
 }
 

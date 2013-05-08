@@ -7,15 +7,11 @@ import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Assert;
 
 import de.prob.ltl.parser.LtlLexer;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.ParserFactory;
-import de.prob.ltl.parser.symbolcheck.SymbolChecker;
-import de.prob.ltl.parser.symbolcheck.SymbolCollector;
-import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.ltl.parser.warning.WarningListener;
 import de.prob.parserbase.ProBParserBase;
 
@@ -52,11 +48,7 @@ public abstract class AbstractLtlParserTest {
 		});
 
 		ParseTree result = parser.start();
-
-		SymbolTable symbolTable = new SymbolTable(parser);
-		ParseTreeWalker walker = new ParseTreeWalker();
-		walker.walk(new SymbolCollector(symbolTable), result);
-		walker.walk(new SymbolChecker(symbolTable), result);
+		parser.semanticCheck(result);
 
 		StringRepresentationGenerator generator = new StringRepresentationGenerator(getProBParserBase());
 		generator.visit(result);
