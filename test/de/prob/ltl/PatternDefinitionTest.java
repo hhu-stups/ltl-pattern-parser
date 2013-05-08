@@ -79,6 +79,13 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 		throwsRuntimeException("def f(true): true f(false)");
 
 		throwsRuntimeException("def f(a,a): a f(false,true)");
+
+		throwsRuntimeException("def");
+		throwsRuntimeException("def ");
+		throwsRuntimeException("def abc");
+		throwsRuntimeException("def abc()");
+		throwsRuntimeException("def abc():");
+		throwsRuntimeException("def abc(a):");
 	}
 
 	@Test

@@ -56,6 +56,10 @@ public class SymbolTable {
 		}
 	}
 
+	public boolean scopeExists(ParseTree ctx) {
+		return scopes.get(ctx) != null;
+	}
+
 	public void setCurrentScope(ParseTree ctx) {
 		if (ctx == null) {
 			currentScope = globalScope;

@@ -27,8 +27,10 @@ public class SymbolChecker extends LtlBaseListener {
 
 	@Override
 	public void enterPattern_def(Pattern_defContext ctx) {
-		symbolTable.setCurrentScope(ctx);
-		varSymbolsInScope = getVarSymbolsInScope();
+		if (symbolTable.scopeExists(ctx)) {
+			symbolTable.setCurrentScope(ctx);
+			varSymbolsInScope = getVarSymbolsInScope();
+		}
 	}
 
 	@Override
