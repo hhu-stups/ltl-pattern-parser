@@ -44,16 +44,16 @@ public class AbstractOldParserCompareTest extends AbstractLtlParserTest {
 	}
 
 	public void throwsException(String expected, String input, ExceptionCause cause) {
-		try {
-			Assert.assertEquals(expected, parse(input));
-			if (!cause.equals(ExceptionCause.DownwardIncompatible)) {
-				Assert.fail("Exception for new parser version should have been thrown. (Input: "+input+")");
-			}
-		} catch(RuntimeException ex) {
-			if (cause.equals(ExceptionCause.DownwardIncompatible)) {
+		if (cause == ExceptionCause.Deprecated || cause == ExceptionCause.Unsupported) {
+			throwsException(input, "Exception for new parser version should have been thrown. (Input: "+input+")");
+		} else {
+			try {
+				parse(input);
+			} catch(Exception e) {
 				Assert.fail("Exception for new parser version should not have been thrown. (Input: "+input+")");
 			}
 		}
+
 		try {
 			Assert.assertEquals(expected, parseOld(input));
 			if (!cause.equals(ExceptionCause.Deprecated)) {

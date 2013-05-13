@@ -1,9 +1,6 @@
 package de.prob.ltl;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.LexerNoViableAltException;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -18,34 +15,51 @@ import de.prob.parserbase.ProBParserBase;
 
 public abstract class AbstractLtlParserTest {
 
-
 	public abstract ProBParserBase getProBParserBase();
 
 	// Helper
-	public void throwsRuntimeException(String input) {
-		try {
-			parse(input);
-			Assert.fail("RuntimeException should have been thrown. (Input: \""+ input +"\")");
-		} catch(RuntimeException e) {
+	protected void throwsException(String input, String msg) {
+		TestErrorListener listener = new TestErrorListener();
+		LtlLexer lexer = ParserFactory.createLtlLexer(input, listener);
+		LtlParser parser = ParserFactory.createLtlParser(lexer, listener);
+
+		ParseTree result = parser.start();
+		parser.semanticCheck(result);
+
+		if (listener.getErrors() == 0) {
+			Assert.fail(msg);
 		}
 	}
 
+	protected void throwsException(String input) {
+		throwsException(input, "Exception should have been thrown. (Input: \""+ input +"\")");
+	}
+
 	protected String parse(String input, WarningListener listener) {
-		final LtlParser parser = ParserFactory.createLtlParser(createLexer(input), new BailErrorStrategy());
-		if (listener != null) {
-			parser.addWarningListener(listener);
-		}
-		parser.removeErrorListeners();
-		parser.addErrorListener(new BaseErrorListener() {
+		LtlLexer lexer = ParserFactory.createLtlLexer(input);
+		LtlParser parser = ParserFactory.createLtlParser(lexer);
+		BaseErrorListener errorListener = new BaseErrorListener() {
 
 			@Override
 			public void syntaxError(Recognizer<?, ?> recognizer,
-					Object offendingSymbol, int line, int charPositionInLine,
-					String msg, RecognitionException e) {
+					Object offendingSymbol, int line,
+					int charPositionInLine, String msg,
+					RecognitionException e) {
+				if (e == null) {
+					throw new RecognitionException(msg, recognizer, null, null);
+				}
 				throw e;
 			}
 
-		});
+		};
+		lexer.removeErrorListeners();
+		parser.removeErrorListeners();
+		lexer.addErrorListener(errorListener);
+		parser.addErrorListener(errorListener);
+
+		if (listener != null) {
+			parser.addWarningListener(listener);
+		}
 
 		ParseTree result = parser.start();
 		parser.semanticCheck(result);
@@ -59,21 +73,21 @@ public abstract class AbstractLtlParserTest {
 		return parse(input, null);
 	}
 
-	protected LtlLexer createLexer(String input) {
-		ANTLRInputStream inputStream = new ANTLRInputStream(input);
-		LtlLexer lexer = new LtlLexer(inputStream) {
-			@Override
-			public void recover(LexerNoViableAltException e) {
-				throw new RuntimeException(e); // Bail out
-			}
+	protected class TestErrorListener extends BaseErrorListener {
 
-			@Override
-			public void recover(RecognitionException re) {
-				throw new RuntimeException(re); // Bail out
-			}
-		};
-		lexer.removeErrorListeners();
-		return lexer;
+		private int errors = 0;
+
+		@Override
+		public void syntaxError(Recognizer<?, ?> recognizer,
+				Object offendingSymbol, int line, int charPositionInLine,
+				String msg, RecognitionException e) {
+			errors++;
+		}
+
+		public int getErrors() {
+			return errors;
+		}
+
 	}
 
 }

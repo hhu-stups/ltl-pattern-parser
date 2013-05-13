@@ -48,8 +48,8 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 		call = "pattern_call(\"f\",2,[true,false])";
 		assertEquals(def + call, "def f(a,b): a and b f(true, false)");
 
-		throwsRuntimeException("def f(a,b,c): a and b or c f(true, false, sink)");
-		throwsRuntimeException("def f(): true f()");
+		throwsException("def f(a,b,c): a and b or c f(true, false, sink)");
+		throwsException("def f(): true f()");
 	}
 
 	@Test
@@ -63,50 +63,50 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 
 	@Test
 	public void testForbiddenDefintion() throws Exception {
-		throwsRuntimeException("def not(a): a not(true)");
-		throwsRuntimeException("def f(not): not f(true)");
-		throwsRuntimeException("def and(a): a and(true)");
-		throwsRuntimeException("def f(and): and f(true)");
-		throwsRuntimeException("def or(a): a or(true)");
-		throwsRuntimeException("def f(or): or f(true)");
-		throwsRuntimeException("def U(a): a U(true)");
-		throwsRuntimeException("def f(U): U f(true)");
-		throwsRuntimeException("def G(a): a G(true)");
-		throwsRuntimeException("def f(G): G f(true)");
-		throwsRuntimeException("def GF(a): a GF(true)");
-		throwsRuntimeException("def f(GF): GF f(false)");
-		throwsRuntimeException("def true(a): a true(true)");
-		throwsRuntimeException("def f(true): true f(false)");
+		throwsException("def not(a): a not(true)");
+		throwsException("def f(not): not f(true)");
+		throwsException("def and(a): a and(true)");
+		throwsException("def f(and): and f(true)");
+		throwsException("def or(a): a or(true)");
+		throwsException("def f(or): or f(true)");
+		throwsException("def U(a): a U(true)");
+		throwsException("def f(U): U f(true)");
+		throwsException("def G(a): a G(true)");
+		throwsException("def f(G): G f(true)");
+		throwsException("def GF(a): a GF(true)");
+		throwsException("def f(GF): GF f(false)");
+		throwsException("def true(a): a true(true)");
+		throwsException("def f(true): true f(false)");
 
-		throwsRuntimeException("def f(a,a): a f(false,true)");
+		throwsException("def f(a,a): a f(false,true)");
 
-		throwsRuntimeException("def");
-		throwsRuntimeException("def ");
-		throwsRuntimeException("def abc");
-		throwsRuntimeException("def abc()");
-		throwsRuntimeException("def abc():");
-		throwsRuntimeException("def abc(a):");
+		throwsException("def");
+		throwsException("def ");
+		throwsException("def abc");
+		throwsException("def abc()");
+		throwsException("def abc():");
+		throwsException("def abc(a):");
 	}
 
 	@Test
 	public void testWrongCall() throws Exception {
-		throwsRuntimeException("def f(a): a f()");
-		throwsRuntimeException("def f(a): a f(true, false)");
-		throwsRuntimeException("def f(a, b): a or b f(false)");
-		throwsRuntimeException("def f(a): a g(false)");
+		throwsException("def f(a): a f()");
+		throwsException("def f(a): a f(true, false)");
+		throwsException("def f(a, b): a or b f(false)");
+		throwsException("def f(a): a g(false)");
 	}
 
 	@Test
 	public void testVarUsageOutsidePattern() throws Exception {
-		throwsRuntimeException("a and true");
-		throwsRuntimeException("a");
-		throwsRuntimeException("def f(a): a a");
+		throwsException("a and true");
+		throwsException("a");
+		throwsException("def f(a): a a");
 	}
 
 	@Test
 	public void testRecursiveDefinitionCall() throws Exception {
-		throwsRuntimeException("def f(a): f(a) or false f(true)");
-		throwsRuntimeException("def f(a): a def f(b): f(b) f(true)");
+		throwsException("def f(a): f(a) or false f(true)");
+		throwsException("def f(a): a def f(b): f(b) f(true)");
 	}
 
 	@Test

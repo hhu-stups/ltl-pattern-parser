@@ -1,6 +1,5 @@
 package de.prob.ltl.parser;
 
-import org.antlr.v4.runtime.ANTLRErrorStrategy;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -15,22 +14,8 @@ public class ParserFactory {
 		return createLtlParser(createLtlLexer(input));
 	}
 
-	public static LtlParser createLtlParser(LtlLexer lexer, ANTLRErrorStrategy strategy) {
+	public static LtlParser createLtlParser(LtlLexer lexer, BaseErrorListener ... errorListeners) {
 		LtlParser parser = createLtlParser(lexer);
-		parser.setErrorHandler(strategy);
-
-		return parser;
-	}
-
-	public static LtlParser createLtlParser(String input, ANTLRErrorStrategy strategy) {
-		LtlParser parser = createLtlParser(input);
-		parser.setErrorHandler(strategy);
-
-		return parser;
-	}
-
-	public static LtlParser createLtlParser(String input, BaseErrorListener ... errorListeners) {
-		LtlParser parser = createLtlParser(input);
 		parser.removeErrorListeners();
 		for (BaseErrorListener listener : errorListeners) {
 			parser.addErrorListener(listener);
@@ -39,11 +24,12 @@ public class ParserFactory {
 		return parser;
 	}
 
-	public static LtlLexer createLtlLexer(String input) {
-		ANTLRInputStream inputStream = new ANTLRInputStream(input);
-		LtlLexer lexer = new LtlLexer(inputStream);
+	public static LtlParser createLtlParser(String input, BaseErrorListener ... errorListeners) {
+		return createLtlParser(createLtlLexer(input), errorListeners);
+	}
 
-		return lexer;
+	public static LtlLexer createLtlLexer(String input) {
+		return new LtlLexer(new ANTLRInputStream(input));
 	}
 
 	public static LtlLexer createLtlLexer(String input, BaseErrorListener ... errorListeners) {
