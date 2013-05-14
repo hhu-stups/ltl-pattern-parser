@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
+import de.prob.ltl.parser.symboltable.PatternScope;
 import de.prob.ltl.parser.symboltable.PatternSymbol;
 import de.prob.ltl.parser.symboltable.Symbol;
 import de.prob.ltl.parser.symboltable.SymbolTable;
@@ -29,7 +30,7 @@ public class SymbolCollector extends LtlBaseListener {
 		TerminalNode nameNode = ids.remove(0);
 		String name = nameNode.getText();
 
-		PatternSymbol pattern = new PatternSymbol(name, nameNode.getSymbol(), ids.size());
+		PatternSymbol pattern = new PatternSymbol(name, nameNode.getSymbol(), PatternScope.determine(ctx.pattern_scope()), ids.size());
 		symbolTable.define(pattern);
 		symbolTable.pushScope(ctx, pattern);
 

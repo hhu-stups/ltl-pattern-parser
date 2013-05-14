@@ -114,11 +114,11 @@ public class SymbolTableTest {
 
 		// Resolve
 		Assert.assertEquals(symbolC, table.resolve("c"));
-		Assert.assertEquals(patternH, table.resolve("h/3"));
+		Assert.assertEquals(patternH, table.resolve("h/global/3"));
 		Assert.assertEquals(symbolB, table.resolve("b"));
-		Assert.assertEquals(patternG, table.resolve("g/1"));
+		Assert.assertEquals(patternG, table.resolve("g/global/1"));
 		Assert.assertNull(table.resolve("a"));
-		Assert.assertEquals(patternF, table.resolve("f/2"));
+		Assert.assertEquals(patternF, table.resolve("f/global/2"));
 
 		// Redefine
 		Symbol symbolA2 = new Symbol("a", null);
@@ -131,17 +131,17 @@ public class SymbolTableTest {
 		table.define(patternH2);
 
 		Assert.assertEquals(symbolA2, table.resolve("a"));
-		Assert.assertEquals(patternG, table.resolve("g/1"));
-		Assert.assertEquals(patternG2, table.resolve("g/2"));
-		Assert.assertEquals(patternH2, table.resolve("h/3"));
+		Assert.assertEquals(patternG, table.resolve("g/global/1"));
+		Assert.assertEquals(patternG2, table.resolve("g/global/2"));
+		Assert.assertEquals(patternH2, table.resolve("h/global/3"));
 
-		Assert.assertEquals(patternF2, table.resolve("f/2"));
+		Assert.assertEquals(patternF2, table.resolve("f/global/2"));
 		table.popScope();
-		Assert.assertEquals(patternF, table.resolve("f/2"));
+		Assert.assertEquals(patternF, table.resolve("f/global/2"));
 
 		// Resolve non existing symbol
 		Assert.assertNull(table.resolve("test"));
-		Assert.assertNull(table.resolve("f/1"));
+		Assert.assertNull(table.resolve("f/global/1"));
 		Assert.assertEquals(1, listener.getErrors());
 	}
 

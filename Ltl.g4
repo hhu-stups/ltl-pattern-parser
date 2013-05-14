@@ -33,6 +33,16 @@ public static String[] getBooleanOperatorsSymbols() {
 		"=>"
 	};
 }
+
+public static String[] getScopes() {
+	return new String[] {
+		"global",
+		"before",
+		"after",
+		"between",
+		"until"
+	};
+}
 }
 
 @parser::header {
@@ -77,7 +87,8 @@ public void semanticCheck(ParseTree ast) {
 /* -- Rules -- */
 start 		: pattern_def* expression pattern_def* EOF;
 
-pattern_def	: 'def' PATTERN_ID LEFT_PAREN PATTERN_ID (',' PATTERN_ID)? RIGHT_PAREN ':' expression;
+pattern_def	: 'def' PATTERN_ID pattern_scope? LEFT_PAREN PATTERN_ID (',' PATTERN_ID)? RIGHT_PAREN ':' expression;
+pattern_scope	: LEFT_ANGLE scope=(GLOBAL_SCOPE | BEFORE_SCOPE | AFTER_SCOPE | BETWEEN_SCOPE | UNTIL_SCOPE) RIGHT_ANGLE;
 
 expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpression
 			| NOT expression																# notExpression
@@ -87,7 +98,7 @@ expression	: LEFT_PAREN expression RIGHT_PAREN												# parenthesisExpressio
 			| expression OR expression														# orExpression	
 			| expression IMPLIES expression													# impliesExpression		
 			| PATTERN_ID 															# patternVarExpression
-			| PATTERN_ID LEFT_PAREN expression (',' expression)* RIGHT_PAREN 		# patternCallExpression
+			| PATTERN_ID pattern_scope? LEFT_PAREN expression (',' expression)* RIGHT_PAREN 		# patternCallExpression
 			| PREDICATE																		# predicateExpression 
 			| ACTION																		# actionExpression
 			| ENABLED																		# enabledExpression
@@ -132,6 +143,13 @@ AND				: ('and' | '&');
 OR				: ('or' | '|');
 IMPLIES			: ('=>');
 
+// Scopes
+GLOBAL_SCOPE	: 'global';
+BEFORE_SCOPE	: 'before';
+AFTER_SCOPE		: 'after';
+BETWEEN_SCOPE	: 'between';
+UNTIL_SCOPE		: 'until';
+
 // Predicates
 LEFT_CURLY		: '{';
 RIGHT_CURLY		: '}';
@@ -150,6 +168,8 @@ ENABLED_PAREN	: LEFT_PAREN (~('(' | ')') | ENABLED_PAREN)* RIGHT_PAREN;
 // Others
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
+LEFT_ANGLE		: '<';
+RIGHT_ANGLE		: '>';
 			
 COMMENT			: ('//' ~('\n')* 
 				| '/*' .*? '*/') -> skip;

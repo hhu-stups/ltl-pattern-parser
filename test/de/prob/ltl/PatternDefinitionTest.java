@@ -127,6 +127,22 @@ public class PatternDefinitionTest extends AbstractLtlParserTest {
 		Assert.assertEquals(1, listener.warningCount);
 	}
 
+	@Test
+	public void testScopes() throws Exception {
+		parse("def f(x): x f(true)");
+		parse("def f<global>(x): x f<global>(true)");
+		parse("def f<before>(x): x f<before>(true)");
+		parse("def f<after>(x): x f<after>(true)");
+		parse("def f<between>(x): x f<between>(true)");
+		parse("def f<until>(x): x f<until>(true)");
+
+		throwsException("def f<>(x): x f(true)");
+		throwsException("def f<a>(x): x f(true)");
+		throwsException("def f(x): x f<>(true)");
+		throwsException("def f(x): x f<a>(true)");
+		throwsException("def f<global>(x): x f<until>(true)");
+	}
+
 	class WarningListenerTester implements WarningListener {
 
 		int warningCount = 0;

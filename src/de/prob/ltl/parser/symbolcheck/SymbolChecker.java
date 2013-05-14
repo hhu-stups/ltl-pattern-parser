@@ -11,6 +11,7 @@ import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser.PatternCallExpressionContext;
 import de.prob.ltl.parser.LtlParser.PatternVarExpressionContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
+import de.prob.ltl.parser.symboltable.PatternScope;
 import de.prob.ltl.parser.symboltable.PatternSymbol;
 import de.prob.ltl.parser.symboltable.Symbol;
 import de.prob.ltl.parser.symboltable.SymbolTable;
@@ -67,7 +68,9 @@ public class SymbolChecker extends LtlBaseListener {
 	public void exitPatternCallExpression(PatternCallExpressionContext ctx) {
 		TerminalNode patternNode = ctx.PATTERN_ID();
 		int args = ctx.expression().size();
-		String name = patternNode.getText() + "/" + args;
+		PatternScope patternScope = PatternScope.determine(ctx.pattern_scope());
+
+		String name = patternNode.getText() + "/" + patternScope.name() + "/" + args;
 
 		if (isRecursiveCall(name)) {
 			String msg = "Recusive call detected: " + name;
