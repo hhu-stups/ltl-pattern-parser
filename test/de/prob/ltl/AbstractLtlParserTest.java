@@ -1,8 +1,5 @@
 package de.prob.ltl;
 
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Assert;
 
@@ -38,20 +35,7 @@ public abstract class AbstractLtlParserTest {
 	protected String parse(String input, WarningListener listener) {
 		LtlLexer lexer = ParserFactory.createLtlLexer(input);
 		LtlParser parser = ParserFactory.createLtlParser(lexer);
-		BaseErrorListener errorListener = new BaseErrorListener() {
-
-			@Override
-			public void syntaxError(Recognizer<?, ?> recognizer,
-					Object offendingSymbol, int line,
-					int charPositionInLine, String msg,
-					RecognitionException e) {
-				if (e == null) {
-					throw new RecognitionException(msg, recognizer, null, null);
-				}
-				throw e;
-			}
-
-		};
+		TestErrorListener errorListener = new TestErrorListener();
 		lexer.removeErrorListeners();
 		parser.removeErrorListeners();
 		lexer.addErrorListener(errorListener);
@@ -63,6 +47,10 @@ public abstract class AbstractLtlParserTest {
 
 		ParseTree result = parser.start();
 		parser.semanticCheck(result);
+
+		if (errorListener.getErrors() > 0) {
+			throw errorListener.getExceptions().get(0);
+		}
 
 		StringRepresentationGenerator generator = new StringRepresentationGenerator(getProBParserBase());
 		generator.visit(result);
