@@ -1,5 +1,7 @@
 package de.prob.ltl.parser.symboltable;
 
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -8,6 +10,7 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.prob.ltl.TestErrorListener;
 import de.prob.ltl.parser.LtlParser;
 
 public class SymbolTableTest {
@@ -78,10 +81,15 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDefineResolve() {
-		SymbolTable table = new SymbolTable(new LtlParser(null));
+		LtlParser parser = new LtlParser(null);
+		TestErrorListener listener = new TestErrorListener();
+		parser.removeErrorListeners();
+		parser.addErrorListener(listener);
+
+		SymbolTable table = new SymbolTable(parser);
 		DummyParseTree dummy1 = new DummyParseTree("Dummy 1");
 		DummyParseTree dummy2 = new DummyParseTree("Dummy 2");
-		Symbol symbolA = new Symbol("a", null);
+		Symbol symbolA = new Symbol("a", new DummyToken());
 		Symbol symbolB = new Symbol("b", null);
 		Symbol symbolC = new Symbol("c", null);
 		PatternSymbol patternF = new PatternSymbol("f", null, 2);
@@ -89,7 +97,9 @@ public class SymbolTableTest {
 		PatternSymbol patternH = new PatternSymbol("h", null, 3);
 
 		// Define in global
+		Assert.assertEquals(0, listener.getErrors());
 		table.define(symbolA);
+		Assert.assertEquals(1, listener.getErrors());
 		table.define(patternF);
 
 		// Define in scope1
@@ -107,7 +117,7 @@ public class SymbolTableTest {
 		Assert.assertEquals(patternH, table.resolve("h/3"));
 		Assert.assertEquals(symbolB, table.resolve("b"));
 		Assert.assertEquals(patternG, table.resolve("g/1"));
-		Assert.assertEquals(symbolA, table.resolve("a"));
+		Assert.assertNull(table.resolve("a"));
 		Assert.assertEquals(patternF, table.resolve("f/2"));
 
 		// Redefine
@@ -132,6 +142,7 @@ public class SymbolTableTest {
 		// Resolve non existing symbol
 		Assert.assertNull(table.resolve("test"));
 		Assert.assertNull(table.resolve("f/1"));
+		Assert.assertEquals(1, listener.getErrors());
 	}
 
 	// Helper
@@ -225,6 +236,20 @@ public class SymbolTableTest {
 
 		private SymbolTableTest getOuterType() {
 			return SymbolTableTest.this;
+		}
+
+	}
+
+	@SuppressWarnings("serial")
+	class DummyToken extends CommonToken {
+
+		public DummyToken() {
+			super(0);
+		}
+
+		@Override
+		public CharStream getInputStream() {
+			return null;
 		}
 
 	}

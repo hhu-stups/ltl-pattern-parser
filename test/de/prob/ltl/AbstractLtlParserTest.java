@@ -73,21 +73,4 @@ public abstract class AbstractLtlParserTest {
 		return parse(input, null);
 	}
 
-	protected class TestErrorListener extends BaseErrorListener {
-
-		private int errors = 0;
-
-		@Override
-		public void syntaxError(Recognizer<?, ?> recognizer,
-				Object offendingSymbol, int line, int charPositionInLine,
-				String msg, RecognitionException e) {
-			errors++;
-		}
-
-		public int getErrors() {
-			return errors;
-		}
-
-	}
-
 }

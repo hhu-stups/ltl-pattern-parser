@@ -1,6 +1,5 @@
 package de.prob.ltl.parser.symboltable;
 
-
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -21,13 +20,21 @@ public class SymbolTable {
 	}
 
 	public void define(Symbol symbol) {
+		if (currentScope.equals(globalScope) && !(symbol instanceof PatternSymbol)) {
+			// Variable definition in global scope
+			String msg = "Variable definition in global scope is not allowed.";
+			Token token = symbol.getToken();
+			parser.notifyErrorListeners(token, msg, new RecognitionException(msg, parser, token.getInputStream(), null));
+			return;
+		}
+
 		String symbolId = symbol.getSymbolID();
 		Symbol otherSymbol = currentScope.resolve(symbolId);
 
 		if (otherSymbol != null) {
 			if (otherSymbol instanceof PatternSymbol) { // Pattern redefinition
 				parser.notifyWarningListeners(symbolId + " is already defined.", symbol);
-			} else if (currentScope.resolveLocal(symbolId) != null) { // For variables: only in same scope
+			} else if (currentScope.resolveLocal(symbolId) != null) { // Redefinition of local variable
 				String msg = symbolId + " is already defined.";
 				Token token = symbol.getToken();
 				parser.notifyErrorListeners(token, msg, new RecognitionException(msg, parser, token.getInputStream(), null));
