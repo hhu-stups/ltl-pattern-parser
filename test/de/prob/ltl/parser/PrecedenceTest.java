@@ -1,10 +1,10 @@
-package de.prob.ltl;
+package de.prob.ltl.parser;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 
-public class PrecedenceTest extends AbstractOldParserCompareTest {
+public class PrecedenceTest extends AbstractParserTest {
 
 	@Test
 	public void testAnd() throws Exception {

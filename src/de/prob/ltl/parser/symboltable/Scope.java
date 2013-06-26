@@ -7,17 +7,11 @@ import java.util.Map;
 
 public class Scope {
 
-	private Scope parent = null;
-	private Symbol scopeSymbol = null;
-	private List<Scope> children = new LinkedList<Scope>();
-	private Map<String, Symbol> symbols = new HashMap<String, Symbol>();
+	protected Scope parent = null;
+	protected Map<String, Symbol> symbols = new HashMap<String, Symbol>();
 
-	public Scope(Scope parent, Symbol scopeSymbol) {
+	public Scope(Scope parent) {
 		this.parent = parent;
-		this.scopeSymbol = scopeSymbol;
-		if (this.parent != null) {
-			this.parent.addChildScope(this);
-		}
 	}
 
 	public void define(Symbol symbol) {
@@ -27,10 +21,10 @@ public class Scope {
 
 	public Symbol resolve(String name) {
 		// Look for symbol in this scope
-		Symbol symbol = symbols.get(name);
+		Symbol symbol = resolveLocal(name);
 
 		// Search in parent scope(s)
-		if (symbol == null && parent != null) {
+		if (symbol == null && hasParent()) {
 			return parent.resolve(name);
 		}
 		return symbol;
@@ -41,10 +35,6 @@ public class Scope {
 		return symbols.get(name);
 	}
 
-	public void addChildScope(Scope scope) {
-		children.add(scope);
-	}
-
 	public boolean hasParent() {
 		return parent != null;
 	}
@@ -53,15 +43,19 @@ public class Scope {
 		return parent;
 	}
 
-	public Symbol getScopeSymbol() {
-		return scopeSymbol;
-	}
-
-	public List<Scope> getChildren() {
-		return children;
+	public void setParent(Scope parent) {
+		this.parent = parent;
 	}
 
 	public List<Symbol> getSymbols() {
+		List<Symbol> result = getLocalSymbols();
+		if (hasParent()) {
+			result.addAll(parent.getSymbols());
+		}
+		return result;
+	}
+
+	public List<Symbol> getLocalSymbols() {
 		return new LinkedList<Symbol>(symbols.values());
 	}
 
