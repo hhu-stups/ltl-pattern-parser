@@ -2,10 +2,14 @@ package de.prob.ltl.parser.symboltable;
 
 import java.util.List;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
+
 public class SymbolTable {
 
 	private final Scope globalScope = new Scope(null);
 	private Scope currentScope = globalScope;
+	private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
 
 	public void define(Symbol symbol) {
 		String name = symbol.getSymbolID();
@@ -36,8 +40,13 @@ public class SymbolTable {
 		return currentScope;
 	}
 
-	public void pushScope(Scope scope) {
+	public void pushScope(Scope scope, ParserRuleContext context) {
 		currentScope = scope;
+		scopes.put(context, scope);
+	}
+
+	public void pushScope(ParserRuleContext context) {
+		currentScope = scopes.get(context);
 	}
 
 	public void popScope() {
@@ -46,6 +55,11 @@ public class SymbolTable {
 		} else {
 			currentScope = globalScope;
 		}
+	}
+
+	public boolean checkTypes(Pattern call) {
+		Pattern definedPattern = (Pattern) resolve(call.getSymbolID());
+		return definedPattern.checkParameterTypes(call.getParameters());
 	}
 
 }

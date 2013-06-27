@@ -14,7 +14,7 @@ start
  ;
 
 pattern_def
- : PATTERN_DEF (LEFT_ANGLE pattern_def_scope RIGHT_ANGLE)? ID pattern_def_params ':' (var_def | var_assign)* expr
+ : PATTERN_DEF (LEFT_ANGLE pattern_def_scope RIGHT_ANGLE)? ID pattern_def_params ':' (var_def | var_assign | loop)* expr
  ;
 
 pattern_def_scope
@@ -46,8 +46,9 @@ pattern_call_scope
  ;
  
 pattern_call_arg
- : expr
+ : ID
  | NUM_POS
+ | expr
  ;
  
 pattern_call_args
@@ -61,7 +62,16 @@ var_def
 var_assign
  : ID ':' expr
  ;
-	
+ 
+loop
+ : LOOP_BEGIN loop_arg (UP | DOWN) TO loop_arg ':' (var_def | var_assign)+ LOOP_END
+ ;
+ 
+loop_arg
+ : NUM_POS
+ | ID
+ ;
+ 
 expr
  : NOT expr						# notExpr
  | GLOBALLY expr				# globallyExpr
@@ -156,6 +166,13 @@ UNTIL_SCOPE		: 'until';
 // Vars
 VAR				: 'var';
 NUM_VAR			: 'num';
+
+// Loops
+LOOP_BEGIN		: 'loop';
+LOOP_END		: 'end';
+UP				: 'up';
+DOWN			: 'down';
+TO				: 'to';
 			
 // Whitespaces
 NUM_POS			: '0' | [1-9] [0-9]*;

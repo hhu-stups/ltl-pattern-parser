@@ -1,7 +1,5 @@
 package de.prob.ltl.parser;
 
-import junit.framework.Assert;
-
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,10 +17,6 @@ public class PatternDefinitionTest extends AbstractParserTest {
 	@Before
 	public void setupTest() {
 		parserRuleCall = PATTERN_DEF_PARSER_RULE_CALL;
-	}
-
-	public void assertEquals(String expected, String input) throws Exception {
-		Assert.assertEquals(expected, parse(input));
 	}
 
 	@Test

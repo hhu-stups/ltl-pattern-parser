@@ -106,7 +106,7 @@ public class SymbolTableTest {
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.define(pattern);
-		st.pushScope(pattern);
+		st.pushScope(pattern, null);
 
 		Variable var = new Variable("var1", VariableTypes.var);
 		st.define(var);
@@ -126,8 +126,8 @@ public class SymbolTableTest {
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.define(pattern);
-		st.pushScope(pattern);
-		st.pushScope(pattern);
+		st.pushScope(pattern, null);
+		st.pushScope(pattern, null);
 
 		Variable var = new Variable("var1", VariableTypes.var);
 		st.define(var);
@@ -152,7 +152,7 @@ public class SymbolTableTest {
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.define(pattern);
-		st.pushScope(pattern);
+		st.pushScope(pattern, null);
 
 		Pattern pattern2 = new Pattern(st.getCurrentScope(), "pattern2");
 		try {
@@ -179,7 +179,7 @@ public class SymbolTableTest {
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.define(pattern);
-		st.pushScope(pattern);
+		st.pushScope(pattern, null);
 
 		Variable var2 = new Variable("var1", VariableTypes.var);
 		try {
@@ -201,7 +201,7 @@ public class SymbolTableTest {
 
 		Pattern pattern1 = new Pattern(st.getCurrentScope(), "pattern1");
 		st.define(pattern1);
-		st.pushScope(pattern1);
+		st.pushScope(pattern1, null);
 
 		Variable var1 = new Variable("var", VariableTypes.var);
 		st.define(var1);
@@ -214,7 +214,7 @@ public class SymbolTableTest {
 
 		Pattern pattern2 = new Pattern(st.getCurrentScope(), "pattern2");
 		st.define(pattern2);
-		st.pushScope(pattern2);
+		st.pushScope(pattern2, null);
 
 		Variable var2 = new Variable("var", VariableTypes.var);
 		st.define(var2);
@@ -231,7 +231,7 @@ public class SymbolTableTest {
 		SymbolTable st = new SymbolTable();
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
-		st.pushScope(pattern);
+		st.pushScope(pattern, null);
 
 		Variable var1 = new Variable("x", VariableTypes.var);
 		st.define(var1);
@@ -270,7 +270,7 @@ public class SymbolTableTest {
 		st.define(var1);
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
-		st.pushScope(pattern);
+		st.pushScope(pattern, null);
 
 		Variable var2 = new Variable("y", VariableTypes.var);
 		st.define(var2);
@@ -372,6 +372,38 @@ public class SymbolTableTest {
 		Assert.assertNotNull(st.resolve("pattern/between/0"));
 		Assert.assertNotNull(st.resolve("pattern/after_until/0"));
 		Assert.assertNotNull(st.resolve("pattern/global/1"));
+	}
+
+	@Test
+	public void testCheckTypes() {
+		SymbolTable st = new SymbolTable();
+
+		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
+		st.pushScope(pattern, null);
+
+		Variable var1 = new Variable("x", VariableTypes.num);
+		st.define(var1);
+		pattern.addParameter(var1);
+
+		Variable var2 = new Variable("y", VariableTypes.var);
+		st.define(var2);
+		pattern.addParameter(var2);
+		st.popScope();
+		st.define(pattern);
+
+		Assert.assertEquals(pattern, st.resolve("pattern/global/2"));
+
+		Pattern call1 = new Pattern(st.getCurrentScope(), "pattern");
+		call1.addParameter(new Variable(null, VariableTypes.num));
+		call1.addParameter(new Variable(null, VariableTypes.var));
+
+		Assert.assertTrue(st.checkTypes(call1));
+
+		Pattern call2 = new Pattern(st.getCurrentScope(), "pattern");
+		call2.addParameter(new Variable(null, VariableTypes.num));
+		call2.addParameter(new Variable(null, VariableTypes.num));
+
+		Assert.assertFalse(st.checkTypes(call2));
 	}
 
 }

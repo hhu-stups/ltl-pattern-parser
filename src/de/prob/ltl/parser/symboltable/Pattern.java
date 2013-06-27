@@ -42,6 +42,15 @@ public class Pattern extends Scope implements Symbol {
 		parameters.add(parameter);
 	}
 
+	public boolean checkParameterTypes(List<Variable> otherParameters) {
+		for (int i = 0; i < parameters.size(); i++) {
+			if (!otherParameters.get(i).getType().equals(parameters.get(i).getType())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public void define(Symbol symbol) {
 		if (symbol instanceof Pattern) {

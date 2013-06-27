@@ -52,6 +52,8 @@ public class SematicTest extends AbstractParserTest {
 		String pattern2 = "def pattern2(x, y): true ";
 		String expr = "true ";
 		parse(pattern1 +  pattern2 + expr);
+		parse("def pattern3(x, y): x or y true");
+		throwsException("def pattern3(x, y): x y");
 	}
 
 	@Test
@@ -165,10 +167,121 @@ public class SematicTest extends AbstractParserTest {
 		parse(pattern5 + var2 + expr);
 	}
 
+	@Test
+	public void testLoop() throws Exception {
+		String loop1 = "loop 1 up to 2: var x: true end ";
+		String pattern1 = "def pattern(): " + loop1 + " true ";
+		String pattern2 = "def pattern(x): " + loop1 + " true ";
+		String pattern3 = "def <before x> pattern(): " + loop1 + " true ";
+		String expr = "true ";
+		parse(pattern1 + expr);
+		throwsException(pattern2 + expr);
+		throwsException(pattern3 + expr);
+
+		String loop2 = "loop 1 up to 2: x: true end ";
+		String pattern4 = "def pattern(): " + loop2 + " true ";
+		String pattern5 = "def pattern(x): " + loop2 + " true ";
+		String pattern6 = "def <before x> pattern(): " + loop2 + " true ";
+		throwsException(pattern4 + expr);
+		parse(pattern5 + expr);
+		parse(pattern6 + expr);
+
+		String loop3 = "loop 1 up to 5: var x: true x: x or false end ";
+		String pattern7 = "def pattern(): " + loop3 + " true ";
+		parse(pattern7 + expr);
+
+		String varDef = "var x: true ";
+
+		throwsException(varDef + pattern1 + expr);
+		parse(varDef + pattern4 + expr);
+		throwsException(varDef + pattern7 + expr);
+
+		parse(pattern1 + varDef + expr);
+		throwsException(pattern2 + varDef + expr);
+		throwsException(pattern3 + varDef + expr);
+		throwsException(pattern4 + varDef + expr);
+		parse(pattern5 + varDef + expr);
+		parse(pattern6 + varDef + expr);
+		parse(pattern7 + varDef + expr);
+
+		String varAssign = "x: true ";
+
+		throwsException(pattern1 + varAssign + expr);
+		throwsException(pattern2 + varAssign + expr);
+		throwsException(pattern3 + varAssign + expr);
+		throwsException(pattern4 + varAssign + expr);
+		throwsException(pattern5 + varAssign + expr);
+		throwsException(pattern6 + varAssign + expr);
+		throwsException(pattern7 + varAssign + expr);
+	}
+
+	@Test
+	public void testLoop2() throws Exception {
+		parse("def pattern(): loop 1 up to 2: var x: true end var x: false x true");
+		throwsException("def pattern(): var x: false loop 1 up to 2: var x: true end x true");
+
+		parse("def pattern(x:num): loop x up to 2: var s: true end true true");
+		throwsException("def pattern(y): loop x up to 2: var s: true end true true");
+		throwsException("def <before x> pattern(): loop 1 up to x: var s: true end true true");
+		throwsException("def <before y> pattern(): loop 1 up to x: var s: true end true true");
+		throwsException("def pattern(): loop x up to 2: var s: true end true true");
+		throwsException("def pattern(): loop 1 up to x: var s: true end true true");
+	}
+
+	@Test
+	public void testNumVarPatternCall() throws Exception {
+		parse("def pattern(n:num): true pattern(1)");
+		parse("def pattern(n:num): true pattern(0)");
+		parse("def pattern(n:num): true pattern(123)");
+		throwsException("def pattern(n:num): true pattern(true)");
+		throwsException("def pattern(n:num): true pattern(GF true)");
+		throwsException("def pattern(n:num): true pattern({...})");
+
+		throwsException("def pattern(n): true pattern(1)");
+		throwsException("def pattern(n): true pattern(0)");
+		throwsException("def pattern(n): true pattern(123)");
+		parse("def pattern(n): true pattern(true)");
+		parse("def pattern(n): true pattern(GF true)");
+		parse("def pattern(n): true pattern({...})");
+
+		throwsException("def pattern(n:num): var x: n pattern(1)");
+		throwsException("def pattern(n:num): var x: true x: n pattern(1)");
+		throwsException("def pattern(n:num): n: 2 pattern(1)");
+
+		parse("def pattern1(n:num): pattern2(n) def pattern2(n:num): true pattern1(123)");
+		throwsException("def pattern1(n): pattern2(n) def pattern2(n:num): true pattern1(true)");
+	}
+
+	@Test
+	public void testNumVarLoop() throws Exception {
+		parse("def pattern(n:num): loop n up to 2: var s: true end true pattern(1)");
+		parse("def pattern(n:num): loop 1 up to n: var s: true end true pattern(1)");
+		parse("def pattern(n:num): loop n up to n: var s: true end true pattern(1)");
+		throwsException("def pattern(n): loop n up to 2: var s: true end true pattern(true)");
+		throwsException("def pattern(n): loop 1 up to n: var s: true end true pattern(GF true)");
+		throwsException("def pattern(n): loop n up to n: var s: true end true pattern({...})");
+	}
+
+	@Test
+	public void testNumVarAssignment() throws Exception {
+		parse("var x: true x");
+		throwsException("var x: 1 x");
+		parse("var x: true x: false x");
+		throwsException("var x: true x: 1 x");
+
+		throwsException("def pattern(n:num): loop 1 up to 2: n: true end pattern(1)");
+		throwsException("def pattern(n:num): loop 1 up to 2: n: 2 end pattern(1)");
+		throwsException("def pattern(n:num): n: true pattern(1)");
+		throwsException("def pattern(n:num): n: 2 pattern(1)");
+		throwsException("def pattern(n:num, x:num): n: x pattern(1, 2)");
+	}
+
+
+
 	/*@Test
 	public void testRecursiveDefinitionCall() throws Exception {
 		throwsException("def f(a): f(a) or false f(true)");
-	}
+	}*/
 
 	/* TODO warning listener
 	@Test

@@ -7,11 +7,15 @@ import de.prob.ltl.parser.LtlParser.AfterUntilScopeDefContext;
 import de.prob.ltl.parser.LtlParser.BeforeScopeDefContext;
 import de.prob.ltl.parser.LtlParser.BetweenScopeDefContext;
 import de.prob.ltl.parser.LtlParser.GlobalScopeDefContext;
+import de.prob.ltl.parser.LtlParser.LoopContext;
+import de.prob.ltl.parser.LtlParser.Loop_argContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 import de.prob.ltl.parser.LtlParser.Pattern_def_paramContext;
 import de.prob.ltl.parser.LtlParser.VarCallAtomContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
+import de.prob.ltl.parser.symboltable.Loop;
+import de.prob.ltl.parser.symboltable.Loop.LoopTypes;
 import de.prob.ltl.parser.symboltable.Pattern;
 import de.prob.ltl.parser.symboltable.Pattern.PatternScopes;
 import de.prob.ltl.parser.symboltable.SymbolTable;
@@ -22,9 +26,40 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 
 	private SymbolTable symbolTable;
 	private Pattern currentPattern;
+	private Loop currentLoop;
 
 	public SematicCheckPhase1(SymbolTable symbolTable) {
 		this.symbolTable = symbolTable;
+	}
+
+	@Override
+	public void enterLoop(LoopContext ctx) {
+		LoopTypes type = (ctx.UP() != null ? LoopTypes.up : LoopTypes.down);
+		currentLoop = new Loop(symbolTable.getCurrentScope(), type);
+		symbolTable.pushScope(currentLoop, ctx);
+	}
+
+	@Override
+	public void exitLoop(LoopContext ctx) {
+		symbolTable.popScope();
+		currentLoop = null;
+	}
+
+	@Override
+	public void enterLoop_arg(Loop_argContext ctx) {
+		Variable parameter = null;
+		if (ctx.NUM_POS() != null) {
+			parameter = new Variable(null, VariableTypes.num);
+		} else {
+			TerminalNode nameNode = ctx.ID();
+			String name = nameNode.getText();
+			parameter = (Variable) symbolTable.resolve(name);
+			if (parameter == null) {
+				throw new RuntimeException(String.format("Variable '%s' cannot be resolved.", name));
+			}
+		}
+
+		currentLoop.addParameter(parameter);
 	}
 
 	@Override
@@ -65,7 +100,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		String name = nameNode.getText();
 
 		currentPattern = new Pattern(symbolTable.getCurrentScope(), name);
-		symbolTable.pushScope(currentPattern);
+		symbolTable.pushScope(currentPattern, ctx);
 	}
 
 	@Override
