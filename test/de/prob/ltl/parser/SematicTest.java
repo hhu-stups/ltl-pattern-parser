@@ -1,5 +1,8 @@
 package de.prob.ltl.parser;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.BeforeClass;
@@ -20,7 +23,7 @@ public class SematicTest extends AbstractParserTest {
 			walker.walk(new SematicCheckPhase1(symbolTable), result);
 			walker.walk(new SematicCheckPhase2(symbolTable), result);
 
-			System.out.println(symbolTable.getSymbols());
+			//System.out.println(symbolTable.getSymbols());
 
 			return result;
 		}
@@ -276,6 +279,20 @@ public class SematicTest extends AbstractParserTest {
 		throwsException("def pattern(n:num, x:num): n: x pattern(1, 2)");
 	}
 
+	@Test
+	public void testPatterns() throws Exception {
+		BufferedReader reader = new BufferedReader(new FileReader("test/patterns.txt"));
+		StringBuilder b = new StringBuilder();
+
+		String line;
+		while ((line = reader.readLine()) != null) {
+			b.append(line);
+			b.append('\n');
+		}
+		reader.close();
+
+		parse(b.toString() + " true");
+	}
 
 
 	/*@Test
