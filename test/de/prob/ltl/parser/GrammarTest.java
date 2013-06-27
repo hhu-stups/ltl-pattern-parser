@@ -5,8 +5,6 @@ import org.junit.Test;
 
 public class GrammarTest extends AbstractParserTest {
 
-	/*
-
 	@Test
 	public void testParenthesisExpression() throws Exception {
 		assertEquals("true", "(true)");
@@ -259,7 +257,7 @@ public class GrammarTest extends AbstractParserTest {
 		throwsException("or(true,false)", "true or false// comment", ExceptionCause.DownwardIncompatible);
 		throwsException("or(true,false)", "true// a comment\nor false", ExceptionCause.DownwardIncompatible);
 		throwsException("or(true,false)", "true//\nor false", ExceptionCause.DownwardIncompatible);
-	}*/
+	}
 
 	@Test
 	public void testMultiLineComment() throws Exception {

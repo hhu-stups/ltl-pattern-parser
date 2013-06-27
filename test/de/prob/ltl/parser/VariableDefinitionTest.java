@@ -1,13 +1,8 @@
 package de.prob.ltl.parser;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class VariableDefinitionTest extends AbstractParserTest {
-
-	public void assertEquals(String expected, String input) throws Exception {
-		Assert.assertEquals(expected, parse(input));
-	}
 
 	@Test
 	public void testDefinitionSimple() throws Exception {

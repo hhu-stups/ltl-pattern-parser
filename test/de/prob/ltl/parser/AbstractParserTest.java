@@ -9,10 +9,14 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import de.prob.ltl.parser.symboltable.SymbolTable;
+import de.prob.parserbase.ProBParserBase;
 import de.prob.parserbase.UnparsedParserBase;
+import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.PrologTermStringOutput;
 import de.prob.prolog.term.PrologTerm;
 
@@ -26,18 +30,34 @@ public abstract class AbstractParserTest {
 
 	interface ParserRuleCall {
 		ParseTree callParserRule(LtlParser parser);
+
+		SymbolTable getSymbolTable();
 	}
 
 	protected static ParserRuleCall DEFAULT_PARSER_RULE_CALL = new ParserRuleCall() {
 
+		private SymbolTable symbolTable;
+
 		@Override
 		public ParseTree callParserRule(LtlParser parser) {
-			return parser.start();
+			ParseTree result = parser.start();
+
+			ParseTreeWalker walker = new ParseTreeWalker();
+			symbolTable = new SymbolTable();
+			walker.walk(new SematicCheckPhase1(symbolTable), result);
+			walker.walk(new SematicCheckPhase2(symbolTable), result);
+
+			return result;
+		}
+
+		@Override
+		public SymbolTable getSymbolTable() {
+			return symbolTable;
 		}
 	};
 
-	private static UnparsedParserBase parserBase;
-	private static de.be4.ltl.core.parser.LtlParser oldParser;
+	protected static UnparsedParserBase parserBase;
+	protected static de.be4.ltl.core.parser.LtlParser oldParser;
 
 	protected static ParserRuleCall parserRuleCall = DEFAULT_PARSER_RULE_CALL;
 
@@ -67,9 +87,13 @@ public abstract class AbstractParserTest {
 		return result;
 	}
 
+	protected LtlPrologTermGenerator createPrologGenerator(final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
+		return new LtlPrologTermGenerator(pto, "current", parserBase);
+	}
+
 	protected String parse(String input) {
 		PrologTermStringOutput pto = new PrologTermStringOutput();
-		LtlPrologTermGenerator generator = new LtlPrologTermGenerator(pto, "current", parserBase);
+		LtlPrologTermGenerator generator = createPrologGenerator(pto, "current", parserBase);
 
 		ParseTree ast = parseToTree(input);
 		generator.generatePrologTerm(ast);

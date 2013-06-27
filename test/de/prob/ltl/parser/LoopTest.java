@@ -4,6 +4,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.prob.ltl.parser.symboltable.SymbolTable;
+
 public class LoopTest extends AbstractParserTest {
 
 	protected static ParserRuleCall LOOP_PARSER_RULE_CALL = new ParserRuleCall() {
@@ -11,6 +13,11 @@ public class LoopTest extends AbstractParserTest {
 		@Override
 		public ParseTree callParserRule(LtlParser parser) {
 			return parser.loop();
+		}
+
+		@Override
+		public SymbolTable getSymbolTable() {
+			return null;
 		}
 	};
 

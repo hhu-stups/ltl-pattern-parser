@@ -4,6 +4,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.prob.ltl.parser.symboltable.SymbolTable;
+
 public class PatternDefinitionTest extends AbstractParserTest {
 
 	protected static ParserRuleCall PATTERN_DEF_PARSER_RULE_CALL = new ParserRuleCall() {
@@ -11,6 +13,24 @@ public class PatternDefinitionTest extends AbstractParserTest {
 		@Override
 		public ParseTree callParserRule(LtlParser parser) {
 			return parser.pattern_def();
+		}
+
+		@Override
+		public SymbolTable getSymbolTable() {
+			return null;
+		}
+	};
+
+	protected static ParserRuleCall SIMPLE_PARSER_RULE_CALL = new ParserRuleCall() {
+
+		@Override
+		public ParseTree callParserRule(LtlParser parser) {
+			return parser.start();
+		}
+
+		@Override
+		public SymbolTable getSymbolTable() {
+			return null;
 		}
 	};
 
@@ -53,7 +73,7 @@ public class PatternDefinitionTest extends AbstractParserTest {
 
 	@Test
 	public void testCallSimple() throws Exception {
-		parserRuleCall = DEFAULT_PARSER_RULE_CALL;
+		parserRuleCall = SIMPLE_PARSER_RULE_CALL;
 
 		parse("pattern()");
 	}
@@ -65,7 +85,7 @@ public class PatternDefinitionTest extends AbstractParserTest {
 
 	@Test
 	public void testCallArgsSimple() throws Exception {
-		parserRuleCall = DEFAULT_PARSER_RULE_CALL;
+		parserRuleCall = SIMPLE_PARSER_RULE_CALL;
 
 		parse("pattern(true, false)");
 		parse("pattern(true, false, true or false)");
@@ -73,7 +93,7 @@ public class PatternDefinitionTest extends AbstractParserTest {
 
 	@Test
 	public void testCallNumArgsSimple() throws Exception {
-		parserRuleCall = DEFAULT_PARSER_RULE_CALL;
+		parserRuleCall = SIMPLE_PARSER_RULE_CALL;
 
 		parse("pattern(true, 1)");
 		parse("pattern(false, 1234567890, true)");
@@ -84,7 +104,7 @@ public class PatternDefinitionTest extends AbstractParserTest {
 
 	@Test
 	public void testCallScopeSimple() throws Exception {
-		parserRuleCall = DEFAULT_PARSER_RULE_CALL;
+		parserRuleCall = SIMPLE_PARSER_RULE_CALL;
 
 		parse("pattern<global>()");
 		parse("pattern<before true>()");
@@ -96,7 +116,7 @@ public class PatternDefinitionTest extends AbstractParserTest {
 
 	@Test
 	public void testCallScopeArgs() throws Exception {
-		parserRuleCall = DEFAULT_PARSER_RULE_CALL;
+		parserRuleCall = SIMPLE_PARSER_RULE_CALL;
 
 		parse("pattern<before x>()");
 		parse("pattern<after other()>()");

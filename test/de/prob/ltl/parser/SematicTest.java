@@ -3,36 +3,9 @@ package de.prob.ltl.parser;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.prob.ltl.parser.symboltable.SymbolTable;
-
 public class SematicTest extends AbstractParserTest {
-
-	protected static ParserRuleCall SEMANTIC_CHECK_PARSER_RULE_CALL = new ParserRuleCall() {
-
-		@Override
-		public ParseTree callParserRule(LtlParser parser) {
-			ParseTree result = parser.start();
-
-			ParseTreeWalker walker = new ParseTreeWalker();
-			SymbolTable symbolTable = new SymbolTable();
-			walker.walk(new SematicCheckPhase1(symbolTable), result);
-			walker.walk(new SematicCheckPhase2(symbolTable), result);
-
-			//System.out.println(symbolTable.getSymbols());
-
-			return result;
-		}
-	};
-
-	@BeforeClass
-	public static void setupTests() {
-		parserRuleCall = SEMANTIC_CHECK_PARSER_RULE_CALL;
-	}
 
 	@Test
 	public void testDefinitionPatternScopes() throws Exception {
