@@ -5,10 +5,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 public class Scope {
 
 	protected Scope parent = null;
 	protected Map<String, Symbol> symbols = new HashMap<String, Symbol>();
+	protected ParserRuleContext definitionContext;
 
 	public Scope(Scope parent) {
 		this.parent = parent;
@@ -45,6 +48,14 @@ public class Scope {
 
 	public void setParent(Scope parent) {
 		this.parent = parent;
+	}
+
+	public ParserRuleContext getDefinitionContext() {
+		return definitionContext;
+	}
+
+	public void setDefinitionContext(ParserRuleContext definitionContext) {
+		this.definitionContext = definitionContext;
 	}
 
 	public List<Symbol> getSymbols() {

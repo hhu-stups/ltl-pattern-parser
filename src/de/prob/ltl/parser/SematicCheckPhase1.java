@@ -11,8 +11,8 @@ import de.prob.ltl.parser.LtlParser.LoopContext;
 import de.prob.ltl.parser.LtlParser.Loop_argContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 import de.prob.ltl.parser.LtlParser.Pattern_def_paramContext;
-import de.prob.ltl.parser.LtlParser.VarCallAtomContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
+import de.prob.ltl.parser.LtlParser.Var_callContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
 import de.prob.ltl.parser.symboltable.Loop;
 import de.prob.ltl.parser.symboltable.Loop.LoopTypes;
@@ -51,7 +51,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		if (ctx.NUM_POS() != null) {
 			parameter = new Variable(null, VariableTypes.num);
 		} else {
-			TerminalNode nameNode = ctx.ID();
+			TerminalNode nameNode = ctx.var_call().ID();
 			String name = nameNode.getText();
 			parameter = (Variable) symbolTable.resolve(name);
 			if (parameter == null) {
@@ -68,7 +68,9 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		String name = nameNode.getText();
 		VariableTypes type = VariableTypes.var;
 
-		symbolTable.define(new Variable(name, type));
+		Variable var = new Variable(name, type);
+		var.setValueContext(ctx);
+		symbolTable.define(var);
 	}
 
 	@Override
@@ -82,7 +84,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 	}
 
 	@Override
-	public void enterVarCallAtom(VarCallAtomContext ctx) {
+	public void enterVar_call(Var_callContext ctx) {
 		TerminalNode nameNode = ctx.ID();
 		String name = nameNode.getText();
 

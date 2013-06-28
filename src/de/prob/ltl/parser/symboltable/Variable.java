@@ -1,5 +1,7 @@
 package de.prob.ltl.parser.symboltable;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 public class Variable implements Symbol {
 
 	public enum VariableTypes {
@@ -9,6 +11,8 @@ public class Variable implements Symbol {
 
 	private String name;
 	private VariableTypes type;
+	private ParserRuleContext oldValueContext;
+	private ParserRuleContext valueContext;
 
 	public Variable(String name, VariableTypes type) {
 		this.name = name;
@@ -25,6 +29,19 @@ public class Variable implements Symbol {
 
 	public void setType(VariableTypes type) {
 		this.type = type;
+	}
+
+	public ParserRuleContext getValueContext() {
+		return valueContext;
+	}
+
+	public ParserRuleContext getOldValueContext() {
+		return oldValueContext;
+	}
+
+	public void setValueContext(ParserRuleContext valueContext) {
+		oldValueContext = this.valueContext;
+		this.valueContext = valueContext;
 	}
 
 	@Override

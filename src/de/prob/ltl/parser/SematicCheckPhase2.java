@@ -51,7 +51,7 @@ public class SematicCheckPhase2 extends LtlBaseListener {
 	public void enterLoop_arg(Loop_argContext ctx) {
 		VariableTypes type = (ctx.NUM_POS() != null ? VariableTypes.num : VariableTypes.var);
 		if (type.equals(VariableTypes.var)) {
-			TerminalNode nameNode = ctx.ID();
+			TerminalNode nameNode = ctx.var_call().ID();
 			String name = nameNode.getText();
 			Variable arg = (Variable) symbolTable.resolve(name);
 			type = arg.getType();
@@ -86,8 +86,8 @@ public class SematicCheckPhase2 extends LtlBaseListener {
 	@Override
 	public void enterPattern_call_arg(Pattern_call_argContext ctx) {
 		VariableTypes type = (ctx.NUM_POS() != null ? VariableTypes.num : VariableTypes.var);
-		if (ctx.ID() != null) {
-			TerminalNode nameNode = ctx.ID();
+		if (ctx.var_call() != null && ctx.var_call().ID() != null) {
+			TerminalNode nameNode = ctx.var_call().ID();
 			String name = nameNode.getText();
 			Variable arg = (Variable) symbolTable.resolve(name);
 			type = arg.getType();

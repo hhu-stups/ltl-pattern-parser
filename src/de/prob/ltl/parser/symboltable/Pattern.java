@@ -51,6 +51,10 @@ public class Pattern extends Scope implements Symbol {
 		return true;
 	}
 
+	public int getParameterIndex(Variable var) {
+		return parameters.indexOf(var);
+	}
+
 	@Override
 	public void define(Symbol symbol) {
 		if (symbol instanceof Pattern) {

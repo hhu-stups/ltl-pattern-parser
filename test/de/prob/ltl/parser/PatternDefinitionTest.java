@@ -17,7 +17,7 @@ public class PatternDefinitionTest extends AbstractParserTest {
 
 		@Override
 		public SymbolTable getSymbolTable() {
-			return null;
+			return new SymbolTable();
 		}
 	};
 
@@ -30,7 +30,7 @@ public class PatternDefinitionTest extends AbstractParserTest {
 
 		@Override
 		public SymbolTable getSymbolTable() {
-			return null;
+			return new SymbolTable();
 		}
 	};
 

@@ -46,7 +46,7 @@ pattern_call_scope
  ;
  
 pattern_call_arg
- : ID
+ : var_call
  | NUM_POS
  | expr
  ;
@@ -63,13 +63,17 @@ var_assign
  : ID ':' expr
  ;
  
+var_call
+ : ID
+ ;
+ 
 loop
  : LOOP_BEGIN loop_arg (UP | DOWN) TO loop_arg ':' (var_def | var_assign)+ LOOP_END
  ;
  
 loop_arg
  : NUM_POS
- | ID
+ | var_call
  ;
  
 expr
@@ -93,7 +97,7 @@ expr
  ;
  
 atom
- : ID							# varCallAtom
+ : var_call						# variableCallAtom
  | pattern_call					# patternCallAtom	
  | PREDICATE					# predicateAtom
  | ACTION						# actionAtom

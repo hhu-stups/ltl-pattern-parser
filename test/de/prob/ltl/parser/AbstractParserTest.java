@@ -88,14 +88,15 @@ public abstract class AbstractParserTest {
 	}
 
 	protected LtlPrologTermGenerator createPrologGenerator(final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
-		return new LtlPrologTermGenerator(pto, "current", parserBase);
+		return new LtlPrologTermGenerator(parserRuleCall.getSymbolTable(), pto, "current", parserBase);
 	}
 
 	protected String parse(String input) {
+		ParseTree ast = parseToTree(input);
+
 		PrologTermStringOutput pto = new PrologTermStringOutput();
 		LtlPrologTermGenerator generator = createPrologGenerator(pto, "current", parserBase);
 
-		ParseTree ast = parseToTree(input);
 		generator.generatePrologTerm(ast);
 		return pto.toString();
 	}
