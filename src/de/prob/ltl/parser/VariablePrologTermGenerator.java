@@ -4,8 +4,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
-import de.prob.ltl.parser.LtlParser.Var_callContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
+import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.ltl.parser.symboltable.Variable;
 import de.prob.parserbase.ProBParserBase;
@@ -32,7 +32,7 @@ public class VariablePrologTermGenerator extends LtlPrologTermGenerator {
 	}
 
 	@Override
-	public void enterVar_call(Var_callContext ctx) {
+	public void enterVariableCallAtom(VariableCallAtomContext ctx) {
 		TerminalNode nameNode = ctx.ID();
 		String name = nameNode.getText();
 		Variable var = (Variable) symbolTable.resolve(name);

@@ -10,11 +10,11 @@ package de.prob.ltl.parser;
 
 /* -- Rules -- */
 start
- : (pattern_def | var_def | var_assign)* expr (pattern_def | var_def | var_assign)*
+ : (pattern_def | var_def | var_assign)* expr pattern_def*
  ;
 
 pattern_def
- : PATTERN_DEF (LEFT_ANGLE pattern_def_scope RIGHT_ANGLE)? ID pattern_def_params ':' (var_def | var_assign | loop)* expr
+ : PATTERN_DEF (LEFT_ANGLE pattern_def_scope RIGHT_ANGLE)? ID LEFT_PAREN (pattern_def_param (',' pattern_def_param)*)? RIGHT_PAREN ':' (var_def | var_assign | loop)* expr
  ;
 
 pattern_def_scope
@@ -26,15 +26,12 @@ pattern_def_scope
  ;
  
 pattern_def_param
- : ID (':' NUM_VAR)?
- ;
- 
-pattern_def_params
- : LEFT_PAREN (pattern_def_param (',' pattern_def_param)*)? RIGHT_PAREN
+ : ID 				# varParam
+ | ID ':' NUM_VAR	# numVarParam
  ;
 
 pattern_call
- : ID (LEFT_ANGLE pattern_call_scope RIGHT_ANGLE)? pattern_call_args
+ : ID (LEFT_ANGLE pattern_call_scope RIGHT_ANGLE)? LEFT_PAREN (pattern_call_arg (',' pattern_call_arg)*)? RIGHT_PAREN
  ;
  
 pattern_call_scope
@@ -46,13 +43,9 @@ pattern_call_scope
  ;
  
 pattern_call_arg
- : var_call
- | NUM_POS
- | expr
- ;
- 
-pattern_call_args
- : LEFT_PAREN (pattern_call_arg (',' pattern_call_arg)*)? RIGHT_PAREN
+ : ID		# varCallArg
+ | NUM		# numArg
+ | expr		# exprArg
  ;
  
 var_def
@@ -63,17 +56,13 @@ var_assign
  : ID ':' expr
  ;
  
-var_call
- : ID
- ;
- 
 loop
  : LOOP_BEGIN loop_arg (UP | DOWN) TO loop_arg ':' (var_def | var_assign)+ LOOP_END
  ;
  
 loop_arg
- : NUM_POS
- | var_call
+ : ID	# loopVarCallArg
+ | NUM	# loopNumArg
  ;
  
 expr
@@ -97,7 +86,7 @@ expr
  ;
  
 atom
- : var_call						# variableCallAtom
+ : ID							# variableCallAtom
  | pattern_call					# patternCallAtom	
  | PREDICATE					# predicateAtom
  | ACTION						# actionAtom
@@ -179,6 +168,6 @@ DOWN			: 'down';
 TO				: 'to';
 			
 // Whitespaces
-NUM_POS			: '0' | [1-9] [0-9]*;
+NUM				: '0' | [1-9] [0-9]*;
 ID				: [a-zA-Z] [a-zA-Z0-9_]*;
 WS				: [ \t\r\n]+ -> skip;

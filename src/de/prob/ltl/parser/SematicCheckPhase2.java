@@ -6,12 +6,15 @@ import de.prob.ltl.parser.LtlParser.AfterScopeCallContext;
 import de.prob.ltl.parser.LtlParser.AfterUntilScopeCallContext;
 import de.prob.ltl.parser.LtlParser.BeforeScopeCallContext;
 import de.prob.ltl.parser.LtlParser.BetweenScopeCallContext;
+import de.prob.ltl.parser.LtlParser.ExprArgContext;
 import de.prob.ltl.parser.LtlParser.GlobalScopeCallContext;
 import de.prob.ltl.parser.LtlParser.LoopContext;
-import de.prob.ltl.parser.LtlParser.Loop_argContext;
+import de.prob.ltl.parser.LtlParser.LoopNumArgContext;
+import de.prob.ltl.parser.LtlParser.LoopVarCallArgContext;
+import de.prob.ltl.parser.LtlParser.NumArgContext;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
-import de.prob.ltl.parser.LtlParser.Pattern_call_argContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
+import de.prob.ltl.parser.LtlParser.VarCallArgContext;
 import de.prob.ltl.parser.symboltable.Pattern;
 import de.prob.ltl.parser.symboltable.Pattern.PatternScopes;
 import de.prob.ltl.parser.symboltable.SymbolTable;
@@ -48,16 +51,16 @@ public class SematicCheckPhase2 extends LtlBaseListener {
 	}
 
 	@Override
-	public void enterLoop_arg(Loop_argContext ctx) {
-		VariableTypes type = (ctx.NUM_POS() != null ? VariableTypes.num : VariableTypes.var);
-		if (type.equals(VariableTypes.var)) {
-			TerminalNode nameNode = ctx.var_call().ID();
-			String name = nameNode.getText();
-			Variable arg = (Variable) symbolTable.resolve(name);
-			type = arg.getType();
-			if (type.equals(VariableTypes.var)) {
-				throw new RuntimeException(String.format("The variable '%s' has the wrong type. Only number variables are allowed.", name));
-			}
+	public void enterLoopNumArg(LoopNumArgContext ctx) {
+	}
+
+	@Override
+	public void enterLoopVarCallArg(LoopVarCallArgContext ctx) {
+		TerminalNode nameNode = ctx.ID();
+		String name = nameNode.getText();
+		Variable arg = (Variable) symbolTable.resolve(name);
+		if (arg.getType().equals(VariableTypes.var)) {
+			throw new RuntimeException(String.format("The variable '%s' has the wrong type. Only number variables are allowed.", name));
 		}
 	}
 
@@ -84,15 +87,21 @@ public class SematicCheckPhase2 extends LtlBaseListener {
 	}
 
 	@Override
-	public void enterPattern_call_arg(Pattern_call_argContext ctx) {
-		VariableTypes type = (ctx.NUM_POS() != null ? VariableTypes.num : VariableTypes.var);
-		if (ctx.var_call() != null && ctx.var_call().ID() != null) {
-			TerminalNode nameNode = ctx.var_call().ID();
-			String name = nameNode.getText();
-			Variable arg = (Variable) symbolTable.resolve(name);
-			type = arg.getType();
-		}
-		currentPattern.addParameter(new Variable(null, type));
+	public void enterNumArg(NumArgContext ctx) {
+		currentPattern.addParameter(new Variable(null, VariableTypes.num));
+	}
+
+	@Override
+	public void enterVarCallArg(VarCallArgContext ctx) {
+		TerminalNode nameNode = ctx.ID();
+		String name = nameNode.getText();
+		Variable arg = (Variable) symbolTable.resolve(name);
+		currentPattern.addParameter(new Variable(null, arg.getType()));
+	}
+
+	@Override
+	public void enterExprArg(ExprArgContext ctx) {
+		currentPattern.addParameter(new Variable(null, VariableTypes.var));
 	}
 
 	@Override

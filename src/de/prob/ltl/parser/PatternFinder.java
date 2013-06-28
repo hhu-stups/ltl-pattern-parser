@@ -10,12 +10,15 @@ import de.prob.ltl.parser.LtlParser.AfterScopeCallContext;
 import de.prob.ltl.parser.LtlParser.AfterUntilScopeCallContext;
 import de.prob.ltl.parser.LtlParser.BeforeScopeCallContext;
 import de.prob.ltl.parser.LtlParser.BetweenScopeCallContext;
+import de.prob.ltl.parser.LtlParser.ExprArgContext;
 import de.prob.ltl.parser.LtlParser.GlobalScopeCallContext;
+import de.prob.ltl.parser.LtlParser.NumArgContext;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
-import de.prob.ltl.parser.LtlParser.Pattern_call_argContext;
+import de.prob.ltl.parser.LtlParser.VarCallArgContext;
 import de.prob.ltl.parser.symboltable.Pattern;
 import de.prob.ltl.parser.symboltable.Pattern.PatternScopes;
 import de.prob.ltl.parser.symboltable.Variable;
+import de.prob.ltl.parser.symboltable.Variable.VariableTypes;
 
 public class PatternFinder extends LtlBaseListener {
 
@@ -39,7 +42,19 @@ public class PatternFinder extends LtlBaseListener {
 	}
 
 	@Override
-	public void enterPattern_call_arg(Pattern_call_argContext ctx) {
+	public void enterNumArg(NumArgContext ctx) {
+		patternCall.addParameter(new Variable(null, VariableTypes.num));
+		arguments.add(ctx);
+	}
+
+	@Override
+	public void enterVarCallArg(VarCallArgContext ctx) {
+		patternCall.addParameter(new Variable(null, VariableTypes.var));
+		arguments.add(ctx);
+	}
+
+	@Override
+	public void enterExprArg(ExprArgContext ctx) {
 		patternCall.addParameter(new Variable(null, null));
 		arguments.add(ctx);
 	}

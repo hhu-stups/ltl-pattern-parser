@@ -29,8 +29,8 @@ import de.prob.ltl.parser.LtlParser.TriggerExprContext;
 import de.prob.ltl.parser.LtlParser.UnaryCombinedExprContext;
 import de.prob.ltl.parser.LtlParser.UntilExprContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
-import de.prob.ltl.parser.LtlParser.Var_callContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
+import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.LtlParser.WeakuntilExprContext;
 import de.prob.ltl.parser.LtlParser.YesterdayExprContext;
 import de.prob.ltl.parser.symboltable.Pattern;
@@ -110,7 +110,7 @@ public class LtlPrologTermGenerator extends LtlBaseListener {
 	}
 
 	@Override
-	public void enterVar_call(Var_callContext ctx) {
+	public void enterVariableCallAtom(VariableCallAtomContext ctx) {
 		if (enterContext(ctx)) {
 			TerminalNode nameNode = ctx.ID();
 			String name = nameNode.getText();

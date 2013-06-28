@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
-import de.prob.ltl.parser.LtlParser.Var_callContext;
+import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.symboltable.Pattern;
 import de.prob.ltl.parser.symboltable.Scope;
 import de.prob.ltl.parser.symboltable.SymbolTable;
@@ -37,7 +37,7 @@ public class PatternPrologTermGenerator extends LtlPrologTermGenerator {
 	}
 
 	@Override
-	public void enterVar_call(Var_callContext ctx) {
+	public void enterVariableCallAtom(VariableCallAtomContext ctx) {
 		Scope scope = symbolTable.getCurrentScope();
 		if (!(scope instanceof Pattern)) {return;
 		// TODO throw new RuntimeException("Should be in pattern scope.");
@@ -50,7 +50,7 @@ public class PatternPrologTermGenerator extends LtlPrologTermGenerator {
 		if (index > -1) {
 			ParseTreeWalker.DEFAULT.walk(new LtlPrologTermGenerator(symbolTable, pto, currentStateID, specParser), arguments.get(index));
 		} else {
-			super.enterVar_call(ctx);
+			super.enterVariableCallAtom(ctx);
 		}
 	}
 
