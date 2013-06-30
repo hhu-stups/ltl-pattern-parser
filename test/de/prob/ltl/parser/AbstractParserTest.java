@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import de.prob.ltl.parser.prolog.LtlPrologTermGenerator;
 import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.parserbase.UnparsedParserBase;
@@ -88,7 +89,7 @@ public abstract class AbstractParserTest {
 	}
 
 	protected LtlPrologTermGenerator createPrologGenerator(final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
-		return new LtlPrologTermGenerator(parserRuleCall.getSymbolTable(), pto, "current", parserBase);
+		return new LtlPrologTermGenerator(pto, "current", parserBase);
 	}
 
 	protected String parse(String input) {

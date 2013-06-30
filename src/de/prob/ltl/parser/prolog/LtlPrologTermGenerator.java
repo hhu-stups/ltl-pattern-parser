@@ -1,4 +1,4 @@
-package de.prob.ltl.parser;
+package de.prob.ltl.parser.prolog;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser.ActionAtomContext;
 import de.prob.ltl.parser.LtlParser.AndExprContext;
 import de.prob.ltl.parser.LtlParser.BooleanAtomContext;
@@ -33,16 +34,12 @@ import de.prob.ltl.parser.LtlParser.Var_defContext;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.LtlParser.WeakuntilExprContext;
 import de.prob.ltl.parser.LtlParser.YesterdayExprContext;
-import de.prob.ltl.parser.symboltable.Pattern;
-import de.prob.ltl.parser.symboltable.SymbolTable;
-import de.prob.ltl.parser.symboltable.Variable;
 import de.prob.parserbase.ProBParseException;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.prolog.output.IPrologTermOutput;
 
 public class LtlPrologTermGenerator extends LtlBaseListener {
 
-	protected SymbolTable symbolTable;
 	protected IPrologTermOutput pto;
 	protected final String currentStateID;
 	protected final ProBParserBase specParser;
@@ -50,8 +47,7 @@ public class LtlPrologTermGenerator extends LtlBaseListener {
 
 	protected ParserRuleContext blockingContext = null;
 
-	public LtlPrologTermGenerator(SymbolTable symbolTable, final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
-		this.symbolTable = symbolTable;
+	public LtlPrologTermGenerator(final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
 		this.pto = pto;
 		this.currentStateID = currentStateID;
 		this.specParser = specParser;
@@ -83,15 +79,7 @@ public class LtlPrologTermGenerator extends LtlBaseListener {
 
 	@Override
 	public void enterPattern_call(Pattern_callContext ctx) {
-		if (enterContext(ctx)) {
-			PatternFinder finder = new PatternFinder();
-			ParseTreeWalker.DEFAULT.walk(finder, ctx);
-
-			Pattern definedPattern = (Pattern) symbolTable.resolve(finder.getCalledPattern().getSymbolID());
-			if (definedPattern != null) {
-				ParseTreeWalker.DEFAULT.walk(new PatternPrologTermGenerator(symbolTable, finder.getArguments(), pto, currentStateID, specParser), definedPattern.getDefinitionContext());
-			}
-		}
+		enterContext(ctx);
 	}
 
 	@Override
@@ -101,23 +89,12 @@ public class LtlPrologTermGenerator extends LtlBaseListener {
 
 	@Override
 	public void enterVar_assign(Var_assignContext ctx) {
-		if (enterContext(ctx)) {
-			TerminalNode nameNode = ctx.ID();
-			String name = nameNode.getText();
-			Variable var = (Variable) symbolTable.resolve(name);
-			var.setValueContext(ctx);
-		}
+		enterContext(ctx);
 	}
 
 	@Override
 	public void enterVariableCallAtom(VariableCallAtomContext ctx) {
-		if (enterContext(ctx)) {
-			TerminalNode nameNode = ctx.ID();
-			String name = nameNode.getText();
-			Variable var = (Variable) symbolTable.resolve(name);
-
-			ParseTreeWalker.DEFAULT.walk(new VariablePrologTermGenerator(var, symbolTable, pto, currentStateID, specParser), var.getValueContext());
-		}
+		enterContext(ctx);
 	}
 
 	@Override

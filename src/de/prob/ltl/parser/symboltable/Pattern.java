@@ -66,12 +66,16 @@ public class Pattern extends Scope implements Symbol {
 	@Override
 	public String getSymbolID() {
 		int params = parameters.size();
-		return String.format("%s/%s/%s", name, scope.name(), params);
+		return getSymbolID(name, scope, params);
 	}
 
 	@Override
 	public String toString() {
 		return String.format("%s(%s)", getSymbolID(), parameters);
+	}
+
+	public static String getSymbolID(String name, PatternScopes scope, int params) {
+		return String.format("%s/%s/%s", name, scope.name(), params);
 	}
 
 }

@@ -14,7 +14,11 @@ start
  ;
 
 pattern_def
- : PATTERN_DEF (LEFT_ANGLE pattern_def_scope RIGHT_ANGLE)? ID LEFT_PAREN (pattern_def_param (',' pattern_def_param)*)? RIGHT_PAREN ':' (var_def | var_assign | loop)* expr
+ : PATTERN_DEF (LEFT_ANGLE pattern_def_scope RIGHT_ANGLE)? ID LEFT_PAREN (pattern_def_param (',' pattern_def_param)*)? RIGHT_PAREN ':' pattern_def_body
+ ;
+
+pattern_def_body
+ : (var_def | var_assign | loop)* expr
  ;
 
 pattern_def_scope
@@ -57,7 +61,11 @@ var_assign
  ;
  
 loop
- : LOOP_BEGIN loop_arg (UP | DOWN) TO loop_arg ':' (var_def | var_assign)+ LOOP_END
+ : LOOP_BEGIN loop_arg (UP | DOWN) TO loop_arg ':' loop_body LOOP_END
+ ;
+ 
+loop_body
+ : (var_def | var_assign)+
  ;
  
 loop_arg

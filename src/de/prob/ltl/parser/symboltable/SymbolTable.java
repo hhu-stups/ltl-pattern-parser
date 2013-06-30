@@ -46,6 +46,10 @@ public class SymbolTable {
 		scope.setDefinitionContext(context);
 	}
 
+	public void pushScope(Scope scope) {
+		currentScope = scope;
+	}
+
 	public void pushScope(ParserRuleContext context) {
 		currentScope = scopes.get(context);
 	}

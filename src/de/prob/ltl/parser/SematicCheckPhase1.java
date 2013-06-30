@@ -70,7 +70,6 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		VariableTypes type = VariableTypes.var;
 
 		Variable var = new Variable(name, type);
-		var.setValueContext(ctx);
 		symbolTable.define(var);
 	}
 
