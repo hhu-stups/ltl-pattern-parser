@@ -69,7 +69,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 
 	@Override
 	public void enterPattern_call(Pattern_callContext ctx) {
-		if (patternCall == null) {
+		if (patternCall == null && blockingContext == null) {
 			TerminalNode nameNode = ctx.ID();
 			String name = nameNode.getText();
 

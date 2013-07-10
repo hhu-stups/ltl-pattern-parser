@@ -52,7 +52,6 @@ public class PrologTermGeneratorTest extends AbstractParserTest {
 
 	@Test
 	public void testPatternBody() {
-		/* TODO add pattern calls in pattern bodies
 		Assert.assertEquals("or(false,true)", parseToString("def a(): b() def b(): true false or a()"));
 		Assert.assertEquals("or(false,true)", parseToString("def b(): true def a(): b() false or a()"));
 
@@ -60,7 +59,6 @@ public class PrologTermGeneratorTest extends AbstractParserTest {
 		Assert.assertEquals("or(false,true)", parseToString("def a(x): x def b(x): a(x) false or b(b(true))"));
 		Assert.assertEquals("or(false,true)", parseToString("def a(x): x def b(x): a(x) false or b(a(true))"));
 		Assert.assertEquals("or(false,true)", parseToString("def a(x): x def b(x): a(x) false or a(b(true))"));
-		 */
 
 		Assert.assertEquals("or(false,true)", parseToString("def a(): var x: true false or x a()"));
 		Assert.assertEquals("or(true,false)", parseToString("def a(): var x: true x: false true or x a()"));
