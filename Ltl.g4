@@ -6,6 +6,36 @@ package de.prob.ltl.parser;
 
 @parser::header {
 package de.prob.ltl.parser;
+
+import de.prob.ltl.parser.symboltable.Symbol;
+import de.prob.ltl.parser.symboltable.SymbolTable;
+}
+
+@parser::members {
+private SymbolTable symbolTable = new SymbolTable(this);
+private List<WarningListener> warningListeners = new ArrayList<WarningListener>();
+
+public SymbolTable getSymbolTable() {
+	return symbolTable;
+}
+
+public void addWarningListener(WarningListener listener) {
+	warningListeners.add(listener);
+}
+
+public void removeWarningListener(WarningListener listener) {
+	warningListeners.remove(listener);
+}
+
+public void removeAllWarningListeners() {
+	warningListeners.clear();
+}
+
+public void notifyWarningListeners(String message, Symbol ... symbols) {
+	for (WarningListener listener : warningListeners) {
+		listener.warning(message, symbols);
+	}
+}
 }
 
 /* -- Rules -- */

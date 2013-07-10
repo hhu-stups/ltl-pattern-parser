@@ -23,11 +23,13 @@ import de.prob.ltl.parser.symboltable.Variable.VariableTypes;
 
 public class SematicCheckPhase2 extends LtlBaseListener {
 
+	private LtlParser parser;
 	private SymbolTable symbolTable;
 	private Pattern currentPattern;
 
-	public SematicCheckPhase2(SymbolTable symbolTable) {
-		this.symbolTable = symbolTable;
+	public SematicCheckPhase2(LtlParser parser) {
+		this.parser = parser;
+		this.symbolTable = parser.getSymbolTable();
 	}
 
 	@Override
@@ -60,18 +62,19 @@ public class SematicCheckPhase2 extends LtlBaseListener {
 		String name = nameNode.getText();
 		Variable arg = (Variable) symbolTable.resolve(name);
 		if (arg.getType().equals(VariableTypes.var)) {
-			throw new RuntimeException(String.format("The variable '%s' has the wrong type. Only number variables are allowed.", name));
+			parser.notifyErrorListeners(nameNode.getSymbol(), String.format("The variable '%s' has the wrong type. Only number variables are allowed.", name), null);
 		}
 	}
 
 	@Override
 	public void exitPattern_call(Pattern_callContext ctx) {
 		if (!symbolTable.isDefined(currentPattern)) {
-			throw new RuntimeException(String.format("Pattern '%s' cannot be resolved.", currentPattern.getSymbolID()));
+			parser.notifyErrorListeners(ctx.ID().getSymbol(), String.format("Pattern '%s' cannot be resolved.", currentPattern.getSymbolID()), null);
 		}
-		if (!symbolTable.checkTypes(currentPattern)) {
-			// TODO
-			throw new RuntimeException(String.format("Pattern '%s' ceastzhesolved.", currentPattern.getSymbolID()));
+		try {
+			symbolTable.checkTypes(currentPattern);
+		} catch(RuntimeException e) {
+			parser.notifyErrorListeners(ctx.ID().getSymbol(), e.getMessage(), null);
 		}
 	}
 

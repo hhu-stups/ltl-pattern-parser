@@ -2,17 +2,33 @@ package de.prob.ltl.parser.symboltable;
 
 import java.util.List;
 
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.prob.ltl.parser.AbstractParserTest;
 import de.prob.ltl.parser.symboltable.Pattern.PatternScopes;
 import de.prob.ltl.parser.symboltable.Variable.VariableTypes;
 
-public class SymbolTableTest {
+public class SymbolTableTest extends AbstractParserTest {
 
+	// Helper
+	class ExceptionThrowingErrorListener extends TestErrorListener {
+
+		@Override
+		public void syntaxError(Recognizer<?, ?> recognizer,
+				Object offendingSymbol, int line, int charPositionInLine,
+				String msg, RecognitionException e) {
+			throw new RuntimeException();
+		}
+
+	}
+
+	// Tests
 	@Test
 	public void testDefinePatternSimple() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		List<Symbol> symbols = st.getSymbols();
 		Assert.assertEquals(0, symbols.size());
@@ -29,7 +45,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDefinePatternDuplicate() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Pattern pattern1 = new Pattern(st.getCurrentScope(), "pattern_1");
 		st.define(pattern1);
@@ -47,7 +63,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDefineVariableSimple() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		List<Symbol> symbols = st.getSymbols();
 		Assert.assertEquals(0, symbols.size());
@@ -64,7 +80,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDefineVariableTypes() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Variable var1 = new Variable("x", VariableTypes.var);
 		st.define(var1);
@@ -81,7 +97,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDefineVariableDuplicate() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		List<Symbol> symbols = st.getSymbols();
 		Assert.assertEquals(0, symbols.size());
@@ -102,7 +118,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testPushPopScope() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.define(pattern);
@@ -122,7 +138,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testPushPopScope2() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.define(pattern);
@@ -148,7 +164,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDefinePatternInPatternScopeError() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.define(pattern);
@@ -172,7 +188,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testDuplicateInDifferentScopesError() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Variable var1 = new Variable("var1", VariableTypes.var);
 		st.define(var1);
@@ -193,7 +209,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testSameSymbolInDifferentPatternScopes() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Pattern pattern1 = new Pattern(st.getCurrentScope(), "pattern1");
 		st.define(pattern1);
@@ -224,7 +240,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testAddPatternParameter() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.pushScope(pattern, null);
@@ -260,7 +276,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testAddPatternParameterDuplicate() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Variable var1 = new Variable("x", VariableTypes.var);
 		st.define(var1);
@@ -314,7 +330,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testPatternScopes() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		pattern.setScope(PatternScopes.global);
@@ -369,7 +385,7 @@ public class SymbolTableTest {
 
 	@Test
 	public void testCheckTypes() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = createParser("", new ExceptionThrowingErrorListener()).getSymbolTable();
 
 		Pattern pattern = new Pattern(st.getCurrentScope(), "pattern");
 		st.pushScope(pattern, null);
@@ -390,13 +406,17 @@ public class SymbolTableTest {
 		call1.addParameter(new Variable(null, VariableTypes.num));
 		call1.addParameter(new Variable(null, VariableTypes.var));
 
-		Assert.assertTrue(st.checkTypes(call1));
+		st.checkTypes(call1);
 
 		Pattern call2 = new Pattern(st.getCurrentScope(), "pattern");
 		call2.addParameter(new Variable(null, VariableTypes.num));
 		call2.addParameter(new Variable(null, VariableTypes.num));
 
-		Assert.assertFalse(st.checkTypes(call2));
+		try {
+			st.checkTypes(call2);
+			Assert.fail("Exception should have been thrown.");
+		} catch(RuntimeException e) {
+		}
 	}
 
 }

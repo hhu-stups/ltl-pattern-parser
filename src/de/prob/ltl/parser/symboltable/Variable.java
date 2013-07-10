@@ -1,5 +1,7 @@
 package de.prob.ltl.parser.symboltable;
 
+import org.antlr.v4.runtime.Token;
+
 import de.prob.prolog.term.PrologTerm;
 
 
@@ -13,6 +15,7 @@ public class Variable implements Symbol {
 	private String name;
 	private VariableTypes type;
 	private PrologTerm value;
+	private Token token;
 
 	public Variable(String name, VariableTypes type) {
 		this.name = name;
@@ -47,6 +50,15 @@ public class Variable implements Symbol {
 
 	public void setValue(PrologTerm value) {
 		this.value = value;
+	}
+
+	@Override
+	public Token getToken() {
+		return token;
+	}
+
+	public void setToken(Token token) {
+		this.token = token;
 	}
 
 }

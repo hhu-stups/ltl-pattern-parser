@@ -5,9 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.AfterScopeCallContext;
 import de.prob.ltl.parser.LtlParser.AfterUntilScopeCallContext;
 import de.prob.ltl.parser.LtlParser.BeforeScopeCallContext;
@@ -48,10 +50,10 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 	protected List<PrologTerm> loopArguments = new LinkedList<PrologTerm>();
 	protected boolean allowPatternDef;
 
-	public PrologTermGenerator(SymbolTable symbolTable, IPrologTermOutput pto,
+	public PrologTermGenerator(LtlParser parser, IPrologTermOutput pto,
 			String currentStateID, ProBParserBase specParser) {
-		super(pto, currentStateID, specParser);
-		this.symbolTable = symbolTable;
+		super(parser, pto, currentStateID, specParser);
+		this.symbolTable = parser.getSymbolTable();
 	}
 
 	private void addPatternArg(PrologTerm arg) {
@@ -64,20 +66,20 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 		scopeArguments.add(arg);
 	}
 
-	private void setArgumentValues(Pattern definedPattern) {
-		if (patternArguments != null && patternArguments.size() > 0) {
+	private void setArgumentValues(Pattern definedPattern, Token token) {
+		if (definedPattern.getParameters().size() == patternArguments.size()) {
 			for (int i = 0; i < patternArguments.size(); i++) {
 				definedPattern.getParameters().get(i).setValue(patternArguments.get(i));
 			}
-		} else if (definedPattern.getParameters().size() > 0) {
-			throw new RuntimeException("Error when calling pattern. Too few arguments.");
+		} else {
+			parser.notifyErrorListeners(token, String.format("Error when calling pattern '%s'. Odd argument count (%d).", definedPattern, patternArguments.size()), null);
 		}
-		if (scopeArguments.size() > 0) {
+		if (definedPattern.getScopeParameters().size() == scopeArguments.size()) {
 			for (int i = 0; i < scopeArguments.size(); i++) {
 				definedPattern.getScopeParameters().get(i).setValue(scopeArguments.get(i));
 			}
-		} else if (definedPattern.getScopeParameters().size() > 0) {
-			throw new RuntimeException("Error when calling pattern. Too few scope arguments.");
+		} else {
+			parser.notifyErrorListeners(token, String.format("Error when calling pattern '%s'. Odd scope argument count (%d).", definedPattern, scopeArguments.size()), null);
 		}
 	}
 
@@ -96,12 +98,12 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 	public void exitPattern_call(Pattern_callContext ctx) {
 		if (patternCall != null && ctx.equals(patternCall.getDefinitionContext())) {
 			Pattern definedPattern = (Pattern) symbolTable.resolve(patternCall.getSymbolID());
-			setArgumentValues(definedPattern);
+			setArgumentValues(definedPattern, ctx.ID().getSymbol());
 
 			symbolTable.pushScope(definedPattern);
 			StructuredPrologOutput exprPto = new StructuredPrologOutput();
 			Pattern_defContext dCtx = (Pattern_defContext) definedPattern.getDefinitionContext();
-			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(symbolTable, exprPto, currentStateID, specParser), dCtx.pattern_def_body());
+			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(parser, exprPto, currentStateID, specParser), dCtx.pattern_def_body());
 			exprPto.fullstop();
 			symbolTable.popScope();
 
@@ -144,7 +146,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 	public void enterPattern_call_scope_arg(Pattern_call_scope_argContext ctx) {
 		if (enterContext(ctx)) {
 			StructuredPrologOutput exprPto = new StructuredPrologOutput();
-			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(symbolTable, exprPto, currentStateID, specParser), ctx.atom());
+			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(parser, exprPto, currentStateID, specParser), ctx.atom());
 			exprPto.fullstop();
 
 			PrologTerm arg = exprPto.getSentences().get(0);
@@ -174,7 +176,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 	public void enterExprArg(ExprArgContext ctx) {
 		if (enterContext(ctx)) {
 			StructuredPrologOutput exprPto = new StructuredPrologOutput();
-			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(symbolTable, exprPto, currentStateID, specParser), ctx.expr());
+			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(parser, exprPto, currentStateID, specParser), ctx.expr());
 			exprPto.fullstop();
 
 			PrologTerm arg = exprPto.getSentences().get(0);
@@ -191,7 +193,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 
 			Variable var = (Variable) symbolTable.resolve(name);
 			StructuredPrologOutput exprPto = new StructuredPrologOutput();
-			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(symbolTable, exprPto, currentStateID, specParser), ctx.expr());
+			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(parser, exprPto, currentStateID, specParser), ctx.expr());
 			exprPto.fullstop();
 
 			PrologTerm value = exprPto.getSentences().get(0);
@@ -207,7 +209,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 
 			Variable var = (Variable) symbolTable.resolve(name);
 			StructuredPrologOutput exprPto = new StructuredPrologOutput();
-			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(symbolTable, exprPto, currentStateID, specParser), ctx.expr());
+			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(parser, exprPto, currentStateID, specParser), ctx.expr());
 			exprPto.fullstop();
 
 			PrologTerm value = exprPto.getSentences().get(0);
@@ -244,7 +246,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 
 	private void loopStep(ParserRuleContext ctx) {
 		StructuredPrologOutput exprPto = new StructuredPrologOutput();
-		ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(symbolTable, exprPto, currentStateID, specParser), ctx);
+		ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(parser, exprPto, currentStateID, specParser), ctx);
 	}
 
 	@Override

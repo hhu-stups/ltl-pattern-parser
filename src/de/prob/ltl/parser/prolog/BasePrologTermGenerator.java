@@ -1,12 +1,14 @@
 package de.prob.ltl.parser.prolog;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlBaseListener;
+import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.ActionAtomContext;
 import de.prob.ltl.parser.LtlParser.AndExprContext;
 import de.prob.ltl.parser.LtlParser.BooleanAtomContext;
@@ -40,6 +42,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 
 public class BasePrologTermGenerator extends LtlBaseListener {
 
+	protected LtlParser parser;
 	protected IPrologTermOutput pto;
 	protected final String currentStateID;
 	protected final ProBParserBase specParser;
@@ -47,7 +50,8 @@ public class BasePrologTermGenerator extends LtlBaseListener {
 
 	protected ParserRuleContext blockingContext = null;
 
-	public BasePrologTermGenerator(final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
+	public BasePrologTermGenerator(LtlParser parser, final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
+		this.parser = parser;
 		this.pto = pto;
 		this.currentStateID = currentStateID;
 		this.specParser = specParser;
@@ -130,29 +134,29 @@ public class BasePrologTermGenerator extends LtlBaseListener {
 		pto.printAtom(content);
 	}
 
-	protected void parseTransitionPredicate(final String text) {
+	protected void parseTransitionPredicate(final String text, Token token) {
 		if (blockingContext != null) {
 			return;
 		}
 		try {
 			specParser.parseTransitionPredicate(pto, text, true);
 		} catch (ProBParseException e) {
-			throw new RuntimeException(e);
+			parser.notifyErrorListeners(token, e.getMessage(), null);
 		} catch (UnsupportedOperationException e) {
-			throw e;
+			parser.notifyErrorListeners(token, e.getMessage(), null);
 		}
 	}
 
-	protected void parsePredicate(final String text) {
+	protected void parsePredicate(final String text, Token token) {
 		if (blockingContext != null) {
 			return;
 		}
 		try {
 			specParser.parsePredicate(pto, text, true);
 		} catch (ProBParseException e) {
-			throw new RuntimeException(e);
+			parser.notifyErrorListeners(token, e.getMessage(), null);
 		} catch (UnsupportedOperationException e) {
-			throw e;
+			parser.notifyErrorListeners(token, e.getMessage(), null);
 		}
 	}
 
@@ -349,7 +353,8 @@ public class BasePrologTermGenerator extends LtlBaseListener {
 	public void enterPredicateAtom(PredicateAtomContext ctx) {
 		openTerm("ap");
 		String text = ctx.getText();
-		parsePredicate(text.substring(1, text.length() - 1));
+		// TODO create token for errors
+		parsePredicate(text.substring(1, text.length() - 1), ctx.start);
 		closeTerm();
 	}
 
@@ -357,7 +362,8 @@ public class BasePrologTermGenerator extends LtlBaseListener {
 	public void enterActionAtom(ActionAtomContext ctx) {
 		openTerm("action");
 		String text = ctx.getText();
-		parseTransitionPredicate(text.substring(1, text.length() - 1));
+		// TODO create token for errors
+		parseTransitionPredicate(text.substring(1, text.length() - 1), ctx.start);
 		closeTerm();
 	}
 
@@ -366,7 +372,8 @@ public class BasePrologTermGenerator extends LtlBaseListener {
 		openTerm("ap");
 		openTerm("enabled");
 		String text = ctx.getText();
-		parseTransitionPredicate(text.substring(2, text.length() - 1));
+		// TODO create token for errors
+		parseTransitionPredicate(text.substring(2, text.length() - 1), ctx.start);
 		closeTerm();
 		closeTerm();
 	}

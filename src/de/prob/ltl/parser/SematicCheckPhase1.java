@@ -26,12 +26,14 @@ import de.prob.ltl.parser.symboltable.Variable.VariableTypes;
 
 public class SematicCheckPhase1 extends LtlBaseListener {
 
+	private LtlParser parser;
 	private SymbolTable symbolTable;
 	private Pattern currentPattern;
 	private Loop currentLoop;
 
-	public SematicCheckPhase1(SymbolTable symbolTable) {
-		this.symbolTable = symbolTable;
+	public SematicCheckPhase1(LtlParser parser) {
+		this.parser = parser;
+		this.symbolTable = parser.getSymbolTable();
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		String name = nameNode.getText();
 		Variable parameter = (Variable) symbolTable.resolve(name);
 		if (parameter == null) {
-			throw new RuntimeException(String.format("Variable '%s' cannot be resolved.", name));
+			parser.notifyErrorListeners(nameNode.getSymbol(), String.format("Variable '%s' cannot be resolved.", name), null);
 		}
 		currentLoop.addParameter(parameter);
 	}
@@ -79,7 +81,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		String name = nameNode.getText();
 
 		if (!symbolTable.isDefined(name)) {
-			throw new RuntimeException(String.format("Assignment to undefined variable '%s'.", name));
+			parser.notifyErrorListeners(nameNode.getSymbol(), String.format("Assignment to undefined variable '%s'.", name), null);
 		}
 	}
 
@@ -89,7 +91,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		String name = nameNode.getText();
 
 		if (!symbolTable.isDefined(name)) {
-			throw new RuntimeException(String.format("Variable '%s' cannot be resolved.", name));
+			parser.notifyErrorListeners(nameNode.getSymbol(), String.format("Variable '%s' cannot be resolved.", name), null);
 		}
 	}
 
@@ -153,6 +155,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		TerminalNode nameNode = ctx.ID();
 		String name = nameNode.getText();
 		Variable scopeParameter = new Variable(name, VariableTypes.var);
+		// TODO add token to each symbol
 		symbolTable.define(scopeParameter);
 		currentPattern.addScopeParameter(scopeParameter);
 	}

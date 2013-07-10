@@ -4,15 +4,20 @@ import java.util.List;
 import java.util.Stack;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
+
+import de.prob.ltl.parser.LtlParser;
 
 public class SymbolTable {
 
+	private LtlParser parser;
 	private final Scope globalScope = new Scope(null);
 	private Stack<Scope> scopeStack = new Stack<Scope>();
 	private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
 
-	public SymbolTable() {
+	public SymbolTable(LtlParser parser) {
+		this.parser = parser;
 		scopeStack.push(globalScope);
 	}
 
@@ -20,9 +25,26 @@ public class SymbolTable {
 		String name = symbol.getSymbolID();
 		if (isDefined(symbol)) {
 			boolean isPattern = symbol instanceof Pattern;
-			throw new RuntimeException(String.format("%s '%s' is already defined.", (isPattern ? "Pattern" : "Variable"), name));
+
+			Token token = symbol.getToken();
+			String msg = String.format("%s '%s' is already defined.", (isPattern ? "Pattern" : "Variable"), name);
+			if (token != null) {
+				parser.notifyErrorListeners(token, msg, null);
+			} else {
+				parser.notifyErrorListeners(msg);
+			}
+		} else {
+			try {
+				getCurrentScope().define(symbol);
+			} catch(RuntimeException e) {
+				Token token = symbol.getToken();
+				if (token != null) {
+					parser.notifyErrorListeners(token, e.getMessage(), null);
+				} else {
+					parser.notifyErrorListeners(e.getMessage());
+				}
+			}
 		}
-		getCurrentScope().define(symbol);
 	}
 
 	public boolean isDefined(Symbol symbol) {
@@ -68,9 +90,9 @@ public class SymbolTable {
 		}
 	}
 
-	public boolean checkTypes(Pattern call) {
+	public void checkTypes(Pattern call) {
 		Pattern definedPattern = (Pattern) resolve(call.getSymbolID());
-		return definedPattern.checkParameterTypes(call.getParameters());
+		definedPattern.checkParameterTypes(call.getParameters());
 	}
 
 }

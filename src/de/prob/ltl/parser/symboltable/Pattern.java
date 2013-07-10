@@ -3,6 +3,10 @@ package de.prob.ltl.parser.symboltable;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.antlr.v4.runtime.Token;
+
+import de.prob.ltl.parser.symboltable.Variable.VariableTypes;
+
 public class Pattern extends Scope implements Symbol {
 
 	public enum PatternScopes {
@@ -17,6 +21,7 @@ public class Pattern extends Scope implements Symbol {
 	private PatternScopes scope = PatternScopes.global;
 	private List<Variable> parameters = new LinkedList<Variable>();
 	private List<Variable> scopeParameters = new LinkedList<Variable>();
+	private Token token;
 
 	public Pattern(Scope parent, String name) {
 		super(parent);
@@ -51,13 +56,23 @@ public class Pattern extends Scope implements Symbol {
 		scopeParameters.add(parameter);
 	}
 
-	public boolean checkParameterTypes(List<Variable> otherParameters) {
+	@Override
+	public Token getToken() {
+		return token;
+	}
+
+	public void setToken(Token token) {
+		this.token = token;
+	}
+
+	public void checkParameterTypes(List<Variable> otherParameters) {
 		for (int i = 0; i < parameters.size(); i++) {
-			if (!otherParameters.get(i).getType().equals(parameters.get(i).getType())) {
-				return false;
+			VariableTypes otherType = otherParameters.get(i).getType();
+			Variable var = parameters.get(i);
+			if (!otherType.equals(var.getType())) {
+				throw new RuntimeException(String.format("Wrong argument type (%s) for %d. parameter (%s).", otherType, (i + 1), var));
 			}
 		}
-		return true;
 	}
 
 	public int getParameterIndex(Variable var) {
