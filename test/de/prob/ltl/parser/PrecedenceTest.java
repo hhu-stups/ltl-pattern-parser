@@ -4,8 +4,21 @@ import org.junit.Assert;
 import org.junit.Test;
 
 
-public class PrecedenceTest extends AbstractParserTest {
+public class PrecedenceTest extends AbstractOldParserTest {
 
+	// Helper
+	public void incompatiblePrecedence(String expected, String incompatibleInput, String equivInput) throws Exception {
+		Assert.assertEquals(expected, parseToString(incompatibleInput));
+		String oldOutput = parseOld(incompatibleInput);
+		if (expected.equals(oldOutput)) {
+			Assert.fail("The old parser version output should differ from the expected output. (Input: "+incompatibleInput+")");
+		} else {
+			System.out.println("Incompatible input: " + incompatibleInput + " ## Expected precedence: " + equivInput);
+		}
+		assertEquals(expected, equivInput);
+	}
+
+	// Tests
 	@Test
 	public void testAnd() throws Exception {
 		// (), constant
@@ -268,18 +281,6 @@ public class PrecedenceTest extends AbstractParserTest {
 		assertEquals("until(globally(finally(true)),false)",
 				"GF true U false",
 				"(GF true) U false");
-	}
-
-	// Helper
-	public void incompatiblePrecedence(String expected, String incompatibleInput, String equivInput) throws Exception {
-		Assert.assertEquals(expected, parse(incompatibleInput));
-		String oldOutput = parseOld(incompatibleInput);
-		if (expected.equals(oldOutput)) {
-			Assert.fail("The old parser version output should differ from the expected output. (Input: "+incompatibleInput+")");
-		} else {
-			System.out.println("Incompatible input: " + incompatibleInput + " ## Expected precedence: " + equivInput);
-		}
-		assertEquals(expected, equivInput);
 	}
 
 }

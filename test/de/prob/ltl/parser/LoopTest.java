@@ -1,46 +1,45 @@
 package de.prob.ltl.parser;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.Before;
-import org.junit.Test;
+import junit.framework.Assert;
 
-import de.prob.ltl.parser.symboltable.SymbolTable;
+import org.junit.Test;
 
 public class LoopTest extends AbstractParserTest {
 
-	protected static ParserRuleCall LOOP_PARSER_RULE_CALL = new ParserRuleCall() {
+	// Helper
+	protected void parseLoop(String input) {
+		LtlParser parser = createParser(input);
 
-		@Override
-		public ParseTree callParserRule(LtlParser parser) {
-			return parser.loop();
+		parser.loop();
+
+		if (hasErrors(parser)) {
+			throw new RuntimeException();
 		}
-
-		@Override
-		public SymbolTable getSymbolTable() {
-			return null;
-		}
-	};
-
-	@Before
-	public void setupTest() {
-		parserRuleCall = DEFAULT_PARSER_RULE_CALL;
 	}
 
+	protected void throwsExceptionLoop(String input) {
+		try {
+			parseLoop(input);
+			Assert.fail("Exception should have been thrown.");
+		} catch (RuntimeException e) {
+		}
+	}
+
+	// Tests
 	@Test
 	public void testDefinitionSimple() throws Exception {
-		parserRuleCall = LOOP_PARSER_RULE_CALL;
-		parse("loop 1 up to 2: var s: true end");
-		parse("loop 2 down to 1: var s: true end");
-		parse("loop s up to e: var x: true end");
-		parse("loop e up to s: var x: true end");
-		parse("loop e up to s: x: true end");
-		parse("loop e up to s: var x: false x: true end");
+		parseLoop("loop 1 up to 2: var s: true end");
+		parseLoop("loop 2 down to 1: var s: true end");
+		parseLoop("loop s up to e: var x: true end");
+		parseLoop("loop e up to s: var x: true end");
+		parseLoop("loop e up to s: x: true end");
+		parseLoop("loop e up to s: var x: false x: true end");
 
-		throwsException("loop true up to 1: var x: true end");
-		throwsException("loop 1 up to true: var x: true end");
-		throwsException("loop 1 up to 2: true end");
-		throwsException("loop 1 up to 2: end");
-		throwsException("loop 1 up to 2: def pattern(): true var x:true end");
+		throwsExceptionLoop("loop true up to 1: var x: true end");
+		throwsExceptionLoop("loop 1 up to true: var x: true end");
+		throwsExceptionLoop("loop 1 up to 2: true end");
+		throwsExceptionLoop("loop 1 up to 2: end");
+		throwsExceptionLoop("loop 1 up to 2: def pattern(): true var x:true end");
 	}
 
 	@Test

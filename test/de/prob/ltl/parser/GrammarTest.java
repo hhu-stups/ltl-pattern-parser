@@ -3,7 +3,7 @@ package de.prob.ltl.parser;
 import org.junit.Test;
 
 
-public class GrammarTest extends AbstractParserTest {
+public class GrammarTest extends AbstractOldParserTest {
 
 	@Test
 	public void testParenthesisExpression() throws Exception {

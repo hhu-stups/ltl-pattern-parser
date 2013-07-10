@@ -13,105 +13,81 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
-import de.prob.ltl.parser.prolog.LtlPrologTermGenerator;
+import de.prob.ltl.parser.prolog.PrologTermGenerator;
 import de.prob.ltl.parser.symboltable.SymbolTable;
-import de.prob.parserbase.ProBParserBase;
 import de.prob.parserbase.UnparsedParserBase;
-import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.output.PrologTermStringOutput;
-import de.prob.prolog.term.PrologTerm;
+import de.prob.prolog.output.StructuredPrologOutput;
 
 public abstract class AbstractParserTest {
 
-	enum ExceptionCause {
-		DownwardIncompatible,
-		Deprecated,
-		Unsupported
-	};
-
-	interface ParserRuleCall {
-		ParseTree callParserRule(LtlParser parser);
-
-		SymbolTable getSymbolTable();
-	}
-
-	protected static ParserRuleCall DEFAULT_PARSER_RULE_CALL = new ParserRuleCall() {
-
-		private SymbolTable symbolTable;
-
-		@Override
-		public ParseTree callParserRule(LtlParser parser) {
-			ParseTree result = parser.start();
-
-			ParseTreeWalker walker = new ParseTreeWalker();
-			symbolTable = new SymbolTable();
-			walker.walk(new SematicCheckPhase1(symbolTable), result);
-			walker.walk(new SematicCheckPhase2(symbolTable), result);
-
-			return result;
-		}
-
-		@Override
-		public SymbolTable getSymbolTable() {
-			return symbolTable;
-		}
-	};
-
 	protected static UnparsedParserBase parserBase;
-	protected static de.be4.ltl.core.parser.LtlParser oldParser;
-
-	protected static ParserRuleCall parserRuleCall = DEFAULT_PARSER_RULE_CALL;
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 		parserBase = new UnparsedParserBase("expression", "predicate", "transition_predicate");
-		oldParser = new de.be4.ltl.core.parser.LtlParser(parserBase);
-
-		parserRuleCall = DEFAULT_PARSER_RULE_CALL;
 	}
 
-	protected ParseTree parseToTree(String input) {
+	protected LtlParser createParser(String input) {
 		LtlLexer lexer = new LtlLexer(new ANTLRInputStream(input));
 		LtlParser parser = new LtlParser(new CommonTokenStream(lexer));
+
 		TestErrorListener errorListener = new TestErrorListener();
 		lexer.removeErrorListeners();
 		parser.removeErrorListeners();
 		lexer.addErrorListener(errorListener);
 		parser.addErrorListener(errorListener);
 
-		ParseTree result = parserRuleCall.callParserRule(parser);
+		return parser;
+	}
 
-		if (errorListener.getErrors() > 0) {
-			throw errorListener.getExceptions().get(0);
+	protected void semanticCheck(ParseTree ast, SymbolTable symbolTable) {
+		ParseTreeWalker.DEFAULT.walk(new SematicCheckPhase1(symbolTable), ast);
+		ParseTreeWalker.DEFAULT.walk(new SematicCheckPhase2(symbolTable), ast);
+	}
+
+	protected boolean hasErrors(LtlParser parser) {
+		if (parser.getErrorListeners().size() > 0 && parser.getErrorListeners().get(0) instanceof TestErrorListener) {
+			TestErrorListener listener = (TestErrorListener) parser.getErrorListeners().get(0);
+
+			if (listener.getErrors() > 0) {
+				return true;
+			}
 		}
-
-		return result;
+		return false;
 	}
 
-	protected LtlPrologTermGenerator createPrologGenerator(final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
-		return new LtlPrologTermGenerator(pto, "current", parserBase);
-	}
-
-	protected String parse(String input) {
-		ParseTree ast = parseToTree(input);
-
-		PrologTermStringOutput pto = new PrologTermStringOutput();
-		LtlPrologTermGenerator generator = createPrologGenerator(pto, "current", parserBase);
+	protected StructuredPrologOutput generatePrologTerm(ParseTree ast, SymbolTable symbolTable) {
+		StructuredPrologOutput pto = new StructuredPrologOutput();
+		PrologTermGenerator generator = new PrologTermGenerator(symbolTable, pto, "current", parserBase);
 
 		generator.generatePrologTerm(ast);
-		return pto.toString();
+		pto.fullstop();
+		return pto;
 	}
 
-	protected String parseOld(String input) throws Exception {
-		PrologTerm term = oldParser.generatePrologTerm(input, "current");
-		return term.toString();
-	}
+	protected void parse(String input) {
+		LtlParser parser = createParser(input);
 
-	protected void assertEquals(String expected, String ... inputs) throws Exception {
-		for (String input : inputs) {
-			Assert.assertEquals(expected, parse(input));
-			Assert.assertEquals(expected, parseOld(input));
+		ParseTree ast = parser.start();
+
+		semanticCheck(ast, new SymbolTable());
+		if (hasErrors(parser)) {
+			throw new RuntimeException("Exception was thrown during parsing.");
 		}
+	}
+
+	protected String parseToString(String input) {
+		LtlParser parser = createParser(input);
+
+		ParseTree ast = parser.start();
+
+		SymbolTable symbolTable = new SymbolTable();
+		semanticCheck(ast, symbolTable);
+		if (hasErrors(parser)) {
+			throw new RuntimeException("Exception was thrown during parsing.");
+		}
+
+		return generatePrologTerm(ast, symbolTable).getSentences().get(0).toString();
 	}
 
 	protected void throwsException(String input, String msg) {
@@ -126,32 +102,7 @@ public abstract class AbstractParserTest {
 		throwsException(input, "Exception should have been thrown. (Input: \""+ input +"\")");
 	}
 
-	protected void throwsException(String expected, String input, ExceptionCause cause) {
-		if (cause == ExceptionCause.Deprecated || cause == ExceptionCause.Unsupported) {
-			throwsException(input, "Exception for new parser version should have been thrown. (Input: "+input+")");
-		} else {
-			try {
-				parse(input);
-			} catch(Exception e) {
-				Assert.fail("Exception for new parser version should not have been thrown. (Input: "+input+")");
-			}
-		}
-
-		try {
-			Assert.assertEquals(expected, parseOld(input));
-			if (!cause.equals(ExceptionCause.Deprecated)) {
-				Assert.fail("Exception for old parser version should have been thrown. (Input: "+input+")");
-			}
-		} catch(Exception ex) {
-			if (cause.equals(ExceptionCause.Deprecated)) {
-				Assert.fail("Exception for old parser version should not have been thrown. (Input: "+input+")");
-			}
-		}
-		if (cause.equals(ExceptionCause.Deprecated)) {
-			System.out.println("Deprecated input: " + input);
-		}
-	}
-
+	// Test helper class
 	public class TestErrorListener extends BaseErrorListener {
 
 		private List<RuntimeException> exceptions = new LinkedList<RuntimeException>();
