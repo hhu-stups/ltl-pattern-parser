@@ -14,6 +14,7 @@ public abstract class AbstractOldParserTest extends AbstractParserTest {
 	};
 
 	protected static de.be4.ltl.core.parser.LtlParser oldParser;
+	protected static boolean printDeprecatedInputs = false;
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
@@ -53,7 +54,7 @@ public abstract class AbstractOldParserTest extends AbstractParserTest {
 				Assert.fail("Exception for old parser version should not have been thrown. (Input: "+input+")");
 			}
 		}
-		if (cause.equals(ExceptionCause.Deprecated)) {
+		if (cause.equals(ExceptionCause.Deprecated) && printDeprecatedInputs) {
 			System.out.println("Deprecated input: " + input);
 		}
 	}

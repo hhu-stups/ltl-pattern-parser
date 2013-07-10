@@ -38,7 +38,7 @@ import de.prob.parserbase.ProBParseException;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class LtlPrologTermGenerator extends LtlBaseListener {
+public class BasePrologTermGenerator extends LtlBaseListener {
 
 	protected IPrologTermOutput pto;
 	protected final String currentStateID;
@@ -47,7 +47,7 @@ public class LtlPrologTermGenerator extends LtlBaseListener {
 
 	protected ParserRuleContext blockingContext = null;
 
-	public LtlPrologTermGenerator(final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
+	public BasePrologTermGenerator(final IPrologTermOutput pto, String currentStateID, final ProBParserBase specParser) {
 		this.pto = pto;
 		this.currentStateID = currentStateID;
 		this.specParser = specParser;

@@ -12,7 +12,7 @@ public class PrecedenceTest extends AbstractOldParserTest {
 		String oldOutput = parseOld(incompatibleInput);
 		if (expected.equals(oldOutput)) {
 			Assert.fail("The old parser version output should differ from the expected output. (Input: "+incompatibleInput+")");
-		} else {
+		} else if (printDeprecatedInputs) {
 			System.out.println("Incompatible input: " + incompatibleInput + " ## Expected precedence: " + equivInput);
 		}
 		assertEquals(expected, equivInput);

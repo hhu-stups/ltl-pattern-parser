@@ -37,7 +37,7 @@ import de.prob.prolog.output.StructuredPrologOutput;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
-public class PrologTermGenerator extends LtlPrologTermGenerator {
+public class PrologTermGenerator extends BasePrologTermGenerator {
 
 	protected SymbolTable symbolTable;
 	protected Pattern patternCall;

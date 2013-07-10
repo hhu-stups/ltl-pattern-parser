@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
 
-public class LtlPrologTermGeneratorTest extends AbstractParserTest {
+public class BasePrologTermGeneratorTest extends AbstractParserTest {
 
 	@Test
 	public void testAtoms() {
