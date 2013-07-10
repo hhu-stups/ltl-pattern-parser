@@ -1,6 +1,7 @@
 package de.prob.ltl.parser.symboltable;
 
 import java.util.List;
+import java.util.Stack;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
@@ -8,8 +9,12 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 public class SymbolTable {
 
 	private final Scope globalScope = new Scope(null);
-	private Scope currentScope = globalScope;
+	private Stack<Scope> scopeStack = new Stack<Scope>();
 	private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
+
+	public SymbolTable() {
+		scopeStack.push(globalScope);
+	}
 
 	public void define(Symbol symbol) {
 		String name = symbol.getSymbolID();
@@ -17,7 +22,7 @@ public class SymbolTable {
 			boolean isPattern = symbol instanceof Pattern;
 			throw new RuntimeException(String.format("%s '%s' is already defined.", (isPattern ? "Pattern" : "Variable"), name));
 		}
-		currentScope.define(symbol);
+		getCurrentScope().define(symbol);
 	}
 
 	public boolean isDefined(Symbol symbol) {
@@ -29,36 +34,37 @@ public class SymbolTable {
 	}
 
 	public Symbol resolve(String name) {
-		return currentScope.resolve(name);
+		return getCurrentScope().resolve(name);
 	}
 
 	public List<Symbol> getSymbols() {
-		return currentScope.getSymbols();
+		return getCurrentScope().getSymbols();
 	}
 
 	public Scope getCurrentScope() {
-		return currentScope;
+		return scopeStack.peek();
 	}
 
 	public void pushScope(Scope scope, ParserRuleContext context) {
-		currentScope = scope;
 		scopes.put(context, scope);
 		scope.setDefinitionContext(context);
+		pushScope(scope);
 	}
 
 	public void pushScope(Scope scope) {
-		currentScope = scope;
+		if (!getCurrentScope().equals(scope)) {
+			scopeStack.push(scope);
+		}
 	}
 
 	public void pushScope(ParserRuleContext context) {
-		currentScope = scopes.get(context);
+		Scope scope = scopes.get(context);
+		pushScope(scope);
 	}
 
 	public void popScope() {
-		if (currentScope.hasParent()) {
-			currentScope = currentScope.getParent();
-		} else {
-			currentScope = globalScope;
+		if (scopeStack.size() > 1) {
+			scopeStack.pop();
 		}
 	}
 
