@@ -20,6 +20,7 @@ import de.prob.ltl.parser.LtlParser.LoopVarCallArgContext;
 import de.prob.ltl.parser.LtlParser.Loop_bodyContext;
 import de.prob.ltl.parser.LtlParser.NumArgContext;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
+import de.prob.ltl.parser.LtlParser.Pattern_call_scope_argContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 import de.prob.ltl.parser.LtlParser.VarCallArgContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
@@ -42,6 +43,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 	protected SymbolTable symbolTable;
 	protected Pattern patternCall;
 	protected List<PrologTerm> patternArguments = new LinkedList<PrologTerm>();
+	protected List<PrologTerm> scopeArguments = new LinkedList<PrologTerm>();
 	protected Loop loopCall;
 	protected List<PrologTerm> loopArguments = new LinkedList<PrologTerm>();
 	protected boolean allowPatternDef;
@@ -57,6 +59,11 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 		patternArguments.add(arg);
 	}
 
+	private void addScopeArg(PrologTerm arg) {
+		patternCall.addScopeParameter(new Variable(null, null));
+		scopeArguments.add(arg);
+	}
+
 	private void setArgumentValues(Pattern definedPattern) {
 		if (patternArguments != null && patternArguments.size() > 0) {
 			for (int i = 0; i < patternArguments.size(); i++) {
@@ -64,6 +71,13 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 			}
 		} else if (definedPattern.getParameters().size() > 0) {
 			throw new RuntimeException("Error when calling pattern. Too few arguments.");
+		}
+		if (scopeArguments.size() > 0) {
+			for (int i = 0; i < scopeArguments.size(); i++) {
+				definedPattern.getScopeParameters().get(i).setValue(scopeArguments.get(i));
+			}
+		} else if (definedPattern.getScopeParameters().size() > 0) {
+			throw new RuntimeException("Error when calling pattern. Too few scope arguments.");
 		}
 	}
 
@@ -97,6 +111,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 
 			patternCall = null;
 			patternArguments.clear();
+			scopeArguments.clear();
 		}
 	}
 
@@ -123,6 +138,18 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 	@Override
 	public void enterAfterUntilScopeCall(AfterUntilScopeCallContext ctx) {
 		patternCall.setScope(PatternScopes.after_until);
+	}
+
+	@Override
+	public void enterPattern_call_scope_arg(Pattern_call_scope_argContext ctx) {
+		if (enterContext(ctx)) {
+			StructuredPrologOutput exprPto = new StructuredPrologOutput();
+			ParseTreeWalker.DEFAULT.walk(new PrologTermGenerator(symbolTable, exprPto, currentStateID, specParser), ctx.atom());
+			exprPto.fullstop();
+
+			PrologTerm arg = exprPto.getSentences().get(0);
+			addScopeArg(arg);
+		};
 	}
 
 	@Override

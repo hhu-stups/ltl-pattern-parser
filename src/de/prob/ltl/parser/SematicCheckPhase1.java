@@ -144,6 +144,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		String name = nameNode.getText();
 		Variable scopeParameter = new Variable(name, VariableTypes.var);
 		symbolTable.define(scopeParameter);
+		currentPattern.addScopeParameter(scopeParameter);
 	}
 
 	@Override
@@ -153,6 +154,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 		String name = nameNode.getText();
 		Variable scopeParameter = new Variable(name, VariableTypes.var);
 		symbolTable.define(scopeParameter);
+		currentPattern.addScopeParameter(scopeParameter);
 	}
 
 	@Override
@@ -162,6 +164,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 			String name = nameNode.getText();
 			Variable scopeParameter = new Variable(name, VariableTypes.var);
 			symbolTable.define(scopeParameter);
+			currentPattern.addScopeParameter(scopeParameter);
 		}
 	}
 
@@ -172,6 +175,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 			String name = nameNode.getText();
 			Variable scopeParameter = new Variable(name, VariableTypes.var);
 			symbolTable.define(scopeParameter);
+			currentPattern.addScopeParameter(scopeParameter);
 		}
 	}
 

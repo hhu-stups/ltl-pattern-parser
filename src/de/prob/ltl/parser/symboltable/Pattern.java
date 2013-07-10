@@ -16,6 +16,7 @@ public class Pattern extends Scope implements Symbol {
 	private String name;
 	private PatternScopes scope = PatternScopes.global;
 	private List<Variable> parameters = new LinkedList<Variable>();
+	private List<Variable> scopeParameters = new LinkedList<Variable>();
 
 	public Pattern(Scope parent, String name) {
 		super(parent);
@@ -40,6 +41,14 @@ public class Pattern extends Scope implements Symbol {
 
 	public void addParameter(Variable parameter) {
 		parameters.add(parameter);
+	}
+
+	public List<Variable> getScopeParameters() {
+		return scopeParameters;
+	}
+
+	public void addScopeParameter(Variable parameter) {
+		scopeParameters.add(parameter);
 	}
 
 	public boolean checkParameterTypes(List<Variable> otherParameters) {

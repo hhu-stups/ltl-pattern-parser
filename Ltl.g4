@@ -39,12 +39,15 @@ pattern_call
  ;
  
 pattern_call_scope
- : GLOBAL_SCOPE 						# globalScopeCall
- | BEFORE_SCOPE atom 					# beforeScopeCall
- | AFTER_SCOPE atom						# afterScopeCall
- | BETWEEN_SCOPE atom AND atom 			# betweenScopeCall
- | AFTER_SCOPE atom UNTIL_SCOPE atom	# afterUntilScopeCall   
+ : GLOBAL_SCOPE 															# globalScopeCall
+ | BEFORE_SCOPE  pattern_call_scope_arg 									# beforeScopeCall
+ | AFTER_SCOPE   pattern_call_scope_arg										# afterScopeCall
+ | BETWEEN_SCOPE pattern_call_scope_arg AND pattern_call_scope_arg 			# betweenScopeCall
+ | AFTER_SCOPE   pattern_call_scope_arg UNTIL_SCOPE pattern_call_scope_arg	# afterUntilScopeCall   
  ;
+ 
+pattern_call_scope_arg
+ : atom;
  
 pattern_call_arg
  : ID		# varCallArg
