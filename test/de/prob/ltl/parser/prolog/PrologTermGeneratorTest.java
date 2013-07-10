@@ -78,10 +78,6 @@ public class PrologTermGeneratorTest extends AbstractParserTest {
 
 	@Test
 	public void testGlobalVarsAndPatterns() {
-		Assert.assertEquals("true", parseToString("var x: true def pattern(): x pattern()"));
-		// TODO check calls to global vars in pattern def, when pattern is called
-		//Assert.assertEquals("true", parseToString("def pattern(): x var x: true pattern()"));
-
 		Assert.assertEquals("true", parseToString("var x: true def pattern(y): y pattern(x)"));
 		Assert.assertEquals("true", parseToString("def pattern(y): y var x: true pattern(x)"));
 	}
@@ -100,6 +96,8 @@ public class PrologTermGeneratorTest extends AbstractParserTest {
 		Assert.assertEquals("or(or(false,true),true)", parseToString("def pattern(n:num): var x: false loop n down to 1: x: x or true end x pattern(3)"));
 
 		Assert.assertEquals("or(or(false,true),true)", parseToString("def pattern(): var x: false loop 1 up to 3: var y: true x: x or y end x pattern()"));
+
+		Assert.assertEquals("or(true,ap(sink))", parseToString("def a(): sink def b(): var x: false loop 1 up to 2: x: true or a() end x b()"));
 	}
 
 }

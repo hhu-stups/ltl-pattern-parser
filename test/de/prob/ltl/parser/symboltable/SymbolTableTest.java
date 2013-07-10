@@ -182,13 +182,9 @@ public class SymbolTableTest {
 		st.pushScope(pattern, null);
 
 		Variable var2 = new Variable("var1", VariableTypes.var);
-		try {
-			st.define(var2);
-			Assert.fail("Exception should have been thrown");
-		} catch(RuntimeException e) {
-		}
+		st.define(var2);
 
-		Assert.assertEquals(var1, st.resolve("var1"));
+		Assert.assertEquals(var2, st.resolve("var1"));
 
 		st.popScope();
 
@@ -287,12 +283,9 @@ public class SymbolTableTest {
 		Variable var3 = new Variable("z", VariableTypes.var);
 		st.define(var3);
 
-		try {
-			Variable var = new Variable("x", VariableTypes.var);
-			st.define(var);
-			Assert.fail("Exception should have been thrown");
-		} catch(RuntimeException e) {
-		}
+		Variable var4 = new Variable("x", VariableTypes.var);
+		st.define(var4);
+		pattern.addParameter(var4);
 
 		try {
 			Variable var = new Variable("z", VariableTypes.var);
@@ -301,9 +294,9 @@ public class SymbolTableTest {
 		} catch(RuntimeException e) {
 		}
 
-		Assert.assertEquals(1, pattern.getParameters().size());
+		Assert.assertEquals(2, pattern.getParameters().size());
 		Assert.assertEquals(3, st.getSymbols().size());
-		Assert.assertEquals(var1, st.resolve("x"));
+		Assert.assertEquals(var4, st.resolve("x"));
 		Assert.assertEquals(var2, st.resolve("y"));
 		Assert.assertEquals(var3, st.resolve("z"));
 
@@ -316,7 +309,7 @@ public class SymbolTableTest {
 
 		st.define(pattern);
 
-		Assert.assertEquals(pattern, st.resolve("pattern/global/1"));
+		Assert.assertEquals(pattern, st.resolve("pattern/global/2"));
 	}
 
 	@Test

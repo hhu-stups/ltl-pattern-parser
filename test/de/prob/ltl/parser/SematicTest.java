@@ -112,16 +112,16 @@ public class SematicTest extends AbstractParserTest {
 		parse(var1 + pattern1 + expr);
 		parse(pattern1 + var1 + expr);
 
-		throwsException(var1 + pattern2 + expr);
+		parse(var1 + pattern2 + expr);
 		parse(pattern2 + var1 + expr);
 
-		throwsException(var1 + pattern3 + expr);
+		parse(var1 + pattern3 + expr);
 		parse(pattern3 + var1 + expr);
 
-		parse(var1 + pattern4 + expr);
+		throwsException(var1 + pattern4 + expr);
 		throwsException(pattern4 + var1 + expr);
 
-		throwsException(var1 + pattern5 + expr);
+		parse(var1 + pattern5 + expr);
 		parse(pattern5 + var1 + expr);
 
 		String var2 = "var x: pattern() ";
@@ -130,16 +130,16 @@ public class SematicTest extends AbstractParserTest {
 		parse(var2 + pattern1 + expr);
 		parse(pattern1 + var2 + expr);
 
-		throwsException(var3 + pattern2 + expr);
+		parse(var3 + pattern2 + expr);
 		parse(pattern2 + var3 + expr);
 
-		throwsException(var4 + pattern3 + expr);
+		parse(var4 + pattern3 + expr);
 		parse(pattern3 + var4 + expr);
 
 		// TODO cycle detection throwsException(var2 + pattern4 + expr);
 		throwsException(pattern4 + var2 + expr);
 
-		throwsException(var2 + pattern5 + expr);
+		parse(var2 + pattern5 + expr);
 		parse(pattern5 + var2 + expr);
 	}
 
@@ -168,9 +168,9 @@ public class SematicTest extends AbstractParserTest {
 
 		String varDef = "var x: true ";
 
-		throwsException(varDef + pattern1 + expr);
-		parse(varDef + pattern4 + expr);
-		throwsException(varDef + pattern7 + expr);
+		parse(varDef + pattern1 + expr);
+		throwsException(varDef + pattern4 + expr);
+		parse(varDef + pattern7 + expr);
 
 		parse(pattern1 + varDef + expr);
 		throwsException(pattern2 + varDef + expr);

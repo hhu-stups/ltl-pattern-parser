@@ -73,6 +73,33 @@ public class Pattern extends Scope implements Symbol {
 	}
 
 	@Override
+	public Symbol resolve(String name) {
+		Symbol symbol = resolveLocal(name);
+
+		if (symbol == null) {
+			symbol = super.resolve(name);
+			if (symbol != null && !(symbol instanceof Pattern)) {
+				symbol = null;
+			}
+		}
+
+		return symbol;
+	}
+
+	@Override
+	public List<Symbol> getSymbols() {
+		List<Symbol> result = getLocalSymbols();
+		if (hasParent()) {
+			for (Symbol symbol : parent.getSymbols()) {
+				if (symbol instanceof Pattern) {
+					result.add(symbol);
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public String getSymbolID() {
 		int params = parameters.size();
 		return getSymbolID(name, scope, params);
