@@ -24,9 +24,9 @@ import de.prob.ltl.parser.LtlParser.NumArgContext;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
 import de.prob.ltl.parser.LtlParser.Pattern_call_scope_argContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
+import de.prob.ltl.parser.LtlParser.VarAssignContext;
 import de.prob.ltl.parser.LtlParser.VarCallArgContext;
-import de.prob.ltl.parser.LtlParser.Var_assignContext;
-import de.prob.ltl.parser.LtlParser.Var_defContext;
+import de.prob.ltl.parser.LtlParser.VarDefContext;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.symboltable.Loop;
 import de.prob.ltl.parser.symboltable.Loop.LoopTypes;
@@ -186,7 +186,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 
 	//#####################################################
 	@Override
-	public void enterVar_def(Var_defContext ctx) {
+	public void enterVarDef(VarDefContext ctx) {
 		if (enterContext(ctx)) {
 			TerminalNode nameNode = ctx.ID();
 			String name = nameNode.getText();
@@ -202,7 +202,7 @@ public class PrologTermGenerator extends BasePrologTermGenerator {
 	}
 
 	@Override
-	public void enterVar_assign(Var_assignContext ctx) {
+	public void enterVarAssign(VarAssignContext ctx) {
 		if (enterContext(ctx)) {
 			TerminalNode nameNode = ctx.ID();
 			String name = nameNode.getText();

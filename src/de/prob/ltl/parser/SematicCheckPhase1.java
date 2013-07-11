@@ -10,11 +10,13 @@ import de.prob.ltl.parser.LtlParser.GlobalScopeDefContext;
 import de.prob.ltl.parser.LtlParser.LoopContext;
 import de.prob.ltl.parser.LtlParser.LoopNumArgContext;
 import de.prob.ltl.parser.LtlParser.LoopVarCallArgContext;
+import de.prob.ltl.parser.LtlParser.NumAssignContext;
+import de.prob.ltl.parser.LtlParser.NumDefContext;
 import de.prob.ltl.parser.LtlParser.NumVarParamContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
+import de.prob.ltl.parser.LtlParser.VarAssignContext;
+import de.prob.ltl.parser.LtlParser.VarDefContext;
 import de.prob.ltl.parser.LtlParser.VarParamContext;
-import de.prob.ltl.parser.LtlParser.Var_assignContext;
-import de.prob.ltl.parser.LtlParser.Var_defContext;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.symboltable.Loop;
 import de.prob.ltl.parser.symboltable.Loop.LoopTypes;
@@ -66,7 +68,7 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 	}
 
 	@Override
-	public void exitVar_def(Var_defContext ctx) {
+	public void exitVarDef(VarDefContext ctx) {
 		TerminalNode nameNode = ctx.ID();
 		String name = nameNode.getText();
 		VariableTypes type = VariableTypes.var;
@@ -76,12 +78,37 @@ public class SematicCheckPhase1 extends LtlBaseListener {
 	}
 
 	@Override
-	public void enterVar_assign(Var_assignContext ctx) {
+	public void exitNumDef(NumDefContext ctx) {
+		TerminalNode nameNode = ctx.ID();
+		String name = nameNode.getText();
+		VariableTypes type = VariableTypes.num;
+
+		Variable var = new Variable(name, type);
+		symbolTable.define(var);
+	}
+
+	@Override
+	public void enterVarAssign(VarAssignContext ctx) {
 		TerminalNode nameNode = ctx.ID();
 		String name = nameNode.getText();
 
 		if (!symbolTable.isDefined(name)) {
 			parser.notifyErrorListeners(nameNode.getSymbol(), String.format("Assignment to undefined variable '%s'.", name), null);
+		}
+	}
+
+	@Override
+	public void enterNumAssign(NumAssignContext ctx) {
+		TerminalNode nameNode = ctx.ID();
+		String name = nameNode.getText();
+
+		if (!symbolTable.isDefined(name)) {
+			parser.notifyErrorListeners(nameNode.getSymbol(), String.format("Assignment to undefined variable '%s'.", name), null);
+		} else {
+			Variable var = (Variable) symbolTable.resolve(name);
+			if (var.getType().equals(VariableTypes.var)) {
+				parser.notifyErrorListeners(nameNode.getSymbol(), String.format("Wrong type. You tried to assign a num value to variable '%s'.", name), null);
+			}
 		}
 	}
 

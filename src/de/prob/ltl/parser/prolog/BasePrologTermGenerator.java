@@ -31,8 +31,8 @@ import de.prob.ltl.parser.LtlParser.StateAtomContext;
 import de.prob.ltl.parser.LtlParser.TriggerExprContext;
 import de.prob.ltl.parser.LtlParser.UnaryCombinedExprContext;
 import de.prob.ltl.parser.LtlParser.UntilExprContext;
-import de.prob.ltl.parser.LtlParser.Var_assignContext;
-import de.prob.ltl.parser.LtlParser.Var_defContext;
+import de.prob.ltl.parser.LtlParser.VarAssignContext;
+import de.prob.ltl.parser.LtlParser.VarDefContext;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.LtlParser.WeakuntilExprContext;
 import de.prob.ltl.parser.LtlParser.YesterdayExprContext;
@@ -87,12 +87,12 @@ public class BasePrologTermGenerator extends LtlBaseListener {
 	}
 
 	@Override
-	public void enterVar_def(Var_defContext ctx) {
+	public void enterVarDef(VarDefContext ctx) {
 		enterContext(ctx);
 	}
 
 	@Override
-	public void enterVar_assign(Var_assignContext ctx) {
+	public void enterVarAssign(VarAssignContext ctx) {
 		enterContext(ctx);
 	}
 

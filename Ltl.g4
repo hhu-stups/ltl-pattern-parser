@@ -86,11 +86,18 @@ pattern_call_arg
  ;
  
 var_def
- : VAR ID ':' expr
+ : VAR ID ':' expr			# varDef
+ | NUM ID ':' num_var_value	# numDef
+ ;
+ 
+num_var_value
+ : ID	# numVarValue
+ | NUM	# numValue
  ;
  
 var_assign
- : ID ':' expr
+ : ID ':' expr 			# varAssign
+ | ID ':' num_var_value	# numAssign
  ;
  
 loop
@@ -105,7 +112,7 @@ loop_arg
  : ID	# loopVarCallArg
  | NUM	# loopNumArg
  ;
- 
+  
 expr
  : NOT expr						# notExpr
  | GLOBALLY expr				# globallyExpr
