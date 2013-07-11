@@ -46,7 +46,7 @@ public class LoopTest extends AbstractParserTest {
 	public void testDefinitionInPatternDef() throws Exception {
 		parse("def pattern(): loop 1 up to 2: var x: true end true pattern()");
 		parse("def pattern(x): loop 1 up to 2: x: x or true end x pattern(false)");
-		throwsException("loop 1 up to 2: var x: true end true");
+		parse("loop 1 up to 2: var x: true end true");
 	}
 
 }

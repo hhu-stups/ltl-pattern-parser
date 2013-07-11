@@ -19,7 +19,7 @@ public class SematicTest extends AbstractParserTest {
 		String expr = "true ";
 		throwsException(pattern1 +  pattern2 + expr);
 		parse(pattern1 +  pattern7 + expr);
-		parse(pattern1 + pattern3 + expr + pattern4 + pattern5 + pattern6);
+		parse(pattern1 + pattern3 + pattern4 + pattern5 + pattern6 + expr);
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class SematicTest extends AbstractParserTest {
 		String expr = "pattern2() ";
 		parse(pattern1 +  pattern2 + expr);
 		parse(pattern2 +  pattern1 + expr);
-		parse(expr + pattern2 +  pattern1);
+		throwsException(expr + pattern2 +  pattern1);
 		throwsException(expr);
 	}
 

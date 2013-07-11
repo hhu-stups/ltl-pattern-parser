@@ -40,7 +40,7 @@ public void notifyWarningListeners(String message, Symbol ... symbols) {
 
 /* -- Rules -- */
 start
- : (pattern_def | var_def | var_assign)* expr pattern_def*
+ : (pattern_def | var_def | var_assign | loop)* expr
  ;
 
 pattern_def
