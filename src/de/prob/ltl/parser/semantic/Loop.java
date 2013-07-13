@@ -9,6 +9,7 @@ import de.prob.ltl.parser.LtlParser.LoopContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
 import de.prob.ltl.parser.LtlParser.Var_valueContext;
+import de.prob.ltl.parser.symboltable.LoopTypes;
 import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
 import de.prob.ltl.parser.symboltable.VariableTypes;
@@ -20,7 +21,7 @@ public class Loop extends SymbolTable {
 
 	private LoopContext context;
 	private Token token;
-	private boolean up;
+	private LoopTypes type;
 	private Variable countVariable;
 
 	public Loop(LtlParser parser, LoopContext context) {
@@ -44,7 +45,7 @@ public class Loop extends SymbolTable {
 	private void determineLoopInfo() {
 		TerminalNode beginNode = context.LOOP_BEGIN();
 		token = beginNode.getSymbol();
-		up = context.UP() != null;
+		type = (context.UP() != null ? LoopTypes.up : LoopTypes.down);
 
 		TerminalNode node = context.ID();
 		if (node != null) {
@@ -96,8 +97,8 @@ public class Loop extends SymbolTable {
 		return token;
 	}
 
-	public boolean isUp() {
-		return up;
+	public LoopTypes getLoopType() {
+		return type;
 	}
 
 }
