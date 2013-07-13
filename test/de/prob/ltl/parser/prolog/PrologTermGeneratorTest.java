@@ -9,7 +9,7 @@ public class PrologTermGeneratorTest extends AbstractParserTest {
 
 	@Test
 	public void testPatternScope() {
-		/*Assert.assertEquals("true", parseToString("def <global> pattern(): true pattern<global>()"));
+		Assert.assertEquals("true", parseToString("def <global> pattern(): true pattern<global>()"));
 		Assert.assertEquals("true", parseToString("def <before r> pattern(): r pattern<before true>()"));
 		Assert.assertEquals("or(true,false)", parseToString("def <before r> pattern(): r or false pattern<before true>()"));
 
@@ -23,7 +23,7 @@ public class PrologTermGeneratorTest extends AbstractParserTest {
 		Assert.assertEquals("implies(false,or(true,ap(sink)))", parseToString("def <after q until r> pattern(): r => q or sink pattern<after true until false>()"));
 
 		Assert.assertEquals("or(true,false)", parseToString("def <before r> pattern(): r: false true or r pattern<before true>()"));
-		 */Assert.assertEquals("or(true,false)", parseToString("def <before r> pattern(): r var x: false true or pattern<before x>()"));
+		Assert.assertEquals("or(true,false)", parseToString("def <before r> pattern(): r var x: false true or pattern<before x>()"));
 	}
 
 	@Test
