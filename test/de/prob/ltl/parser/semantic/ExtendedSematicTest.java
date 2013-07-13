@@ -98,6 +98,12 @@ public class ExtendedSematicTest extends AbstractParserTest {
 		parse("def a(): true def b(): true b() or a()");
 		throwsException("def a(): true def a(): true true");
 		parse("def <before r> a(): true def a(): true true");
+
+		throwsException("def <before r> a(): true a<before r>()");
+		throwsException("def <before r> a(x): true a<before r>(true)");
+		throwsException("def <before r> a(x): true a<before true>(r)");
+		throwsException("def <before r> a(x): true a<before x>(true)");
+		throwsException("def <before r> a(x): true a<before true>(x)");
 	}
 
 	@Test
@@ -106,6 +112,11 @@ public class ExtendedSematicTest extends AbstractParserTest {
 		parse("count 2 down to 1: var x: true x: false end false");
 		parse("count (1) up to (2): var x: true x: false end false");
 		parse("count (2) down to (1): var x: true x: false end false");
+
+		throwsException("count x up to 2: num x: 1 end false");
+		throwsException("count 1 up to x: num x: 1 end false");
+		throwsException("count i: 1 up to i: num x: 1 end false");
+		throwsException("count i: i up to 2: num x: 1 end false");
 
 		throwsException("count 1 up to 2: x: false end false");
 		throwsException("count x up to 2: var x: false end false");

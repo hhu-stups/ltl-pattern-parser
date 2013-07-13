@@ -63,21 +63,21 @@ public class PatternDefinition extends SymbolTable {
 		for (ParseTree child : context.pattern_def_body().children) {
 			if (child instanceof Var_defContext) {
 				// Define variable and check its initial value
-				/*VariableDefinition definition = */
-				new VariableDefinition(parser, (Var_defContext) child);
+				VariableDefinition definition = new VariableDefinition(parser, (Var_defContext) child);
+				symbolTableManager.addNode(definition);
 			} else if (child instanceof Var_assignContext) {
 				// Check variable and its assigned value
-				/*VariableAssignment assignment = */
-				new VariableAssignment(parser, (Var_assignContext) child);
+				VariableAssignment assignment = new VariableAssignment(parser, (Var_assignContext) child);
+				symbolTableManager.addNode(assignment);
 			} else if (child instanceof LoopContext) {
 				// Check loop with its count variable, arguments and body
-				/*Loop loop = */
-				new Loop(parser, (LoopContext) child);
+				Loop loop = new Loop(parser, (LoopContext) child);
+				symbolTableManager.addNode(loop);
 			}
 		}
 		// Check final expr
-		/* ExprOrAtomCheck patternReturn = */
-		new ExprOrAtomCheck(parser, context.pattern_def_body().expr());
+		ExprOrAtom patternReturn = new ExprOrAtom(parser, context.pattern_def_body().expr());
+		symbolTableManager.addNode(patternReturn);
 		symbolTableManager.popScope();
 	}
 

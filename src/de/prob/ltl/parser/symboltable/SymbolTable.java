@@ -1,8 +1,11 @@
 package de.prob.ltl.parser.symboltable;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import de.prob.ltl.parser.semantic.Node;
 import de.prob.ltl.parser.semantic.PatternDefinition;
 import de.prob.ltl.parser.semantic.Variable;
 
@@ -12,6 +15,8 @@ public class SymbolTable {
 	private boolean parentLookup;
 	private Map<String, Variable> variables = new HashMap<String, Variable>();
 	private Map<String, PatternDefinition> patternDefinitions;
+
+	private List<Node> nodes = new LinkedList<Node>();
 
 	/**
 	 * Creates a symbol table
@@ -122,6 +127,14 @@ public class SymbolTable {
 	 */
 	public boolean isDefinedPattern(String name) {
 		return resolvePattern(name) != null;
+	}
+
+	public void addNode(Node node) {
+		nodes.add(node);
+	}
+
+	public List<Node> getNodes() {
+		return nodes;
 	}
 
 }
