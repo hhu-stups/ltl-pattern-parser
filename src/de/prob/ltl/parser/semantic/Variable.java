@@ -1,16 +1,12 @@
-package de.prob.ltl.parser.symboltable;
+package de.prob.ltl.parser.semantic;
 
 import org.antlr.v4.runtime.Token;
 
+import de.prob.ltl.parser.symboltable.VariableTypes;
 import de.prob.prolog.term.PrologTerm;
 
 
-public class Variable implements Symbol {
-
-	public enum VariableTypes {
-		var,
-		num
-	}
+public class Variable {
 
 	private String name;
 	private VariableTypes type;
@@ -35,11 +31,6 @@ public class Variable implements Symbol {
 	}
 
 	@Override
-	public String getSymbolID() {
-		return name;
-	}
-
-	@Override
 	public String toString() {
 		return String.format("%s:%s", name, (type != null ? type.name() : null));
 	}
@@ -52,7 +43,6 @@ public class Variable implements Symbol {
 		this.value = value;
 	}
 
-	@Override
 	public Token getToken() {
 		return token;
 	}

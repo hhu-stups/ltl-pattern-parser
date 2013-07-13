@@ -48,21 +48,21 @@ G(q & !r => (p W r))
 /*----------------*/
 def <global> bounded_existence(p, n:num):
 var s: (!p W (p W G!p))
-loop 1 up to n:
+count 1 up to n:
 s: (!p W (p W s))
 end
 s
 
 def <before r> bounded_existence(p, n:num):
 var s: ((!p & !r) U (r | ((p & !r) U (r | (!p U r)))))
-loop 1 up to n:
+count 1 up to n:
 s: ((!p & !r) U (r | ((p & !r) U (r | s))))
 end
 F r => s
 
 def <after q> bounded_existence(p, n:num):
 var s: (!p W (p W G!p))
-loop 1 up to n:
+count 1 up to n:
 s: (!p W (p W s))
 end
 F q => (!q U (q & s))
@@ -70,14 +70,14 @@ F q => (!q U (q & s))
 
 def <between q and r> bounded_existence(p, n:num):
 var s: ((!p & !r) U (r | ((p & !r) U (r | (!p U r)))))
-loop 1 up to n:
+count 1 up to n:
 s: ((!p & !r) U (r | ((p & !r) U (r | s))))
 end
 G((q & F r) => s)
 
 def <after q until r> bounded_existence(p, n:num):
 var s: ((!p & !r) U (r | ((p & !r) U (r | (!p W r) | G p))))
-loop 1 up to n:
+count 1 up to n:
 s: ((!p & !r) U (r | ((p & !r) U (r | s))))
 end
 G(q => s)

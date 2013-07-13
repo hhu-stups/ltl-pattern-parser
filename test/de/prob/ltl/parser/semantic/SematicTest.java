@@ -1,9 +1,11 @@
-package de.prob.ltl.parser;
+package de.prob.ltl.parser.semantic;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 
 import org.junit.Test;
+
+import de.prob.ltl.parser.AbstractParserTest;
 
 public class SematicTest extends AbstractParserTest {
 
@@ -145,7 +147,7 @@ public class SematicTest extends AbstractParserTest {
 
 	@Test
 	public void testLoop() throws Exception {
-		String loop1 = "loop 1 up to 2: var x: true end ";
+		String loop1 = "count 1 up to 2: var x: true end ";
 		String pattern1 = "def pattern(): " + loop1 + " true ";
 		String pattern2 = "def pattern(x): " + loop1 + " true ";
 		String pattern3 = "def <before x> pattern(): " + loop1 + " true ";
@@ -154,7 +156,7 @@ public class SematicTest extends AbstractParserTest {
 		throwsException(pattern2 + expr);
 		throwsException(pattern3 + expr);
 
-		String loop2 = "loop 1 up to 2: x: true end ";
+		String loop2 = "count 1 up to 2: x: true end ";
 		String pattern4 = "def pattern(): " + loop2 + " true ";
 		String pattern5 = "def pattern(x): " + loop2 + " true ";
 		String pattern6 = "def <before x> pattern(): " + loop2 + " true ";
@@ -162,7 +164,7 @@ public class SematicTest extends AbstractParserTest {
 		parse(pattern5 + expr);
 		parse(pattern6 + expr);
 
-		String loop3 = "loop 1 up to 5: var x: true x: x or false end ";
+		String loop3 = "count 1 up to 5: var x: true x: x or false end ";
 		String pattern7 = "def pattern(): " + loop3 + " true ";
 		parse(pattern7 + expr);
 
@@ -193,15 +195,15 @@ public class SematicTest extends AbstractParserTest {
 
 	@Test
 	public void testLoop2() throws Exception {
-		parse("def pattern(): loop 1 up to 2: var x: true end var x: false x true");
-		throwsException("def pattern(): var x: false loop 1 up to 2: var x: true end x true");
+		parse("def pattern(): count 1 up to 2: var x: true end var x: false x true");
+		throwsException("def pattern(): var x: false count 1 up to 2: var x: true end x true");
 
-		parse("def pattern(x:num): loop x up to 2: var s: true end true true");
-		throwsException("def pattern(y): loop x up to 2: var s: true end true true");
-		throwsException("def <before x> pattern(): loop 1 up to x: var s: true end true true");
-		throwsException("def <before y> pattern(): loop 1 up to x: var s: true end true true");
-		throwsException("def pattern(): loop x up to 2: var s: true end true true");
-		throwsException("def pattern(): loop 1 up to x: var s: true end true true");
+		parse("def pattern(x:num): count x up to 2: var s: true end true true");
+		throwsException("def pattern(y): count x up to 2: var s: true end true true");
+		throwsException("def <before x> pattern(): count 1 up to x: var s: true end true true");
+		throwsException("def <before y> pattern(): count 1 up to x: var s: true end true true");
+		throwsException("def pattern(): count x up to 2: var s: true end true true");
+		throwsException("def pattern(): count 1 up to x: var s: true end true true");
 	}
 
 	@Test
@@ -230,12 +232,12 @@ public class SematicTest extends AbstractParserTest {
 
 	@Test
 	public void testNumVarLoop() throws Exception {
-		parse("def pattern(n:num): loop n up to 2: var s: true end true pattern(1)");
-		parse("def pattern(n:num): loop 1 up to n: var s: true end true pattern(1)");
-		parse("def pattern(n:num): loop n up to n: var s: true end true pattern(1)");
-		throwsException("def pattern(n): loop n up to 2: var s: true end true pattern(true)");
-		throwsException("def pattern(n): loop 1 up to n: var s: true end true pattern(GF true)");
-		throwsException("def pattern(n): loop n up to n: var s: true end true pattern({...})");
+		parse("def pattern(n:num): count n up to 2: var s: true end true pattern(1)");
+		parse("def pattern(n:num): count 1 up to n: var s: true end true pattern(1)");
+		parse("def pattern(n:num): count n up to n: var s: true end true pattern(1)");
+		throwsException("def pattern(n): count n up to 2: var s: true end true pattern(true)");
+		throwsException("def pattern(n): count 1 up to n: var s: true end true pattern(GF true)");
+		throwsException("def pattern(n): count n up to n: var s: true end true pattern({...})");
 	}
 
 	@Test
@@ -245,8 +247,8 @@ public class SematicTest extends AbstractParserTest {
 		parse("var x: true x: false x");
 		throwsException("var x: true x: 1 x");
 
-		throwsException("def pattern(n:num): loop 1 up to 2: n: true end pattern(1)");
-		throwsException("def pattern(n:num): loop 1 up to 2: n: 2 end pattern(1)");
+		throwsException("def pattern(n:num): count 1 up to 2: n: true end pattern(1)");
+		throwsException("def pattern(n:num): count 1 up to 2: n: 2 end pattern(1)");
 		throwsException("def pattern(n:num): n: true pattern(1)");
 		throwsException("def pattern(n:num): n: 2 pattern(1)");
 		throwsException("def pattern(n:num, x:num): n: x pattern(1, 2)");

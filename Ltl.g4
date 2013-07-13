@@ -7,34 +7,14 @@ package de.prob.ltl.parser;
 @parser::header {
 package de.prob.ltl.parser;
 
-import de.prob.ltl.parser.symboltable.Symbol;
-import de.prob.ltl.parser.symboltable.SymbolTable;
+import de.prob.ltl.parser.symboltable.SymbolTableManager;
 }
 
 @parser::members {
-private SymbolTable symbolTable = new SymbolTable(this);
-private List<WarningListener> warningListeners = new ArrayList<WarningListener>();
+private SymbolTableManager symbolTableManager = new SymbolTableManager();
 
-public SymbolTable getSymbolTable() {
-	return symbolTable;
-}
-
-public void addWarningListener(WarningListener listener) {
-	warningListeners.add(listener);
-}
-
-public void removeWarningListener(WarningListener listener) {
-	warningListeners.remove(listener);
-}
-
-public void removeAllWarningListeners() {
-	warningListeners.clear();
-}
-
-public void notifyWarningListeners(String message, Symbol ... symbols) {
-	for (WarningListener listener : warningListeners) {
-		listener.warning(message, symbols);
-	}
+public SymbolTableManager getSymbolTableManager() {
+	return symbolTableManager;
 }
 }
 
@@ -65,52 +45,38 @@ pattern_def_param
  ;
 
 pattern_call
- : ID (LEFT_ANGLE pattern_call_scope RIGHT_ANGLE)? LEFT_PAREN (pattern_call_arg (',' pattern_call_arg)*)? RIGHT_PAREN
+ : ID (LEFT_ANGLE pattern_call_scope RIGHT_ANGLE)? LEFT_PAREN (var_value (',' var_value)*)? RIGHT_PAREN
  ;
  
 pattern_call_scope
- : GLOBAL_SCOPE 															# globalScopeCall
- | BEFORE_SCOPE  pattern_call_scope_arg 									# beforeScopeCall
- | AFTER_SCOPE   pattern_call_scope_arg										# afterScopeCall
- | BETWEEN_SCOPE pattern_call_scope_arg AND pattern_call_scope_arg 			# betweenScopeCall
- | AFTER_SCOPE   pattern_call_scope_arg UNTIL_SCOPE pattern_call_scope_arg	# afterUntilScopeCall   
+ : GLOBAL_SCOPE 						# globalScopeCall
+ | BEFORE_SCOPE  atom 					# beforeScopeCall
+ | AFTER_SCOPE   atom					# afterScopeCall
+ | BETWEEN_SCOPE atom AND atom 			# betweenScopeCall
+ | AFTER_SCOPE   atom UNTIL_SCOPE atom	# afterUntilScopeCall   
  ;
- 
-pattern_call_scope_arg
- : atom;
- 
-pattern_call_arg
- : ID		# varCallArg
- | NUM		# numArg
- | expr		# exprArg
- ;
- 
+   
 var_def
- : VAR ID ':' expr			# varDef
- | NUM ID ':' num_var_value	# numDef
- ;
- 
-num_var_value
- : ID	# numVarValue
- | NUM	# numValue
+ : (VAR | NUM_VAR) ID ':' var_value
  ;
  
 var_assign
- : ID ':' expr 			# varAssign
- | ID ':' num_var_value	# numAssign
+ : ID ':' var_value
+ ;
+ 
+var_value
+ : ID								# varValue
+ | NUM								# numValue
+ | LEFT_PAREN var_value RIGHT_PAREN	# parValue
+ | expr								# exprValue
  ;
  
 loop
- : LOOP_BEGIN loop_arg (UP | DOWN) TO loop_arg ':' loop_body LOOP_END
+ : LOOP_BEGIN (ID ':')? var_value (UP | DOWN) TO var_value ':' loop_body LOOP_END
  ;
  
 loop_body
  : (var_def | var_assign)+
- ;
- 
-loop_arg
- : ID	# loopVarCallArg
- | NUM	# loopNumArg
  ;
   
 expr
@@ -209,7 +175,7 @@ VAR				: 'var';
 NUM_VAR			: 'num';
 
 // Loops
-LOOP_BEGIN		: 'loop';
+LOOP_BEGIN		: 'count';
 LOOP_END		: 'end';
 UP				: 'up';
 DOWN			: 'down';

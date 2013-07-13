@@ -1,98 +1,127 @@
 package de.prob.ltl.parser.symboltable;
 
-import java.util.List;
-import java.util.Stack;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
-
-import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.semantic.PatternDefinition;
+import de.prob.ltl.parser.semantic.Variable;
 
 public class SymbolTable {
 
-	private LtlParser parser;
-	private final Scope globalScope = new Scope(null);
-	private Stack<Scope> scopeStack = new Stack<Scope>();
-	private ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
+	private SymbolTable parent;
+	private boolean parentLookup;
+	private Map<String, Variable> variables = new HashMap<String, Variable>();
+	private Map<String, PatternDefinition> patternDefinitions;
 
-	public SymbolTable(LtlParser parser) {
-		this.parser = parser;
-		scopeStack.push(globalScope);
+	/**
+	 * Creates a symbol table
+	 */
+	public SymbolTable() {
+		this(null);
 	}
 
-	public void define(Symbol symbol) {
-		String name = symbol.getSymbolID();
-		if (isDefined(symbol)) {
-			boolean isPattern = symbol instanceof Pattern;
+	/**
+	 * Creates a symbol table with a parent, so that patterns are defined in the root parent
+	 * 
+	 * @param parent default is null
+	 */
+	public SymbolTable(SymbolTable parent) {
+		this(parent, false);
+	}
 
-			Token token = symbol.getToken();
-			String msg = String.format("%s '%s' is already defined.", (isPattern ? "Pattern" : "Variable"), name);
-			if (token != null) {
-				parser.notifyErrorListeners(token, msg, null);
-			} else {
-				parser.notifyErrorListeners(msg);
+	/**
+	 * Creates a symbol table with a parent, so that patterns are defined in the root parent
+	 * 
+	 * @param parent default is null
+	 * @param parentLookup true to do variable lookups also in the parent scope; default is false
+	 */
+	public SymbolTable(SymbolTable parent, boolean parentLookup) {
+		this.parent = parent;
+		this.parentLookup = parentLookup;
+
+		if (this.parent == null) {
+			// Only needed in root symbol table
+			patternDefinitions = new HashMap<String, PatternDefinition>();
+		}
+	}
+
+	/**
+	 * Defines a variable
+	 * 
+	 * @param var
+	 * @return false, if a variable with the same name was already defined; otherwise true
+	 */
+	public boolean define(Variable var) {
+		if (isDefinedVariable(var.getName())) {
+			return false;
+		}
+		variables.put(var.getName(), var);
+		return true;
+	}
+
+	/**
+	 * Defines a pattern
+	 * 
+	 * @param pattern
+	 * @return false, if a pattern with the same name was already defined
+	 * or this symbol table is not the root; otherwise true
+	 */
+	public boolean define(PatternDefinition pattern) {
+		if (parent == null) {
+			if (isDefinedPattern(pattern.getName())) {
+				return false;
 			}
-		} else {
-			try {
-				getCurrentScope().define(symbol);
-			} catch(RuntimeException e) {
-				Token token = symbol.getToken();
-				if (token != null) {
-					parser.notifyErrorListeners(token, e.getMessage(), null);
-				} else {
-					parser.notifyErrorListeners(e.getMessage());
-				}
-			}
+			patternDefinitions.put(pattern.getName(), pattern);
+			return true;
 		}
+		return false;
 	}
 
-	public boolean isDefined(Symbol symbol) {
-		return isDefined(symbol.getSymbolID());
-	}
-
-	public boolean isDefined(String name) {
-		return resolve(name) != null;
-	}
-
-	public Symbol resolve(String name) {
-		return getCurrentScope().resolve(name);
-	}
-
-	public List<Symbol> getSymbols() {
-		return getCurrentScope().getSymbols();
-	}
-
-	public Scope getCurrentScope() {
-		return scopeStack.peek();
-	}
-
-	public void pushScope(Scope scope, ParserRuleContext context) {
-		scopes.put(context, scope);
-		scope.setDefinitionContext(context);
-		pushScope(scope);
-	}
-
-	public void pushScope(Scope scope) {
-		if (!getCurrentScope().equals(scope)) {
-			scopeStack.push(scope);
+	/**
+	 * Resolves a defined variable by name
+	 * 
+	 * @param name
+	 * @return Variable with this name; null, if no variable was found with this name
+	 */
+	public Variable resolveVariable(String name) {
+		Variable var = variables.get(name);
+		if (parentLookup && var == null && parent != null) {
+			var = parent.resolveVariable(name);
 		}
+		return var;
 	}
 
-	public void pushScope(ParserRuleContext context) {
-		Scope scope = scopes.get(context);
-		pushScope(scope);
-	}
-
-	public void popScope() {
-		if (scopeStack.size() > 1) {
-			scopeStack.pop();
+	/**
+	 * Resolves a defined pattern by name
+	 * 
+	 * @param name
+	 * @return Pattern with this name; null, if no pattern was found with this name
+	 */
+	public PatternDefinition resolvePattern(String name) {
+		if (parent == null) {
+			return patternDefinitions.get(name);
 		}
+		return parent.resolvePattern(name);
 	}
 
-	public void checkTypes(Pattern call) {
-		Pattern definedPattern = (Pattern) resolve(call.getSymbolID());
-		definedPattern.checkParameterTypes(call.getParameters());
+	/**
+	 * Checks whether a variable with the given name was defined
+	 * 
+	 * @param name
+	 * @return true, if variable with the given name was defined; otherwise false
+	 */
+	public boolean isDefinedVariable(String name) {
+		return resolveVariable(name) != null;
+	}
+
+	/**
+	 * Checks whether a pattern with the given name was defined
+	 * 
+	 * @param name
+	 * @return true, if pattern with the given name was defined; otherwise false
+	 */
+	public boolean isDefinedPattern(String name) {
+		return resolvePattern(name) != null;
 	}
 
 }

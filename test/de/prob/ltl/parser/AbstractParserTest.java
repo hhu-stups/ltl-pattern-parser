@@ -1,5 +1,6 @@
 package de.prob.ltl.parser;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,11 +10,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
-import de.prob.ltl.parser.prolog.PrologTermGenerator;
+import de.prob.ltl.parser.LtlParser.StartContext;
+import de.prob.ltl.parser.semantic.SemanticCheck;
 import de.prob.parserbase.UnparsedParserBase;
 import de.prob.prolog.output.StructuredPrologOutput;
 
@@ -42,9 +43,9 @@ public abstract class AbstractParserTest {
 		return parser;
 	}
 
-	protected void semanticCheck(ParseTree ast, LtlParser parser) {
-		ParseTreeWalker.DEFAULT.walk(new SematicCheckPhase1(parser), ast);
-		ParseTreeWalker.DEFAULT.walk(new SematicCheckPhase2(parser), ast);
+	protected void semanticCheck(StartContext ast, LtlParser parser) {
+		SemanticCheck sc = new SemanticCheck(parser);
+		sc.check(ast);
 	}
 
 	protected boolean hasErrors(LtlParser parser) {
@@ -58,11 +59,20 @@ public abstract class AbstractParserTest {
 		return false;
 	}
 
+	protected List<RuntimeException> getExceptions(LtlParser parser) {
+		if (parser.getErrorListeners().size() > 0 && parser.getErrorListeners().get(0) instanceof TestErrorListener) {
+			TestErrorListener listener = (TestErrorListener) parser.getErrorListeners().get(0);
+
+			return listener.getExceptions();
+		}
+		return Collections.emptyList();
+	}
+
 	protected StructuredPrologOutput generatePrologTerm(ParseTree ast, LtlParser parser) {
 		StructuredPrologOutput pto = new StructuredPrologOutput();
-		PrologTermGenerator generator = new PrologTermGenerator(parser, pto, "current", parserBase);
+		//PrologTermGenerator generator = new PrologTermGenerator(parser, pto, "current", parserBase);
 
-		generator.generatePrologTerm(ast);
+		//generator.generatePrologTerm(ast);
 		pto.fullstop();
 		return pto;
 	}
@@ -70,22 +80,22 @@ public abstract class AbstractParserTest {
 	protected void parse(String input) {
 		LtlParser parser = createParser(input);
 
-		ParseTree ast = parser.start();
+		StartContext ast = parser.start();
 
 		semanticCheck(ast, parser);
 		if (hasErrors(parser)) {
-			throw new RuntimeException("Exception was thrown during parsing.");
+			throw getExceptions(parser).get(0);
 		}
 	}
 
 	protected String parseToString(String input) {
 		LtlParser parser = createParser(input);
 
-		ParseTree ast = parser.start();
+		StartContext ast = parser.start();
 
 		semanticCheck(ast, parser);
 		if (hasErrors(parser)) {
-			throw new RuntimeException("Exception was thrown during parsing.");
+			throw getExceptions(parser).get(0);
 		}
 
 		return generatePrologTerm(ast, parser).getSentences().get(0).toString();
