@@ -7,8 +7,6 @@ import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
 import de.prob.ltl.parser.symboltable.VariableTypes;
-import de.prob.parserbase.ProBParserBase;
-import de.prob.prolog.output.IPrologTermOutput;
 
 public class VariableCall implements Node {
 
@@ -60,12 +58,6 @@ public class VariableCall implements Node {
 
 	public Variable getVariable() {
 		return variable;
-	}
-
-	@Override
-	public void createPrologTerm(LtlParser parser, IPrologTermOutput pto,
-			String currentState, ProBParserBase parserBase) {
-		pto.printTerm(variable.getValue());
 	}
 
 }

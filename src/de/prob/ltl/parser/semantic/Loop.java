@@ -1,6 +1,5 @@
 package de.prob.ltl.parser.semantic;
 
-import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,11 +16,6 @@ import de.prob.ltl.parser.symboltable.LoopTypes;
 import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
 import de.prob.ltl.parser.symboltable.VariableTypes;
-import de.prob.parserbase.ProBParserBase;
-import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.output.StructuredPrologOutput;
-import de.prob.prolog.term.IntegerPrologTerm;
-import de.prob.prolog.term.PrologTerm;
 
 public class Loop extends SymbolTable implements Node {
 
@@ -108,54 +102,6 @@ public class Loop extends SymbolTable implements Node {
 		}
 	}
 
-	@Override
-	public void createPrologTerm(LtlParser parser, IPrologTermOutput pto,
-			String currentState, ProBParserBase parserBase) {
-		symbolTableManager.pushScope(this);
-		StructuredPrologOutput startPto = new StructuredPrologOutput();
-		values.get(0).createPrologTerm(parser, startPto, currentState, parserBase);
-		StructuredPrologOutput endPto = new StructuredPrologOutput();
-		values.get(1).createPrologTerm(parser, endPto, currentState, parserBase);
-		startPto.fullstop();
-		PrologTerm startTerm = startPto.getSentences().get(0);
-		endPto.fullstop();
-		PrologTerm endTerm = endPto.getSentences().get(0);
-
-		if (!startTerm.isNumber() || !endTerm.isNumber()) {
-			if (!startTerm.isNumber()) {
-				parser.notifyErrorListeners(token, "Start value of the loop is not a number.", null);
-			}
-			if (!endTerm.isNumber()) {
-				parser.notifyErrorListeners(token, "End value of the loop is not a number.", null);
-			}
-		} else {
-			BigInteger start = ((IntegerPrologTerm)startTerm).getValue();
-			BigInteger end = ((IntegerPrologTerm)endTerm).getValue();
-
-			boolean isUp = type.equals(LoopTypes.up);
-			int compare = (isUp ? -1 : 1);
-			while (start.compareTo(end) == compare) {
-				if (countVariable != null) {
-					countVariable.setValue(new IntegerPrologTerm(start));
-				}
-				loopStep(parser, pto, currentState, parserBase);
-				if (isUp) {
-					start = start.add(BigInteger.ONE);
-				}else {
-					start = start.subtract(BigInteger.ONE);
-				}
-			}
-		}
-		symbolTableManager.popScope();
-	}
-
-	private void loopStep(LtlParser parser, IPrologTermOutput pto,
-			String currentState, ProBParserBase parserBase) {
-		for (Node node : symbolTableManager.getNodes()) {
-			node.createPrologTerm(parser, pto, currentState, parserBase);
-		}
-	}
-
 	// Getters
 	public Token getToken() {
 		return token;
@@ -163,6 +109,14 @@ public class Loop extends SymbolTable implements Node {
 
 	public LoopTypes getLoopType() {
 		return type;
+	}
+
+	public Variable getCountVariable() {
+		return countVariable;
+	}
+
+	public List<VariableValue> getValues() {
+		return values;
 	}
 
 }

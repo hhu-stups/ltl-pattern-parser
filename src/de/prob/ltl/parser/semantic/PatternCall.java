@@ -17,9 +17,6 @@ import de.prob.ltl.parser.LtlParser.Var_valueContext;
 import de.prob.ltl.parser.symboltable.PatternScopes;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
 import de.prob.ltl.parser.symboltable.VariableTypes;
-import de.prob.parserbase.ProBParserBase;
-import de.prob.prolog.output.IPrologTermOutput;
-import de.prob.prolog.output.StructuredPrologOutput;
 
 public class PatternCall implements Node {
 
@@ -32,8 +29,8 @@ public class PatternCall implements Node {
 	private PatternScopes scope;
 	private List<Variable> scopeArguments = new LinkedList<Variable>();
 	private List<Variable> arguments = new LinkedList<Variable>();
-	private List<Node> scopeArgumentNodes = new LinkedList<Node>();
-	private List<Node> argumentNodes = new LinkedList<Node>();
+	private List<ExprOrAtom> scopeArgumentNodes = new LinkedList<ExprOrAtom>();
+	private List<VariableValue> argumentNodes = new LinkedList<VariableValue>();
 	private PatternDefinition definition;
 
 	public PatternCall(LtlParser parser, Pattern_callContext context) {
@@ -72,22 +69,26 @@ public class PatternCall implements Node {
 			if (ctx instanceof BeforeScopeCallContext) {
 				scope = PatternScopes.before;
 				ExprOrAtom argumentAtom = new ExprOrAtom(parser, ((BeforeScopeCallContext) ctx).atom());
-				addArgument(scopeArguments, scopeArgumentNodes, new Variable(null, VariableTypes.var), argumentAtom);
+				addArgument(scopeArguments, new Variable(null, VariableTypes.var));
+				scopeArgumentNodes.add(argumentAtom);
 			} else if (ctx instanceof AfterScopeCallContext) {
 				scope = PatternScopes.after;
 				ExprOrAtom argumentAtom = new ExprOrAtom(parser, ((AfterScopeCallContext) ctx).atom());
-				addArgument(scopeArguments, scopeArgumentNodes, new Variable(null, VariableTypes.var), argumentAtom);
+				addArgument(scopeArguments, new Variable(null, VariableTypes.var));
+				scopeArgumentNodes.add(argumentAtom);
 			} else if (ctx instanceof BetweenScopeCallContext) {
 				scope = PatternScopes.between;
 				for (int i = 0; i < ((BetweenScopeCallContext) ctx).atom().size(); i++) {
 					ExprOrAtom argumentAtom = new ExprOrAtom(parser, ((BetweenScopeCallContext) ctx).atom(i));
-					addArgument(scopeArguments, scopeArgumentNodes, new Variable(null, VariableTypes.var), argumentAtom);
+					addArgument(scopeArguments, new Variable(null, VariableTypes.var));
+					scopeArgumentNodes.add(argumentAtom);
 				}
 			} else if (ctx instanceof AfterUntilScopeCallContext) {
 				scope = PatternScopes.after_until;
 				for (int i = 0; i < ((AfterUntilScopeCallContext) ctx).atom().size(); i++) {
 					ExprOrAtom argumentAtom = new ExprOrAtom(parser, ((AfterUntilScopeCallContext) ctx).atom(i));
-					addArgument(scopeArguments, scopeArgumentNodes, new Variable(null, VariableTypes.var), argumentAtom);
+					addArgument(scopeArguments, new Variable(null, VariableTypes.var));
+					scopeArgumentNodes.add(argumentAtom);
 				}
 			}
 		}
@@ -99,7 +100,8 @@ public class PatternCall implements Node {
 
 			Variable argument = new Variable(null, value.getValueType());
 			argument.setToken(value.getToken());
-			addArgument(arguments, argumentNodes, argument, value);
+			addArgument(arguments, argument);
+			argumentNodes.add(value);
 		}
 	}
 
@@ -119,9 +121,8 @@ public class PatternCall implements Node {
 		}
 	}
 
-	private void addArgument(List<Variable> argumentList, List<Node> valueList, Variable var, Node node) {
+	private void addArgument(List<Variable> argumentList, Variable var) {
 		argumentList.add(var);
-		valueList.add(node);
 	}
 
 	public String getName() {
@@ -149,36 +150,21 @@ public class PatternCall implements Node {
 		return arguments;
 	}
 
-	@Override
-	public String toString() {
-		return String.format("call(%s)", getName());
+	public PatternDefinition getDefinition() {
+		return definition;
+	}
+
+	public List<ExprOrAtom> getScopeArgumentNodes() {
+		return scopeArgumentNodes;
+	}
+
+	public List<VariableValue> getArgumentNodes() {
+		return argumentNodes;
 	}
 
 	@Override
-	public void createPrologTerm(LtlParser parser, IPrologTermOutput pto,
-			String currentState, ProBParserBase parserBase) {
-		for (int i = 0; i < scopeArgumentNodes.size(); i++) {
-			Variable parameter = definition.getScopeParameters().get(i);
-			Node argument = scopeArgumentNodes.get(i);
-			StructuredPrologOutput temp = new StructuredPrologOutput();
-			argument.createPrologTerm(parser, temp, currentState, parserBase);
-			temp.fullstop();
-			parameter.setValue(temp.getSentences().get(0));
-		}
-		for (int i = 0; i < argumentNodes.size(); i++) {
-			Variable parameter = definition.getParameters().get(i);
-			Node argument = argumentNodes.get(i);
-			StructuredPrologOutput temp = new StructuredPrologOutput();
-			argument.createPrologTerm(parser, temp, currentState, parserBase);
-			temp.fullstop();
-			parameter.setValue(temp.getSentences().get(0));
-		}
-
-		symbolTableManager.pushScope(definition);
-		for (Node node : symbolTableManager.getNodes()) {
-			node.createPrologTerm(parser, pto, currentState, parserBase);
-		}
-		symbolTableManager.popScope();
+	public String toString() {
+		return String.format("call(%s)", getName());
 	}
 
 }

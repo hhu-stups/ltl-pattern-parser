@@ -39,6 +39,7 @@ import de.prob.prolog.output.IPrologTermOutput;
 public class ExprOrAtomPrologTermGenerator extends LtlBaseListener {
 
 	private final LtlParser parser;
+	private final LtlPrologTermGenerator generator;
 
 	private final IPrologTermOutput pto;
 	private final String currentStateID;
@@ -47,8 +48,9 @@ public class ExprOrAtomPrologTermGenerator extends LtlBaseListener {
 	protected ParseTreeProperty<Integer> numberOfTerms = new ParseTreeProperty<Integer>();
 	protected ParserRuleContext blockingContext = null;
 
-	public ExprOrAtomPrologTermGenerator(LtlParser parser, IPrologTermOutput pto, String currentStateID, ProBParserBase parserBase) {
+	public ExprOrAtomPrologTermGenerator(LtlParser parser, LtlPrologTermGenerator generator, IPrologTermOutput pto, String currentStateID, ProBParserBase parserBase) {
 		this.parser = parser;
+		this.generator = generator;
 		this.pto = pto;
 		this.currentStateID = currentStateID;
 		this.specParser = parserBase;
@@ -58,7 +60,7 @@ public class ExprOrAtomPrologTermGenerator extends LtlBaseListener {
 	public void enterVariableCallAtom(VariableCallAtomContext ctx) {
 		if (enterContext(ctx)) {
 			VariableCall call = new VariableCall(parser, ctx);
-			call.createPrologTerm(parser, pto, currentStateID, specParser);
+			generator.generateVariableCall(call, pto);
 		}
 	}
 
@@ -66,7 +68,7 @@ public class ExprOrAtomPrologTermGenerator extends LtlBaseListener {
 	public void enterPatternCallAtom(PatternCallAtomContext ctx) {
 		if (enterContext(ctx)) {
 			PatternCall call = new PatternCall(parser, ctx.pattern_call());
-			call.createPrologTerm(parser, pto, currentStateID, specParser);
+			generator.generatePatternCall(call, pto);
 		}
 	}
 

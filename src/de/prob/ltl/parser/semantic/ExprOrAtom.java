@@ -7,9 +7,6 @@ import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
-import de.prob.ltl.parser.prolog.ExprOrAtomPrologTermGenerator;
-import de.prob.parserbase.ProBParserBase;
-import de.prob.prolog.output.IPrologTermOutput;
 
 public class ExprOrAtom implements Node {
 
@@ -33,10 +30,8 @@ public class ExprOrAtom implements Node {
 		}
 	}
 
-	@Override
-	public void createPrologTerm(LtlParser parser, IPrologTermOutput pto,
-			String currentState, ProBParserBase parserBase) {
-		ParseTreeWalker.DEFAULT.walk(new ExprOrAtomPrologTermGenerator(parser, pto, currentState, parserBase), context);
+	public ParseTree getContext() {
+		return context;
 	}
 
 }

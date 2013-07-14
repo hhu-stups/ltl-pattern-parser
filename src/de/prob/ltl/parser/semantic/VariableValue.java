@@ -1,9 +1,6 @@
 package de.prob.ltl.parser.semantic;
 
-import java.math.BigInteger;
-
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser;
@@ -11,11 +8,8 @@ import de.prob.ltl.parser.LtlParser.NumValueContext;
 import de.prob.ltl.parser.LtlParser.ParValueContext;
 import de.prob.ltl.parser.LtlParser.VarValueContext;
 import de.prob.ltl.parser.LtlParser.Var_valueContext;
-import de.prob.ltl.parser.prolog.ExprOrAtomPrologTermGenerator;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
 import de.prob.ltl.parser.symboltable.VariableTypes;
-import de.prob.parserbase.ProBParserBase;
-import de.prob.prolog.output.IPrologTermOutput;
 
 public class VariableValue implements Node {
 
@@ -64,27 +58,6 @@ public class VariableValue implements Node {
 		// But with help of the varValue rule, this case could never be reached.
 	}
 
-	@Override
-	public void createPrologTerm(LtlParser parser, IPrologTermOutput pto, String currentState, ProBParserBase parserBase) {
-		if (context instanceof VarValueContext) {
-			TerminalNode node = ((VarValueContext) context).ID();
-			String name = node.getText();
-
-			Variable var = symbolTableManager.resolveVariable(name);
-			pto.printTerm(var.getValue());
-		} else if (context instanceof NumValueContext) {
-			TerminalNode node = ((NumValueContext) context).NUM();
-			String numString = node.getText();
-
-			pto.printNumber(new BigInteger(numString));
-		} else if (context instanceof ParValueContext) {
-			VariableValue varValue = new VariableValue(parser, ((ParValueContext) context).var_value());
-			varValue.createPrologTerm(parser, pto, currentState, parserBase);
-		} else {
-			ParseTreeWalker.DEFAULT.walk(new ExprOrAtomPrologTermGenerator(parser, pto, currentState, parserBase), context);
-		}
-	}
-
 	// Getters
 	public VariableTypes getValueType() {
 		return valueType;
@@ -92,6 +65,10 @@ public class VariableValue implements Node {
 
 	public Token getToken() {
 		return token;
+	}
+
+	public Var_valueContext getContext() {
+		return context;
 	}
 
 }
