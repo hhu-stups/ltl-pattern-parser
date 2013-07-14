@@ -97,6 +97,11 @@ public class PrologTermGeneratorTest extends AbstractParserTest {
 		Assert.assertEquals("or(or(false,true),true)", parseToString("def pattern(): var x: false count 1 up to 3: var y: true x: x or y end x pattern()"));
 
 		Assert.assertEquals("or(true,ap(sink))", parseToString("def a(): sink def b(): var x: false count 1 up to 2: x: true or a() end x b()"));
+
+		String pattern = "def pattern(n:num): var r: false count 1 up to n: r: true and r end r ";
+		Assert.assertEquals("true", parseToString(pattern + "var x: true count i: 1 up to 1: x: x or pattern(i) end x"));
+		Assert.assertEquals("or(true,false)", parseToString(pattern + "var x: true count i: 1 up to 2: x: x or pattern(i) end x"));
+		Assert.assertEquals("or(or(true,false),and(true,false))", parseToString(pattern + "var x: true count i: 1 up to 3: x: x or pattern(i) end x"));
 	}
 
 }

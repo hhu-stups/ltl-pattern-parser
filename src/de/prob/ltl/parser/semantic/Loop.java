@@ -132,14 +132,16 @@ public class Loop extends SymbolTable implements Node {
 			BigInteger start = ((IntegerPrologTerm)startTerm).getValue();
 			BigInteger end = ((IntegerPrologTerm)endTerm).getValue();
 
-			if (type.equals(LoopTypes.up)) {
-				while (start.compareTo(end) == -1) {
-					loopStep(parser, pto, currentState, parserBase);
-					start = start.add(BigInteger.ONE);
+			boolean isUp = type.equals(LoopTypes.up);
+			int compare = (isUp ? -1 : 1);
+			while (start.compareTo(end) == compare) {
+				if (countVariable != null) {
+					countVariable.setValue(new IntegerPrologTerm(start));
 				}
-			} else {
-				while (start.compareTo(end) == 1) {
-					loopStep(parser, pto, currentState, parserBase);
+				loopStep(parser, pto, currentState, parserBase);
+				if (isUp) {
+					start = start.add(BigInteger.ONE);
+				}else {
 					start = start.subtract(BigInteger.ONE);
 				}
 			}
