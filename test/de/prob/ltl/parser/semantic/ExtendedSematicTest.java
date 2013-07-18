@@ -81,29 +81,12 @@ public class ExtendedSematicTest extends AbstractParserTest {
 		parse("def pattern(): true false");
 		parse("def pattern(): true pattern()");
 
-		parse("def pattern(): true pattern<global>()");
-		parse("def <global> pattern(): true pattern()");
-		parse("def <global> pattern(): true pattern<global>()");
-		parse("def <before r> pattern(): true pattern<before true>()");
-		parse("def <after q> pattern(): true pattern<after true>()");
-		parse("def <between q and r> pattern(): true pattern<between true and false>()");
-		parse("def <after q until r> pattern(): true pattern<after true until false>()");
-
 		throwsException("def pattern(): true a()");
-		throwsException("def pattern(): true pattern<before true>()");
-		throwsException("def <before r> pattern(): true pattern()");
 
 		parse("def a(): true def b(): true true");
 		parse("def a(): true def b(): true a() or b()");
 		parse("def a(): true def b(): true b() or a()");
 		throwsException("def a(): true def a(): true true");
-		parse("def <before r> a(): true def a(): true true");
-
-		throwsException("def <before r> a(): true a<before r>()");
-		throwsException("def <before r> a(x): true a<before r>(true)");
-		throwsException("def <before r> a(x): true a<before true>(r)");
-		throwsException("def <before r> a(x): true a<before x>(true)");
-		throwsException("def <before r> a(x): true a<before true>(x)");
 	}
 
 	@Test

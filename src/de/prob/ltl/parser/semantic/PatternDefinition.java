@@ -8,19 +8,13 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser;
-import de.prob.ltl.parser.LtlParser.AfterScopeDefContext;
-import de.prob.ltl.parser.LtlParser.AfterUntilScopeDefContext;
-import de.prob.ltl.parser.LtlParser.BeforeScopeDefContext;
-import de.prob.ltl.parser.LtlParser.BetweenScopeDefContext;
 import de.prob.ltl.parser.LtlParser.LoopContext;
 import de.prob.ltl.parser.LtlParser.NumVarParamContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 import de.prob.ltl.parser.LtlParser.Pattern_def_paramContext;
-import de.prob.ltl.parser.LtlParser.Pattern_def_scopeContext;
 import de.prob.ltl.parser.LtlParser.VarParamContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
-import de.prob.ltl.parser.symboltable.PatternScopes;
 import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
 import de.prob.ltl.parser.symboltable.VariableTypes;
@@ -33,8 +27,6 @@ public class PatternDefinition extends SymbolTable {
 	private Pattern_defContext context;
 	private Token token;
 	private String name;
-	private PatternScopes scope;
-	private List<Variable> scopeParameters = new LinkedList<Variable>();
 	private List<Variable> parameters = new LinkedList<Variable>();
 
 	public PatternDefinition(LtlParser parser, Pattern_defContext context) {
@@ -47,7 +39,6 @@ public class PatternDefinition extends SymbolTable {
 		if (this.context != null) {
 			symbolTableManager.pushScope(this);
 			determineTokenAndName();
-			determineScopeAndScopeParameters();
 			determineParameters();
 			symbolTableManager.popScope();
 
@@ -87,35 +78,6 @@ public class PatternDefinition extends SymbolTable {
 		token = node.getSymbol();
 	}
 
-	private void determineScopeAndScopeParameters() {
-		scope = PatternScopes.global;
-
-		Pattern_def_scopeContext ctx = context.pattern_def_scope();
-		if (ctx != null) {
-			if (ctx instanceof BeforeScopeDefContext) {
-				scope = PatternScopes.before;
-				Variable parameter = createVariable(((BeforeScopeDefContext) ctx).ID());
-				addParameter(scopeParameters, parameter);
-			} else if (ctx instanceof AfterScopeDefContext) {
-				scope = PatternScopes.after;
-				Variable parameter = createVariable(((AfterScopeDefContext) ctx).ID());
-				addParameter(scopeParameters, parameter);
-			} else if (ctx instanceof BetweenScopeDefContext) {
-				scope = PatternScopes.between;
-				for (int i = 0; i < ((BetweenScopeDefContext) ctx).ID().size(); i++) {
-					Variable parameter = createVariable(((BetweenScopeDefContext) ctx).ID(i));
-					addParameter(scopeParameters, parameter);
-				}
-			} else if (ctx instanceof AfterUntilScopeDefContext) {
-				scope = PatternScopes.after_until;
-				for (int i = 0; i < ((AfterUntilScopeDefContext) ctx).ID().size(); i++) {
-					Variable parameter = createVariable(((AfterUntilScopeDefContext) ctx).ID(i));
-					addParameter(scopeParameters, parameter);
-				}
-			}
-		}
-	}
-
 	private void determineParameters() {
 		for (Pattern_def_paramContext ctx : context.pattern_def_param()) {
 			Variable parameter = null;
@@ -147,7 +109,7 @@ public class PatternDefinition extends SymbolTable {
 	}
 
 	public String getName() {
-		return String.format("%s/%s/%d", name, scope, parameters.size());
+		return String.format("%s/%d", name, parameters.size());
 	}
 
 	// Getters
@@ -161,14 +123,6 @@ public class PatternDefinition extends SymbolTable {
 
 	public String getSimpleName() {
 		return name;
-	}
-
-	public PatternScopes getScope() {
-		return scope;
-	}
-
-	public List<Variable> getScopeParameters() {
-		return scopeParameters;
 	}
 
 	public List<Variable> getParameters() {

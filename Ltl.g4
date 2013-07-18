@@ -24,19 +24,11 @@ start
  ;
 
 pattern_def
- : PATTERN_DEF (LEFT_ANGLE pattern_def_scope RIGHT_ANGLE)? ID LEFT_PAREN (pattern_def_param (',' pattern_def_param)*)? RIGHT_PAREN ':' pattern_def_body
+ : PATTERN_DEF ID LEFT_PAREN (pattern_def_param (',' pattern_def_param)*)? RIGHT_PAREN ':' pattern_def_body
  ;
 
 pattern_def_body
  : (var_def | var_assign | loop)* expr
- ;
-
-pattern_def_scope
- : GLOBAL_SCOPE 					# globalScopeDef
- | BEFORE_SCOPE ID 					# beforeScopeDef
- | AFTER_SCOPE ID					# afterScopeDef
- | BETWEEN_SCOPE ID AND ID 			# betweenScopeDef
- | AFTER_SCOPE ID UNTIL_SCOPE ID	# afterUntilScopeDef
  ;
  
 pattern_def_param
@@ -45,15 +37,12 @@ pattern_def_param
  ;
 
 pattern_call
- : ID (LEFT_ANGLE pattern_call_scope RIGHT_ANGLE)? LEFT_PAREN (var_value (',' var_value)*)? RIGHT_PAREN
+ : ID LEFT_PAREN (var_value (',' var_value)*)? RIGHT_PAREN
  ;
  
-pattern_call_scope
- : GLOBAL_SCOPE 						# globalScopeCall
- | BEFORE_SCOPE  atom 					# beforeScopeCall
- | AFTER_SCOPE   atom					# afterScopeCall
- | BETWEEN_SCOPE atom AND atom 			# betweenScopeCall
- | AFTER_SCOPE   atom UNTIL_SCOPE atom	# afterUntilScopeCall   
+scope_call
+ : (BEFORE_SCOPE | AFTER_SCOPE) LEFT_PAREN var_value ',' var_value RIGHT_PAREN
+ | (BETWEEN_SCOPE | UNTIL_SCOPE) LEFT_PAREN var_value ',' var_value ',' var_value RIGHT_PAREN
  ;
    
 var_def
@@ -102,6 +91,7 @@ expr
 atom
  : ID							# variableCallAtom
  | pattern_call					# patternCallAtom	
+ | scope_call					# scopeCallAtom
  | PREDICATE					# predicateAtom
  | ACTION						# actionAtom
  | ENABLED						# enabledAtom
@@ -155,8 +145,6 @@ LEFT_BRACKET	: '[';
 RIGHT_BRACKET	: ']';
 LEFT_PAREN		: '(';
 RIGHT_PAREN		: ')';
-LEFT_ANGLE		: '<';
-RIGHT_ANGLE		: '>';
 
 // Comments
 COMMENT			: ('//' ~('\n')* 
@@ -164,11 +152,12 @@ COMMENT			: ('//' ~('\n')*
 				
 // Patterns
 PATTERN_DEF		: 'def';
-GLOBAL_SCOPE	: 'global';
+
+// Scopes
 BEFORE_SCOPE	: 'before';
 AFTER_SCOPE		: 'after';
 BETWEEN_SCOPE	: 'between';
-UNTIL_SCOPE		: 'until';
+UNTIL_SCOPE		: 'after_until';
 
 // Vars
 VAR				: 'var';

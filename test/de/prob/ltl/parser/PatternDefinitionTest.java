@@ -42,16 +42,6 @@ public class PatternDefinitionTest extends AbstractParserTest {
 	}
 
 	@Test
-	public void testDefinitionScopeSimple() throws Exception {
-		parseDef("def <global> pattern(): false");
-		parseDef("def <before r> pattern(): false");
-		parseDef("def <after q> pattern(): false");
-		parseDef("def <between q and r> pattern(): false");
-		parseDef("def <between q & r> pattern(): false");
-		parseDef("def <after q until r> pattern(): false");
-	}
-
-	@Test
 	public void testDefinitionNumParamSimple() throws Exception {
 		parseDef("def pattern(n:num): false");
 		parseDef("def pattern(x, n:num): false");
@@ -84,26 +74,6 @@ public class PatternDefinitionTest extends AbstractParserTest {
 	}
 
 	@Test
-	public void testCallScopeSimple() throws Exception {
-		parseSimple("pattern<global>()");
-		parseSimple("pattern<before true>()");
-		parseSimple("pattern<after true>()");
-		parseSimple("pattern<between true and false>()");
-		parseSimple("pattern<between true & false>()");
-		parseSimple("pattern<after true until false>()");
-	}
-
-	@Test
-	public void testCallScopeArgs() throws Exception {
-		parseSimple("pattern<before x>()");
-		parseSimple("pattern<after other()>()");
-		parseSimple("pattern<between (true => (GF deadlock) and false) and false>()");
-		parseSimple("pattern<between {...} & e(...)>()");
-		parseSimple("pattern<after [...] until current>()");
-		parseSimple("pattern<before (!false)>()");
-	}
-
-	@Test
 	public void testForbiddenDefintion() throws Exception {
 		throwsException("def not(a): a not(true)");
 		throwsException("def f(not): not f(true)");
@@ -128,7 +98,7 @@ public class PatternDefinitionTest extends AbstractParserTest {
 		throwsException("def sink(x): x sink(true)");
 		throwsException("def deadlock(x): x deadlock(true)");
 		throwsException("def and(x): x and(true)");
-		throwsException("def global(x): x global(true)");
+		throwsException("def before(x): x before(true)");
 
 		throwsException("def f(a,a): a f(false,true)");
 

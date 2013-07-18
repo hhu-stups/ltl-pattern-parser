@@ -7,16 +7,9 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser;
-import de.prob.ltl.parser.LtlParser.AfterScopeCallContext;
-import de.prob.ltl.parser.LtlParser.AfterUntilScopeCallContext;
-import de.prob.ltl.parser.LtlParser.BeforeScopeCallContext;
-import de.prob.ltl.parser.LtlParser.BetweenScopeCallContext;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
-import de.prob.ltl.parser.LtlParser.Pattern_call_scopeContext;
 import de.prob.ltl.parser.LtlParser.Var_valueContext;
-import de.prob.ltl.parser.symboltable.PatternScopes;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
-import de.prob.ltl.parser.symboltable.VariableTypes;
 
 public class PatternCall implements Node {
 
@@ -26,10 +19,7 @@ public class PatternCall implements Node {
 	private Pattern_callContext context;
 	private Token token;
 	private String name;
-	private PatternScopes scope;
-	private List<Variable> scopeArguments = new LinkedList<Variable>();
 	private List<Variable> arguments = new LinkedList<Variable>();
-	private List<ExprOrAtom> scopeArgumentNodes = new LinkedList<ExprOrAtom>();
 	private List<VariableValue> argumentNodes = new LinkedList<VariableValue>();
 	private PatternDefinition definition;
 
@@ -41,7 +31,6 @@ public class PatternCall implements Node {
 
 		if (this.context != null) {
 			determineTokenAndName();
-			determineScopeAndScopeArguments();
 			determineArguments();
 
 			// Find pattern definition
@@ -61,38 +50,6 @@ public class PatternCall implements Node {
 		token = node.getSymbol();
 	}
 
-	private void determineScopeAndScopeArguments() {
-		scope = PatternScopes.global;
-
-		Pattern_call_scopeContext ctx = context.pattern_call_scope();
-		if (ctx != null) {
-			if (ctx instanceof BeforeScopeCallContext) {
-				scope = PatternScopes.before;
-				ExprOrAtom argumentAtom = new ExprOrAtom(parser, ((BeforeScopeCallContext) ctx).atom());
-				addArgument(scopeArguments, new Variable(null, VariableTypes.var));
-				scopeArgumentNodes.add(argumentAtom);
-			} else if (ctx instanceof AfterScopeCallContext) {
-				scope = PatternScopes.after;
-				ExprOrAtom argumentAtom = new ExprOrAtom(parser, ((AfterScopeCallContext) ctx).atom());
-				addArgument(scopeArguments, new Variable(null, VariableTypes.var));
-				scopeArgumentNodes.add(argumentAtom);
-			} else if (ctx instanceof BetweenScopeCallContext) {
-				scope = PatternScopes.between;
-				for (int i = 0; i < ((BetweenScopeCallContext) ctx).atom().size(); i++) {
-					ExprOrAtom argumentAtom = new ExprOrAtom(parser, ((BetweenScopeCallContext) ctx).atom(i));
-					addArgument(scopeArguments, new Variable(null, VariableTypes.var));
-					scopeArgumentNodes.add(argumentAtom);
-				}
-			} else if (ctx instanceof AfterUntilScopeCallContext) {
-				scope = PatternScopes.after_until;
-				for (int i = 0; i < ((AfterUntilScopeCallContext) ctx).atom().size(); i++) {
-					ExprOrAtom argumentAtom = new ExprOrAtom(parser, ((AfterUntilScopeCallContext) ctx).atom(i));
-					addArgument(scopeArguments, new Variable(null, VariableTypes.var));
-					scopeArgumentNodes.add(argumentAtom);
-				}
-			}
-		}
-	}
 
 	private void determineArguments() {
 		for (Var_valueContext ctx : context.var_value()) {
@@ -126,7 +83,7 @@ public class PatternCall implements Node {
 	}
 
 	public String getName() {
-		return String.format("%s/%s/%d", name, scope, arguments.size());
+		return String.format("%s/%d", name, arguments.size());
 	}
 
 	// Getters
@@ -138,24 +95,12 @@ public class PatternCall implements Node {
 		return name;
 	}
 
-	public PatternScopes getScope() {
-		return scope;
-	}
-
-	public List<Variable> getScopeArguments() {
-		return scopeArguments;
-	}
-
 	public List<Variable> getArguments() {
 		return arguments;
 	}
 
 	public PatternDefinition getDefinition() {
 		return definition;
-	}
-
-	public List<ExprOrAtom> getScopeArgumentNodes() {
-		return scopeArgumentNodes;
 	}
 
 	public List<VariableValue> getArgumentNodes() {

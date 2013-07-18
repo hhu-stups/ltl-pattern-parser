@@ -1,28 +1,10 @@
 package de.prob.ltl.parser.semantic;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
 import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
 
 public class SematicTest extends AbstractParserTest {
-
-	@Test
-	public void testDefinitionPatternScopes() throws Exception {
-		String pattern1 = "def pattern(): true ";
-		String pattern2 = "def <global> pattern(): true ";
-		String pattern3 = "def <before r> pattern(): r ";
-		String pattern4 = "def <after q> pattern(): true ";
-		String pattern5 = "def <between q and r> pattern(): true ";
-		String pattern6 = "def <after q until r> pattern(): true ";
-		String pattern7 = "def <global> pattern(x): true ";
-		String expr = "true ";
-		throwsException(pattern1 +  pattern2 + expr);
-		parse(pattern1 +  pattern7 + expr);
-		parse(pattern1 + pattern3 + pattern4 + pattern5 + pattern6 + expr);
-	}
 
 	@Test
 	public void testDefinitionPatternParameter() throws Exception {
@@ -38,11 +20,9 @@ public class SematicTest extends AbstractParserTest {
 	public void testDefinitionPatternError() throws Exception {
 		String pattern1 = "def pattern(x, x): true ";
 		String pattern2 = "def pattern(x, y): z ";
-		String pattern3 = "def <before r> pattern(r): true ";
 		String expr = "true ";
 		throwsException(pattern1 + expr);
 		throwsException(pattern2 + expr);
-		throwsException(pattern3 + expr);
 	}
 
 	@Test
@@ -104,7 +84,6 @@ public class SematicTest extends AbstractParserTest {
 	public void testPatternsAndVars() throws Exception {
 		String pattern1 = "def pattern(): true ";
 		String pattern2 = "def pattern(x): true ";
-		String pattern3 = "def <before x> pattern(): true ";
 		String pattern4 = "def pattern(): x ";
 		String pattern5 = "def pattern(): var x: true true ";
 
@@ -117,9 +96,6 @@ public class SematicTest extends AbstractParserTest {
 		parse(var1 + pattern2 + expr);
 		parse(pattern2 + var1 + expr);
 
-		parse(var1 + pattern3 + expr);
-		parse(pattern3 + var1 + expr);
-
 		throwsException(var1 + pattern4 + expr);
 		throwsException(pattern4 + var1 + expr);
 
@@ -128,15 +104,11 @@ public class SematicTest extends AbstractParserTest {
 
 		String var2 = "var x: pattern() ";
 		String var3 = "var x: pattern(true) ";
-		String var4 = "var x: pattern<before true>() ";
 		parse(var2 + pattern1 + expr);
 		parse(pattern1 + var2 + expr);
 
 		parse(var3 + pattern2 + expr);
 		parse(pattern2 + var3 + expr);
-
-		parse(var4 + pattern3 + expr);
-		parse(pattern3 + var4 + expr);
 
 		// TODO cycle detection throwsException(var2 + pattern4 + expr);
 		throwsException(pattern4 + var2 + expr);
@@ -150,19 +122,15 @@ public class SematicTest extends AbstractParserTest {
 		String loop1 = "count 1 up to 2: var x: true end ";
 		String pattern1 = "def pattern(): " + loop1 + " true ";
 		String pattern2 = "def pattern(x): " + loop1 + " true ";
-		String pattern3 = "def <before x> pattern(): " + loop1 + " true ";
 		String expr = "true ";
 		parse(pattern1 + expr);
 		throwsException(pattern2 + expr);
-		throwsException(pattern3 + expr);
 
 		String loop2 = "count 1 up to 2: x: true end ";
 		String pattern4 = "def pattern(): " + loop2 + " true ";
 		String pattern5 = "def pattern(x): " + loop2 + " true ";
-		String pattern6 = "def <before x> pattern(): " + loop2 + " true ";
 		throwsException(pattern4 + expr);
 		parse(pattern5 + expr);
-		parse(pattern6 + expr);
 
 		String loop3 = "count 1 up to 5: var x: true x: x or false end ";
 		String pattern7 = "def pattern(): " + loop3 + " true ";
@@ -176,20 +144,16 @@ public class SematicTest extends AbstractParserTest {
 
 		parse(pattern1 + varDef + expr);
 		throwsException(pattern2 + varDef + expr);
-		throwsException(pattern3 + varDef + expr);
 		throwsException(pattern4 + varDef + expr);
 		parse(pattern5 + varDef + expr);
-		parse(pattern6 + varDef + expr);
 		parse(pattern7 + varDef + expr);
 
 		String varAssign = "x: true ";
 
 		throwsException(pattern1 + varAssign + expr);
 		throwsException(pattern2 + varAssign + expr);
-		throwsException(pattern3 + varAssign + expr);
 		throwsException(pattern4 + varAssign + expr);
 		throwsException(pattern5 + varAssign + expr);
-		throwsException(pattern6 + varAssign + expr);
 		throwsException(pattern7 + varAssign + expr);
 	}
 
@@ -200,8 +164,6 @@ public class SematicTest extends AbstractParserTest {
 
 		parse("def pattern(x:num): count x up to 2: var s: true end true true");
 		throwsException("def pattern(y): count x up to 2: var s: true end true true");
-		throwsException("def <before x> pattern(): count 1 up to x: var s: true end true true");
-		throwsException("def <before y> pattern(): count 1 up to x: var s: true end true true");
 		throwsException("def pattern(): count x up to 2: var s: true end true true");
 		throwsException("def pattern(): count 1 up to x: var s: true end true true");
 	}
@@ -253,22 +215,6 @@ public class SematicTest extends AbstractParserTest {
 		throwsException("def pattern(n:num): n: 2 pattern(1)");
 		throwsException("def pattern(n:num, x:num): n: x pattern(1, 2)");
 	}
-
-	@Test
-	public void testPatterns() throws Exception {
-		BufferedReader reader = new BufferedReader(new FileReader("test/patterns.txt"));
-		StringBuilder b = new StringBuilder();
-
-		String line;
-		while ((line = reader.readLine()) != null) {
-			b.append(line);
-			b.append('\n');
-		}
-		reader.close();
-
-		parse(b.toString() + " true");
-	}
-
 
 	/*@Test
 	public void testRecursiveDefinitionCall() throws Exception {

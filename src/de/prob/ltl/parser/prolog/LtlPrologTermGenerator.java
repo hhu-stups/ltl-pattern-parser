@@ -116,14 +116,6 @@ public class LtlPrologTermGenerator {
 	}
 
 	public void generatePatternCall(PatternCall call, IPrologTermOutput epto) {
-		for (int i = 0; i < call.getScopeArgumentNodes().size(); i++) {
-			Variable parameter = call.getDefinition().getScopeParameters().get(i);
-			ExprOrAtom argument = call.getScopeArgumentNodes().get(i);
-			StructuredPrologOutput temp = new StructuredPrologOutput();
-			generateExprOrAtom(argument, temp);
-			temp.fullstop();
-			parameter.setValue(temp.getSentences().get(0));
-		}
 		for (int i = 0; i < call.getArgumentNodes().size(); i++) {
 			Variable parameter = call.getDefinition().getParameters().get(i);
 			VariableValue argument = call.getArgumentNodes().get(i);
