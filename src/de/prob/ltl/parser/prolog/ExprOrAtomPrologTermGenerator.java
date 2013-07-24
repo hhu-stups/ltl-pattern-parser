@@ -22,6 +22,7 @@ import de.prob.ltl.parser.LtlParser.OrExprContext;
 import de.prob.ltl.parser.LtlParser.PatternCallAtomContext;
 import de.prob.ltl.parser.LtlParser.PredicateAtomContext;
 import de.prob.ltl.parser.LtlParser.ReleaseExprContext;
+import de.prob.ltl.parser.LtlParser.ScopeCallAtomContext;
 import de.prob.ltl.parser.LtlParser.SinceExprContext;
 import de.prob.ltl.parser.LtlParser.StateAtomContext;
 import de.prob.ltl.parser.LtlParser.TriggerExprContext;
@@ -31,6 +32,7 @@ import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 import de.prob.ltl.parser.LtlParser.WeakuntilExprContext;
 import de.prob.ltl.parser.LtlParser.YesterdayExprContext;
 import de.prob.ltl.parser.semantic.PatternCall;
+import de.prob.ltl.parser.semantic.ScopeCall;
 import de.prob.ltl.parser.semantic.VariableCall;
 import de.prob.parserbase.ProBParseException;
 import de.prob.parserbase.ProBParserBase;
@@ -69,6 +71,14 @@ public class ExprOrAtomPrologTermGenerator extends LtlBaseListener {
 		if (enterContext(ctx)) {
 			PatternCall call = new PatternCall(parser, ctx.pattern_call());
 			generator.generatePatternCall(call, pto);
+		}
+	}
+
+	@Override
+	public void enterScopeCallAtom(ScopeCallAtomContext ctx) {
+		if (enterContext(ctx)) {
+			ScopeCall call = new ScopeCall(parser, ctx.scope_call());
+			generator.generateScopeCall(call, pto);
 		}
 	}
 

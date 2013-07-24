@@ -10,10 +10,12 @@ import de.prob.ltl.parser.LtlParser.NumValueContext;
 import de.prob.ltl.parser.LtlParser.ParValueContext;
 import de.prob.ltl.parser.LtlParser.VarValueContext;
 import de.prob.ltl.parser.LtlParser.Var_valueContext;
+import de.prob.ltl.parser.prolog.scope.ScopePrologTermGenerator;
 import de.prob.ltl.parser.semantic.ExprOrAtom;
 import de.prob.ltl.parser.semantic.Loop;
 import de.prob.ltl.parser.semantic.Node;
 import de.prob.ltl.parser.semantic.PatternCall;
+import de.prob.ltl.parser.semantic.ScopeCall;
 import de.prob.ltl.parser.semantic.Variable;
 import de.prob.ltl.parser.semantic.VariableAssignment;
 import de.prob.ltl.parser.semantic.VariableCall;
@@ -112,7 +114,6 @@ public class LtlPrologTermGenerator {
 
 	public void generateExprOrAtom(ExprOrAtom expr, IPrologTermOutput epto) {
 		ParseTreeWalker.DEFAULT.walk(new ExprOrAtomPrologTermGenerator(parser, this, epto, currentState, parserBase), expr.getContext());
-
 	}
 
 	public void generatePatternCall(PatternCall call, IPrologTermOutput epto) {
@@ -128,6 +129,20 @@ public class LtlPrologTermGenerator {
 		symbolTableManager.pushScope(call.getDefinition());
 		generatePrologTerm(epto);
 		symbolTableManager.popScope();
+	}
+
+	public void generateScopeCall(ScopeCall call, IPrologTermOutput epto) {
+		for (int i = 0; i < call.getArgumentNodes().size(); i++) {
+			Variable parameter = call.getArguments().get(i);
+			VariableValue argument = call.getArgumentNodes().get(i);
+			StructuredPrologOutput temp = new StructuredPrologOutput();
+			generateVariableValue(argument, temp);
+			temp.fullstop();
+			parameter.setValue(temp.getSentences().get(0));
+		}
+
+		ScopePrologTermGenerator generator = new ScopePrologTermGenerator(parser, this, epto, currentState, parserBase);
+		generator.generatePrologTerm(call);
 	}
 
 	public void generateVariableCall(VariableCall call, IPrologTermOutput epto) {

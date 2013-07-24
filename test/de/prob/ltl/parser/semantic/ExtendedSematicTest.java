@@ -123,4 +123,14 @@ public class ExtendedSematicTest extends AbstractParserTest {
 		throwsException("count i: 1 up to 2: var x: true end i: 0 false");
 	}
 
+	@Test
+	public void testScopes() throws Exception {
+		parse("def a(): true def b(x): x before(a(), b(true))");
+		parse("var x: true before(x, x)");
+
+		throwsException("num x: 1 before(x, true)");
+		throwsException("num x: 1 before(true, x)");
+		throwsException("before(1, true)");
+	}
+
 }

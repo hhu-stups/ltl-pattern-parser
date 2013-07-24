@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
+import de.prob.ltl.parser.LtlParser.Scope_callContext;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 
 public class ExprOrAtom implements Node {
@@ -25,6 +26,11 @@ public class ExprOrAtom implements Node {
 				@Override
 				public void enterPattern_call(Pattern_callContext ctx) {
 					new PatternCall(parser, ctx);
+				}
+
+				@Override
+				public void enterScope_call(Scope_callContext ctx) {
+					new ScopeCall(parser, ctx);
 				}
 			}, this.context);
 		}
