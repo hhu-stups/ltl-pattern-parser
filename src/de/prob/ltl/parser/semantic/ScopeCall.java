@@ -10,6 +10,7 @@ import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.Scope_callContext;
 import de.prob.ltl.parser.LtlParser.Var_valueContext;
 import de.prob.ltl.parser.symboltable.VariableTypes;
+import de.prob.prolog.term.PrologTerm;
 
 public class ScopeCall implements Node {
 
@@ -100,6 +101,16 @@ public class ScopeCall implements Node {
 
 	public List<VariableValue> getArgumentNodes() {
 		return argumentNodes;
+	}
+
+	public PrologTerm getValue(int index) {
+		PrologTerm value = null;
+
+		if (index < arguments.size()) {
+			value = arguments.get(index).getValue();
+		}
+
+		return value;
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class ScopePrologTermGeneratorTest extends AbstractParserTest {
 		//assertEquals("F(sink) => true", 	"before(sink, Y(true))");
 
 		assertEquals("F(sink) => (true & !sink) U (false & !sink)", 	"before(sink, true U false)");
-		assertEquals("F(sink) => false U (sink | (false & true))", 		"before(sink, true R false)");
+		assertEquals("F(sink) => false U (sink | (true & false))", 		"before(sink, true R false)");
 		assertEquals("F(sink) => true U (sink | false)", 				"before(sink, true W false)");
 		//assertEquals("F(sink) => true", 	"before(sink, true S false)");
 		//assertEquals("F(sink) => true", 	"before(sink, true T false)");

@@ -10,7 +10,7 @@ import de.prob.ltl.parser.LtlParser.NumValueContext;
 import de.prob.ltl.parser.LtlParser.ParValueContext;
 import de.prob.ltl.parser.LtlParser.VarValueContext;
 import de.prob.ltl.parser.LtlParser.Var_valueContext;
-import de.prob.ltl.parser.prolog.scope.ScopePrologTermGenerator;
+import de.prob.ltl.parser.prolog.scope.ScopeReplacer;
 import de.prob.ltl.parser.semantic.ExprOrAtom;
 import de.prob.ltl.parser.semantic.Loop;
 import de.prob.ltl.parser.semantic.Node;
@@ -141,8 +141,8 @@ public class LtlPrologTermGenerator {
 			parameter.setValue(temp.getSentences().get(0));
 		}
 
-		ScopePrologTermGenerator generator = new ScopePrologTermGenerator(parser, this, epto, currentState, parserBase);
-		generator.generatePrologTerm(call);
+		ScopeReplacer replacer = ScopeReplacer.createReplacer(call);
+		replacer.generatePrologTerm(epto);
 	}
 
 	public void generateVariableCall(VariableCall call, IPrologTermOutput epto) {
