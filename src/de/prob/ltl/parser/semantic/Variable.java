@@ -32,7 +32,7 @@ public class Variable {
 
 	@Override
 	public String toString() {
-		return String.format("%s:%s", name, (type != null ? type.name() : null));
+		return String.format("%s:%s", name, (type != null ? type : null));
 	}
 
 	public PrologTerm getValue() {

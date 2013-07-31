@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.NumValueContext;
 import de.prob.ltl.parser.LtlParser.ParValueContext;
+import de.prob.ltl.parser.LtlParser.SeqValueContext;
 import de.prob.ltl.parser.LtlParser.VarValueContext;
 import de.prob.ltl.parser.LtlParser.Var_valueContext;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
@@ -48,6 +49,10 @@ public class VariableValue implements Node {
 		} else if (context instanceof NumValueContext) {
 			valueType = VariableTypes.num;
 			token = ((NumValueContext) context).NUM().getSymbol();
+		} else if (context instanceof SeqValueContext) {
+			valueType = VariableTypes.seq;
+			SeqDefinition def = new SeqDefinition(parser, ((SeqValueContext) context).seq_value());
+			token = def.getToken();
 		} else if (context instanceof ParValueContext) {
 			VariableValue varValue = new VariableValue(parser, ((ParValueContext) context).var_value());
 			valueType = varValue.getValueType();

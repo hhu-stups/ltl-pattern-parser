@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.Scope_callContext;
 import de.prob.ltl.parser.LtlParser.Var_valueContext;
+import de.prob.ltl.parser.symboltable.ScopeTypes;
 import de.prob.ltl.parser.symboltable.VariableTypes;
 import de.prob.prolog.term.PrologTerm;
 

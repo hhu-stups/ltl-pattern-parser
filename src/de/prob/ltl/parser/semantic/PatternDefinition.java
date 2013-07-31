@@ -12,6 +12,7 @@ import de.prob.ltl.parser.LtlParser.LoopContext;
 import de.prob.ltl.parser.LtlParser.NumVarParamContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 import de.prob.ltl.parser.LtlParser.Pattern_def_paramContext;
+import de.prob.ltl.parser.LtlParser.SeqVarParamContext;
 import de.prob.ltl.parser.LtlParser.VarParamContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
@@ -83,6 +84,8 @@ public class PatternDefinition extends SymbolTable {
 			Variable parameter = null;
 			if (ctx instanceof NumVarParamContext) {
 				parameter = createVariable(((NumVarParamContext) ctx).ID(), VariableTypes.num);
+			} else if (ctx instanceof SeqVarParamContext) {
+				parameter = createVariable(((SeqVarParamContext) ctx).ID(), VariableTypes.seq);
 			} else {
 				parameter = createVariable(((VarParamContext) ctx).ID());
 			}
@@ -109,7 +112,37 @@ public class PatternDefinition extends SymbolTable {
 	}
 
 	public String getName() {
-		return String.format("%s/%d", name, parameters.size());
+		return createIdentifier(name, parameters);
+	}
+
+	private static void printParam(StringBuilder sb, VariableTypes type, int count) {
+		sb.append(type.toString());
+		if (count > 1) {
+			sb.append(count);
+		}
+	}
+
+	public static String createIdentifier(String name, List<Variable> parameters) {
+		StringBuilder sb = new StringBuilder(name);
+		sb.append('/');
+		if (parameters.size() == 0) {
+			sb.append(0);
+		} else {
+			VariableTypes lastType = parameters.get(0).getType();
+			int count = 1;
+			for (int i = 1; i < parameters.size(); i++) {
+				VariableTypes current = parameters.get(i).getType();
+				if (lastType.equals(current)) {
+					count++;
+				} else {
+					printParam(sb, lastType, count);
+					lastType = current;
+					count = 1;
+				}
+			}
+			printParam(sb, lastType, count);
+		}
+		return sb.toString();
 	}
 
 	// Getters

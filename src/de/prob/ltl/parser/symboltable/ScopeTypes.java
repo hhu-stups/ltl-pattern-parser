@@ -1,4 +1,4 @@
-package de.prob.ltl.parser.semantic;
+package de.prob.ltl.parser.symboltable;
 
 public enum ScopeTypes {
 	BEFORE,

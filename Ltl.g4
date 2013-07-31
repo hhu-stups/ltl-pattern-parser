@@ -34,6 +34,7 @@ pattern_def_body
 pattern_def_param
  : ID 				# varParam
  | ID ':' NUM_VAR	# numVarParam
+ | ID ':' SEQ_VAR	# seqVarParam
  ;
 
 pattern_call
@@ -44,9 +45,9 @@ scope_call
  : (BEFORE_SCOPE | AFTER_SCOPE) LEFT_PAREN var_value ',' var_value RIGHT_PAREN
  | (BETWEEN_SCOPE | UNTIL_SCOPE) LEFT_PAREN var_value ',' var_value ',' var_value RIGHT_PAREN
  ;
-   
+    
 var_def
- : (VAR | NUM_VAR) ID ':' var_value
+ : (VAR | NUM_VAR | SEQ_VAR) ID ':' var_value
  ;
  
 var_assign
@@ -56,8 +57,19 @@ var_assign
 var_value
  : ID								# varValue
  | NUM								# numValue
+ | seq_value						# seqValue
  | LEFT_PAREN var_value RIGHT_PAREN	# parValue
  | expr								# exprValue
+ ;
+ 
+seq_value
+ : LEFT_PAREN var_value (',' var_value)+ (SEQ_WITHOUT var_value)? RIGHT_PAREN	# seqValueDefinition
+ | ID SEQ_WITHOUT var_value														# seqValueID
+ ;
+ 
+seq_call
+ : SEQ_VAR LEFT_PAREN var_value RIGHT_PAREN												# seqCallSimple
+ | SEQ_VAR LEFT_PAREN var_value (',' var_value)+ (SEQ_WITHOUT var_value)? RIGHT_PAREN	# seqCallDefinition
  ;
  
 loop
@@ -92,6 +104,7 @@ atom
  : ID							# variableCallAtom
  | pattern_call					# patternCallAtom	
  | scope_call					# scopeCallAtom
+ | seq_call						# seqCallAtom
  | PREDICATE					# predicateAtom
  | ACTION						# actionAtom
  | ENABLED						# enabledAtom
@@ -162,6 +175,10 @@ UNTIL_SCOPE		: 'after_until';
 // Vars
 VAR				: 'var';
 NUM_VAR			: 'num';
+SEQ_VAR			: 'seq';
+
+// Sequence
+SEQ_WITHOUT		: 'without';
 
 // Loops
 LOOP_BEGIN		: 'count';

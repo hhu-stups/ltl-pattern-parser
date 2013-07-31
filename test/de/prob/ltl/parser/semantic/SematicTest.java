@@ -216,6 +216,156 @@ public class SematicTest extends AbstractParserTest {
 		throwsException("def pattern(n:num, x:num): n: x pattern(1, 2)");
 	}
 
+	@Test
+	public void testSeqVarDefinition() throws Exception {
+		parse("seq s: (true, false) true");
+		parse("seq s: (true, false, sink) true");
+		parse("seq s: (true, false without sink) true");
+
+		parse("seq s: (true, false) seq t: s true");
+		parse("seq s: (true, false) seq t: s without sink true");
+		parse("seq s: (true, false) seq t: (true, false without s) true");
+		parse("seq s: (true, false) seq t: (s, false) true");
+
+		parse("var v: true seq s: (v, false) true");
+		parse("var v: true seq s: (true, false without v) true");
+
+		throwsException("seq s: true true");
+		throwsException("seq s: 1 true");
+		throwsException("seq s: (true) true");
+		throwsException("seq s: (1) true");
+		throwsException("seq s: (1, true) true");
+		throwsException("num n: true seq s: (n, false) true");
+		throwsException("num n: true seq s: (true, false without n) true");
+
+		throwsException("var v: true seq s: v without true true");
+		throwsException("num n: true seq s: n without true true");
+		throwsException("seq s: s without true true");
+		throwsException("seq s: (true, false without s) true");
+		throwsException("seq s: s true");
+
+		throwsException("seq s: (true, false) without sink true");
+		throwsException("seq s: (true, false) s");
+
+		parse("seq s: ((true, (sink, deadlock)), false) seq t: (s, false) true");
+	}
+
+	@Test
+	public void testSeqVarAssignment() throws Exception {
+		parse("seq s: (true, false) s: (true, false) true");
+		parse("seq s: (true, false) s: (true, false without sink) true");
+
+		parse("seq s: (true, false) seq t: s t: s true");
+		parse("seq s: (true, false) seq t: s t: s without sink true");
+		parse("seq s: (true, false) seq t: s t: (true, false without s) true");
+		parse("seq s: (true, false) seq t: s t: (s, false) true");
+		parse("seq s: (true, false) seq t: s t: (t, false) true");
+		parse("seq s: (true, false) seq t: s t: t true");
+
+		parse("var v: true seq s: (true, false) s: (v, false) true");
+		parse("var v: true seq s: (true, false) s: (true, false without v) true");
+
+		throwsException("seq s: (true, false) s: true true");
+		throwsException("seq s: (true, false) s: 1 true");
+		throwsException("seq s: (true, false) s: (true) true");
+		throwsException("seq s: (true, false) s: (1) true");
+		throwsException("seq s: (true, false) s: (1, true) true");
+		throwsException("num n: true seq s: (true, false) s: (n, false) true");
+		throwsException("num n: true seq s: (true, false) s: (true, false without n) true");
+
+		throwsException("var v: true seq s: (true, false) s: v without true true");
+		throwsException("num n: true seq s: (true, false) s: n without true true");
+		parse("seq s: (true, false) s: s without true true");
+		parse("seq s: (true, false) s: (true, false without s) true");
+
+		throwsException("seq s: (true, false) s: (true, false) without sink true");
+	}
+
+	@Test
+	public void testSeqPatternCall() throws Exception {
+		String pattern1 = " def p(s:seq): true ";
+		String pattern2 = " def p(v): true ";
+		String pattern3 = " def p(n:num): true ";
+
+		parse(pattern1 + "p((true, false))");
+		parse(pattern1 + "p((true, false without sink))");
+		parse(pattern1 + "seq s: (true, false) p(s)");
+		parse(pattern1 + "seq s: (true, false) p(s without sink)");
+
+		throwsException(pattern1 + "p(true)");
+		throwsException(pattern1 + "p(1)");
+		throwsException(pattern1 + "num n: 1 p(n)");
+		throwsException(pattern1 + "var v: true p(v)");
+
+		throwsException(pattern2 + "p((true, false))");
+		throwsException(pattern2 + "p((true, false without sink))");
+		throwsException(pattern2 + "seq s: (true, false) p(s)");
+		throwsException(pattern2 + "seq s: (true, false) p(s without sink)");
+
+		throwsException(pattern3 + "p((true, false))");
+		throwsException(pattern3 + "p((true, false without sink))");
+		throwsException(pattern3 + "seq s: (true, false) p(s)");
+		throwsException(pattern3 + "seq s: (true, false) p(s without sink)");
+
+		throwsException("def p(s:seq): s p((true, false))");
+	}
+
+	@Test
+	public void testSeqScopeCall() throws Exception {
+		throwsException("before(true, (true, false))");
+		throwsException("before(true, (true, false without sink))");
+		throwsException("seq s: (true, false) before(true, s)");
+		throwsException("seq s: (true, false) before(true, s without sink)");
+
+		throwsException("before((true, false), false)");
+		throwsException("before((true, false without sink), false)");
+		throwsException("seq s: (true, false) before(s, false)");
+		throwsException("seq s: (true, false) before(s without sink, false)");
+	}
+
+	@Test
+	public void testSeqLoop() throws Exception {
+		throwsException("loop (true, false) up to 5: var v: true end true");
+		throwsException("loop 1 up to (true, false): var v: true end true");
+		throwsException("seq s: (true, false) loop 1 up to s: var v: true end true");
+		throwsException("seq s: (true, false) loop s up to 5: var v: true end true");
+	}
+
+	@Test
+	public void testSeqCall() throws Exception {
+		parse("seq s: (true, false) seq(s)");
+		parse("seq s: (true, false) seq(s without sink)");
+		throwsException("var s: true seq(s)");
+		throwsException("var s: true seq(s without sink)");
+		throwsException("num s: 1 seq(s)");
+		throwsException("num s: 1 seq(s without sink)");
+
+		parse("seq(true, false)");
+		parse("seq(true, false without sink)");
+		throwsException("seq(1, false)");
+		throwsException("seq(true, false without 1)");
+		throwsException("num s: 1 seq(s, false without sink)");
+		throwsException("num s: 1 seq(true, false without s)");
+
+		parse("seq((true, false))");
+		parse("seq((true, false without sink))");
+		throwsException("seq((true, false) without sink)");
+
+		parse("true or seq(true, false)");
+		parse("GF seq(true, false)");
+		parse("def p(): seq(true, false) p()");
+		parse("def p(s:seq): seq(s) p((true, false))");
+		parse("before(true, seq(true, false))");
+
+		parse("var s: seq(true, false) s");
+		throwsException("num s: seq(true, false) true");
+		throwsException("seq s: seq(true, false) true");
+		parse("seq s: (true, seq(true, false)) true");
+
+		throwsException("loop seq(true, false) up to 5: var v: true end true");
+		throwsException("loop 1 up to seq(true, false): var v: true end true");
+	}
+
 	/*@Test
 	public void testRecursiveDefinitionCall() throws Exception {
 		throwsException("def f(a): f(a) or false f(true)");

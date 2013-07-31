@@ -1,7 +1,7 @@
 package de.prob.ltl.parser.prolog.scope;
 
 import de.prob.ltl.parser.semantic.ScopeCall;
-import de.prob.ltl.parser.semantic.ScopeTypes;
+import de.prob.ltl.parser.symboltable.ScopeTypes;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;

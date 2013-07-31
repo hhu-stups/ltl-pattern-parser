@@ -41,7 +41,12 @@ public class VariableDefinition implements Node {
 		TerminalNode node = context.ID();
 		name = node.getText();
 		token = node.getSymbol();
-		type = (context.VAR() != null ? VariableTypes.var : VariableTypes.num);
+		type = VariableTypes.num;
+		if (context.VAR() != null) {
+			type = VariableTypes.var;
+		} else if (context.SEQ_VAR() != null) {
+			type = VariableTypes.seq;
+		}
 
 		variable = new Variable(name, type);
 		variable.setToken(token);

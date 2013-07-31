@@ -7,6 +7,7 @@ import de.prob.ltl.parser.LtlBaseListener;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
 import de.prob.ltl.parser.LtlParser.Scope_callContext;
+import de.prob.ltl.parser.LtlParser.SeqCallAtomContext;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
 
 public class ExprOrAtom implements Node {
@@ -32,6 +33,12 @@ public class ExprOrAtom implements Node {
 				public void enterScope_call(Scope_callContext ctx) {
 					new ScopeCall(parser, ctx);
 				}
+
+				@Override
+				public void enterSeqCallAtom(SeqCallAtomContext ctx) {
+					new SeqCall(parser, ctx.seq_call());
+				}
+
 			}, this.context);
 		}
 	}

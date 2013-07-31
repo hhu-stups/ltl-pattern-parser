@@ -50,7 +50,6 @@ public class PatternCall implements Node {
 		token = node.getSymbol();
 	}
 
-
 	private void determineArguments() {
 		for (Var_valueContext ctx : context.var_value()) {
 			VariableValue value = new VariableValue(parser, ctx);
@@ -83,7 +82,7 @@ public class PatternCall implements Node {
 	}
 
 	public String getName() {
-		return String.format("%s/%d", name, arguments.size());
+		return PatternDefinition.createIdentifier(name, arguments);
 	}
 
 	// Getters
