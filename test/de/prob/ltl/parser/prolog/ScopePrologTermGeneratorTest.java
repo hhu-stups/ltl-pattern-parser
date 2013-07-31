@@ -9,7 +9,6 @@ public class ScopePrologTermGeneratorTest extends AbstractParserTest {
 
 	// Helper
 	public void assertEquals(String expected, String actual) {
-		System.out.println(expected);
 		String a = parseToString(expected);
 		String b = parseToString(actual);
 		Assert.assertEquals(a, b);
