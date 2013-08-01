@@ -1,122 +1,72 @@
 package de.prob.ltl.parser.semantic;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.LtlParser.ArgumentContext;
 import de.prob.ltl.parser.LtlParser.LoopContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
-import de.prob.ltl.parser.LtlParser.Var_valueContext;
 import de.prob.ltl.parser.symboltable.LoopTypes;
 import de.prob.ltl.parser.symboltable.SymbolTable;
-import de.prob.ltl.parser.symboltable.SymbolTableManager;
+import de.prob.ltl.parser.symboltable.Variable;
 import de.prob.ltl.parser.symboltable.VariableTypes;
 
-public class Loop extends SymbolTable implements Node {
+public class Loop extends AbstractSemanticObject {
 
-	private final LtlParser parser;
-	private final SymbolTableManager symbolTableManager;
+	private final SymbolTable symbolTable;
 
 	private LoopContext context;
-	private Token token;
+
 	private LoopTypes type;
-	private Variable countVariable;
-	private List<VariableValue> values = new LinkedList<VariableValue>();
+	private Variable counterVariable;
 
 	public Loop(LtlParser parser, LoopContext context) {
-		super(parser.getSymbolTableManager().getCurrentScope(), true);
-		this.parser = parser;
+		super(parser);
+		symbolTable = new SymbolTable(symbolTableManager.getCurrentScope(), true);
+
 		this.context = context;
-
-		symbolTableManager = parser.getSymbolTableManager();
-
 		if (this.context != null) {
-			symbolTableManager.pushScope(this);
-
-			checkLoopArguments();	/* 	Check arguments before defining the counting variable
-			 							Else it would be possible to use the counting variable as argument
-										e.g:
-										count i: 1 up to i:
-										...
-										end */
+			symbolTableManager.pushScope(symbolTable);
+			checkArguments();	/* 	Check arguments before defining the counting variable
+									Else it would be possible to use the counting variable as argument
+									e.g:
+									count i: 1 up to i:
+									...
+									end */
 			determineLoopInfo();
-			checkLoopBody();
 
+			checkLoopBody();
 			symbolTableManager.popScope();
 		}
 	}
 
 	private void determineLoopInfo() {
-		TerminalNode beginNode = context.LOOP_BEGIN();
-		token = beginNode.getSymbol();
+		token = context.LOOP_BEGIN().getSymbol();
 		type = (context.UP() != null ? LoopTypes.up : LoopTypes.down);
-
-		TerminalNode node = context.ID();
-		if (node != null) {
-			String name = node.getText();
-			countVariable = new Variable(name, VariableTypes.num);
-
-			// Define variable
-			if (!symbolTableManager.define(countVariable)) {
-				parser.notifyErrorListeners(node.getSymbol(), String.format("The variable '%s' is already defined.", name), null);
-			}
+		if (context.ID() != null) {
+			counterVariable = createVariable(context.ID(), VariableTypes.num);
+			defineVariable(counterVariable);
 		}
 	}
 
-	private void checkLoopArguments() {
-		for (int i = 0; i < context.var_value().size(); i++) {
-			Var_valueContext var_value = context.var_value(i);
+	private void checkArguments() {
+		for (ArgumentContext arg : context.argument()) {
+			Argument value = new Argument(parser, arg);
 
-			VariableValue value = new VariableValue(parser, var_value);
-			VariableTypes valueType = value.getValueType();
-			values.add(value);
-
-			if (!valueType.equals(VariableTypes.num)) {
-				String msg = String.format("Type mismatch. Loop argument has the type '%s'. Expected type '%s'.", valueType, VariableTypes.num);
-				if (value.getToken() != null) {
-					parser.notifyErrorListeners(value.getToken(), msg, null);
-				} else {
-					// TODO create token from starttoken and stoptoken
-					parser.notifyErrorListeners(msg);
-				}
-			}
+			VariableTypes types[] = new VariableTypes[] { VariableTypes.num };
+			value.checkArgument(types, true, false, false);
 		}
 	}
 
 	private void checkLoopBody() {
 		for (ParseTree child : context.loop_body().children) {
 			if (child instanceof Var_defContext) {
-				// Define variable and check its initial value
-				VariableDefinition definition = new VariableDefinition(parser, (Var_defContext) child);
-				symbolTableManager.addNode(definition);
+				new VariableDefinition(parser, (Var_defContext) child);
 			} else if (child instanceof Var_assignContext) {
-				// Check variable and its assigned value
-				VariableAssignment assignment = new VariableAssignment(parser, (Var_assignContext) child);
-				symbolTableManager.addNode(assignment);
+				new VariableAssignment(parser, (Var_assignContext) child);
 			}
 		}
-	}
-
-	// Getters
-	public Token getToken() {
-		return token;
-	}
-
-	public LoopTypes getLoopType() {
-		return type;
-	}
-
-	public Variable getCountVariable() {
-		return countVariable;
-	}
-
-	public List<VariableValue> getValues() {
-		return values;
 	}
 
 }

@@ -3,13 +3,11 @@ package de.prob.ltl.parser.symboltable;
 import java.util.List;
 import java.util.Stack;
 
-import de.prob.ltl.parser.semantic.Node;
 import de.prob.ltl.parser.semantic.PatternDefinition;
-import de.prob.ltl.parser.semantic.Variable;
 
 public class SymbolTableManager {
 
-	private final SymbolTable globalScope = new SymbolTable();
+	private final SymbolTable globalScope = new SymbolTable(null);
 	private final Stack<SymbolTable> scopeStack = new Stack<SymbolTable>();
 
 	public SymbolTableManager() {
@@ -97,12 +95,12 @@ public class SymbolTableManager {
 		return getCurrentScope().isDefinedPattern(name);
 	}
 
-	public void addNode(Node node) {
-		getCurrentScope().addNode(node);
+	public void addSubTable(SymbolTable st) {
+		getCurrentScope().addSubTable(st);
 	}
 
-	public List<Node> getNodes() {
-		return getCurrentScope().getNodes();
+	public List<SymbolTable> getSubTables() {
+		return getCurrentScope().getSubTables();
 	}
 
 }

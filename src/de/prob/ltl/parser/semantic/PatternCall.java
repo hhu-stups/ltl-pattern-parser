@@ -3,42 +3,36 @@ package de.prob.ltl.parser.semantic;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.LtlParser.ArgumentContext;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
-import de.prob.ltl.parser.LtlParser.Var_valueContext;
-import de.prob.ltl.parser.symboltable.SymbolTableManager;
+import de.prob.ltl.parser.symboltable.Variable;
+import de.prob.ltl.parser.symboltable.VariableTypes;
 
-public class PatternCall implements Node {
-
-	private final LtlParser parser;
-	private final SymbolTableManager symbolTableManager;
+public class PatternCall extends AbstractSemanticObject {
 
 	private Pattern_callContext context;
-	private Token token;
-	private String name;
-	private List<Variable> arguments = new LinkedList<Variable>();
-	private List<VariableValue> argumentNodes = new LinkedList<VariableValue>();
+
 	private PatternDefinition definition;
+	private String name;
+	private String identifier;
+	private List<Argument> arguments = new LinkedList<Argument>();
 
 	public PatternCall(LtlParser parser, Pattern_callContext context) {
-		this.parser = parser;
+		super(parser);
+
 		this.context = context;
-
-		symbolTableManager = parser.getSymbolTableManager();
-
 		if (this.context != null) {
 			determineTokenAndName();
 			determineArguments();
+			determineIdentifier();
 
-			// Find pattern definition
-			definition = symbolTableManager.resolvePattern(getName());
+			definition = symbolTableManager.resolvePattern(identifier);
 			if (definition == null) {
-				parser.notifyErrorListeners(token, String.format("Pattern '%s' cannot be resolved.", getName()), null);
+				notifyErrorListeners("Pattern '%s' cannot be resolved.", identifier);
 			} else {
-				// Check types of arguments and parameters
 				checkArguments();
 			}
 		}
@@ -46,69 +40,40 @@ public class PatternCall implements Node {
 
 	private void determineTokenAndName() {
 		TerminalNode node = context.ID();
-		name = node.getText();
 		token = node.getSymbol();
+		name = node.getText();
 	}
 
 	private void determineArguments() {
-		for (Var_valueContext ctx : context.var_value()) {
-			VariableValue value = new VariableValue(parser, ctx);
-
-			Variable argument = new Variable(null, value.getValueType());
-			argument.setToken(value.getToken());
-			addArgument(arguments, argument);
-			argumentNodes.add(value);
+		for (ArgumentContext arg : context.argument()) {
+			Argument argument = new Argument(parser, arg);
+			arguments.add(argument);
 		}
+	}
+
+	private void determineIdentifier() {
+		List<Variable> vars = new LinkedList<Variable>();
+
+		for (Argument arg : arguments) {
+			vars.add(new Variable(null, arg.determineType()));
+		}
+
+		identifier = PatternDefinition.createPatternIdentifier(name, vars);
 	}
 
 	private void checkArguments() {
-		for (int i = 0; i < arguments.size(); i++) {
-			Variable parameter = definition.getParameters().get(i);
-			Variable argument = arguments.get(i);
-			if (!parameter.getType().equals(argument.getType())) {
-				String msg = String.format("Type mismatch. Passed argument has the type '%s'. Expected type '%s'.", argument.getType(), parameter.getType());
-				if (argument.getToken() != null) {
-					parser.notifyErrorListeners(argument.getToken(), msg, null);
-				} else {
-					// TODO create token from starttoken and stoptoken
-					parser.notifyErrorListeners(msg);
-				}
-			}
+		List<Variable> parameters = definition.getParameters();
+		for (int i = 0; i < parameters.size(); i++) {
+			Variable parameter = parameters.get(i);
+			Argument argument = arguments.get(i);
+
+			VariableTypes type = parameter.getType();
+			VariableTypes types[] = new VariableTypes[] { type };
+			boolean numAllowed = type.equals(VariableTypes.num);
+			boolean seqDefinitionAllowed = type.equals(VariableTypes.seq);
+			boolean exprAllowed = type.equals(VariableTypes.var);
+			argument.checkArgument(types, numAllowed, seqDefinitionAllowed, exprAllowed);
 		}
-	}
-
-	private void addArgument(List<Variable> argumentList, Variable var) {
-		argumentList.add(var);
-	}
-
-	public String getName() {
-		return PatternDefinition.createIdentifier(name, arguments);
-	}
-
-	// Getters
-	public Token getToken() {
-		return token;
-	}
-
-	public String getSimpleName() {
-		return name;
-	}
-
-	public List<Variable> getArguments() {
-		return arguments;
-	}
-
-	public PatternDefinition getDefinition() {
-		return definition;
-	}
-
-	public List<VariableValue> getArgumentNodes() {
-		return argumentNodes;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("call(%s)", getName());
 	}
 
 }

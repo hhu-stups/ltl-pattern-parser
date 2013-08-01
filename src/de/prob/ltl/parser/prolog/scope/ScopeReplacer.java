@@ -1,7 +1,5 @@
 package de.prob.ltl.parser.prolog.scope;
 
-import de.prob.ltl.parser.semantic.ScopeCall;
-import de.prob.ltl.parser.symboltable.ScopeTypes;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -12,7 +10,7 @@ public abstract class ScopeReplacer {
 	private PrologTerm r;
 	private PrologTerm p;
 
-	public static ScopeReplacer createReplacer(ScopeCall call) {
+	/*public static ScopeReplacer createReplacer(ScopeCall call) {
 		ScopeReplacer replacer = null;
 
 		// Determine call and starting (q) and ending (r) state/event
@@ -36,7 +34,7 @@ public abstract class ScopeReplacer {
 		}
 
 		return replacer;
-	}
+	}*/
 
 	public void generatePrologTerm(IPrologTermOutput pto) {
 		pto.printTerm(scopeFormula(replace(p)));

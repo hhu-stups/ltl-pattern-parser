@@ -18,17 +18,27 @@ public SymbolTableManager getSymbolTableManager() {
 }
 }
 
-/* -- Rules -- */
+/* -- Starting rule -- */
 start
+ : body EOF
+ ;
+
+/* --- Common rules --- */
+body
  : (pattern_def | var_def | var_assign | loop)* expr
  ;
-
-pattern_def
- : PATTERN_DEF ID LEFT_PAREN (pattern_def_param (',' pattern_def_param)*)? RIGHT_PAREN ':' pattern_def_body
+ 
+argument
+ : ID								# varArgument
+ | NUM								# numArgument
+ | seq_def							# seqArgument
+ | LEFT_PAREN argument RIGHT_PAREN	# parArgument
+ | expr								# exprArgument
  ;
 
-pattern_def_body
- : (var_def | var_assign | loop)* expr
+/* --- Pattern rules --- */
+pattern_def
+ : PATTERN_DEF ID LEFT_PAREN (pattern_def_param (',' pattern_def_param)*)? RIGHT_PAREN ':' body
  ;
  
 pattern_def_param
@@ -38,48 +48,44 @@ pattern_def_param
  ;
 
 pattern_call
- : ID LEFT_PAREN (var_value (',' var_value)*)? RIGHT_PAREN
+ : ID LEFT_PAREN (argument (',' argument)*)? RIGHT_PAREN
  ;
  
+/* --- Scope call rule --- */
 scope_call
- : (BEFORE_SCOPE | AFTER_SCOPE) LEFT_PAREN var_value ',' var_value RIGHT_PAREN
- | (BETWEEN_SCOPE | UNTIL_SCOPE) LEFT_PAREN var_value ',' var_value ',' var_value RIGHT_PAREN
+ : (BEFORE_SCOPE | AFTER_SCOPE | BETWEEN_SCOPE | UNTIL_SCOPE) LEFT_PAREN argument ',' argument (',' argument)? RIGHT_PAREN
  ;
     
+/* --- Variable rules --- */
 var_def
- : (VAR | NUM_VAR | SEQ_VAR) ID ':' var_value
+ : (VAR | NUM_VAR | SEQ_VAR) ID ':' argument
  ;
  
 var_assign
- : ID ':' var_value
+ : ID ':' argument
  ;
  
-var_value
- : ID								# varValue
- | NUM								# numValue
- | seq_value						# seqValue
- | LEFT_PAREN var_value RIGHT_PAREN	# parValue
- | expr								# exprValue
- ;
- 
-seq_value
- : LEFT_PAREN var_value (',' var_value)+ (SEQ_WITHOUT var_value)? RIGHT_PAREN	# seqValueDefinition
- | ID SEQ_WITHOUT var_value														# seqValueID
+/* --- Sequence rules --- */
+seq_def
+ : LEFT_PAREN argument (',' argument)+ (SEQ_WITHOUT argument)? RIGHT_PAREN	# seqDefinition
+ | ID SEQ_WITHOUT argument													# seqVarExtension
  ;
  
 seq_call
- : SEQ_VAR LEFT_PAREN var_value RIGHT_PAREN												# seqCallSimple
- | SEQ_VAR LEFT_PAREN var_value (',' var_value)+ (SEQ_WITHOUT var_value)? RIGHT_PAREN	# seqCallDefinition
+ : SEQ_VAR LEFT_PAREN argument RIGHT_PAREN											# seqCallSimple
+ | SEQ_VAR LEFT_PAREN argument (',' argument)+ (SEQ_WITHOUT argument)? RIGHT_PAREN	# seqCallDefinition
  ;
  
+/* --- Loop rules --- */
 loop
- : LOOP_BEGIN (ID ':')? var_value (UP | DOWN) TO var_value ':' loop_body LOOP_END
+ : LOOP_BEGIN (ID ':')? argument (UP | DOWN) TO argument ':' loop_body LOOP_END
  ;
  
 loop_body
  : (var_def | var_assign)+
  ;
   
+/* --- Ltl and boolean expr --- */
 expr
  : NOT expr						# notExpr
  | GLOBALLY expr				# globallyExpr
@@ -101,7 +107,7 @@ expr
  ;
  
 atom
- : ID							# variableCallAtom
+ : ID							# variableCallAtom	// Only type 'var' allowed
  | pattern_call					# patternCallAtom	
  | scope_call					# scopeCallAtom
  | seq_call						# seqCallAtom

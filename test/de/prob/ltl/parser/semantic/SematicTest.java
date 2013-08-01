@@ -26,6 +26,11 @@ public class SematicTest extends AbstractParserTest {
 	}
 
 	@Test
+	public void testDefinitionSubPattern() throws Exception {
+		throwsException("def a(): def b(): true true true");
+	}
+
+	@Test
 	public void testCallPattern() throws Exception {
 		String pattern1 = "def pattern(): true ";
 		String pattern2 = "def pattern2(): pattern() ";
@@ -42,6 +47,14 @@ public class SematicTest extends AbstractParserTest {
 		throwsException("def f(a): a f(true, false)");
 		throwsException("def f(a, b): a or b f(false)");
 		throwsException("def f(a): a g(false)");
+
+		throwsException("def f(a): true f(1)");
+		throwsException("def f(a): true f(x)");
+		throwsException("def f(a): true num x: 1 f(x)");
+		throwsException("def f(a): true seq x: (true, false) f(x)");
+		throwsException("def f(a:seq): true f(x without true)");
+		throwsException("def f(a:seq): true f((a, b))");
+		throwsException("def f(a): true num x: 1 f(!x)");
 	}
 
 	@Test
@@ -225,7 +238,7 @@ public class SematicTest extends AbstractParserTest {
 		parse("seq s: (true, false) seq t: s true");
 		parse("seq s: (true, false) seq t: s without sink true");
 		parse("seq s: (true, false) seq t: (true, false without s) true");
-		parse("seq s: (true, false) seq t: (s, false) true");
+		throwsException("seq s: (true, false) seq t: (s, false) true");
 
 		parse("var v: true seq s: (v, false) true");
 		parse("var v: true seq s: (true, false without v) true");
@@ -247,7 +260,7 @@ public class SematicTest extends AbstractParserTest {
 		throwsException("seq s: (true, false) without sink true");
 		throwsException("seq s: (true, false) s");
 
-		parse("seq s: ((true, (sink, deadlock)), false) seq t: (s, false) true");
+		throwsException("seq s: ((true, (sink, deadlock)), false) seq t: (s, false) true");
 	}
 
 	@Test
@@ -258,8 +271,8 @@ public class SematicTest extends AbstractParserTest {
 		parse("seq s: (true, false) seq t: s t: s true");
 		parse("seq s: (true, false) seq t: s t: s without sink true");
 		parse("seq s: (true, false) seq t: s t: (true, false without s) true");
-		parse("seq s: (true, false) seq t: s t: (s, false) true");
-		parse("seq s: (true, false) seq t: s t: (t, false) true");
+		throwsException("seq s: (true, false) seq t: s t: (s, false) true");
+		throwsException("seq s: (true, false) seq t: s t: (t, false) true");
 		parse("seq s: (true, false) seq t: s t: t true");
 
 		parse("var v: true seq s: (true, false) s: (v, false) true");

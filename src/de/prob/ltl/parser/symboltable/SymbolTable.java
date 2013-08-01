@@ -5,9 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.prob.ltl.parser.semantic.Node;
 import de.prob.ltl.parser.semantic.PatternDefinition;
-import de.prob.ltl.parser.semantic.Variable;
 
 public class SymbolTable {
 
@@ -16,14 +14,7 @@ public class SymbolTable {
 	private Map<String, Variable> variables = new HashMap<String, Variable>();
 	private Map<String, PatternDefinition> patternDefinitions;
 
-	private List<Node> nodes = new LinkedList<Node>();
-
-	/**
-	 * Creates a symbol table
-	 */
-	public SymbolTable() {
-		this(null);
-	}
+	private List<SymbolTable> subTables = new LinkedList<SymbolTable>();
 
 	/**
 	 * Creates a symbol table with a parent, so that patterns are defined in the root parent
@@ -129,12 +120,12 @@ public class SymbolTable {
 		return resolvePattern(name) != null;
 	}
 
-	public void addNode(Node node) {
-		nodes.add(node);
+	public void addSubTable(SymbolTable st) {
+		subTables.add(st);
 	}
 
-	public List<Node> getNodes() {
-		return nodes;
+	public List<SymbolTable> getSubTables() {
+		return subTables;
 	}
 
 }

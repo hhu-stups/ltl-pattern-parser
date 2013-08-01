@@ -10,7 +10,7 @@ public class SequenceTest extends AbstractParserTest {
 	protected void parseSeq(String input) {
 		LtlParser parser = createParser(input);
 
-		parser.seq_value();
+		parser.seq_def();
 
 		if (hasErrors(parser)) {
 			throw new RuntimeException();

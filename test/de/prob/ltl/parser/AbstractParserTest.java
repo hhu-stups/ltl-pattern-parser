@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 
 import de.prob.ltl.parser.LtlParser.StartContext;
-import de.prob.ltl.parser.prolog.LtlPrologTermGenerator;
 import de.prob.ltl.parser.semantic.SemanticCheck;
 import de.prob.parserbase.UnparsedParserBase;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -46,7 +45,7 @@ public abstract class AbstractParserTest {
 
 	protected void semanticCheck(StartContext ast, LtlParser parser) {
 		SemanticCheck sc = new SemanticCheck(parser);
-		sc.check(ast);
+		sc.check(ast.body());
 	}
 
 	protected boolean hasErrors(LtlParser parser) {
@@ -71,9 +70,9 @@ public abstract class AbstractParserTest {
 
 	protected StructuredPrologOutput generatePrologTerm(ParseTree ast, LtlParser parser) {
 		StructuredPrologOutput pto = new StructuredPrologOutput();
-		LtlPrologTermGenerator generator = new LtlPrologTermGenerator(parser, "current", parserBase);
+		// TODO LtlPrologTermGenerator generator = new LtlPrologTermGenerator(parser, "current", parserBase);
 
-		generator.generatePrologTerm(pto);
+		//generator.generatePrologTerm(pto);
 		pto.fullstop();
 		return pto;
 	}

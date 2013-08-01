@@ -1,64 +1,46 @@
 package de.prob.ltl.parser.semantic;
 
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
-import de.prob.ltl.parser.symboltable.SymbolTableManager;
+import de.prob.ltl.parser.symboltable.Variable;
 import de.prob.ltl.parser.symboltable.VariableTypes;
 
-public class VariableAssignment implements Node {
-
-	private final LtlParser parser;
-	private final SymbolTableManager symbolTableManager;
+public class VariableAssignment extends AbstractSemanticObject {
 
 	private Var_assignContext context;
-	private Token token;
-	private String name;
+
 	private Variable variable;
-	private VariableValue value;
 
 	public VariableAssignment(LtlParser parser, Var_assignContext context) {
-		this.parser = parser;
+		super(parser);
+
 		this.context = context;
-
-		symbolTableManager = parser.getSymbolTableManager();
-
 		if (this.context != null) {
-			determineTokenAndName();
-
-			// Check variable existence
-			variable = symbolTableManager.resolveVariable(name);
-			if (variable == null) {
-				parser.notifyErrorListeners(token, String.format("Variable '%s' cannot be resolved.", name), null);
+			determineVariableInfo();
+			if (variable != null) {
+				checkAssignedValue();
 			}
-
-			checkAssignedValue();
 		}
 	}
 
-	private void determineTokenAndName() {
+	private void determineVariableInfo() {
 		TerminalNode node = context.ID();
-		name = node.getText();
+		variable = resolveVariable(node);
 		token = node.getSymbol();
 	}
 
 	private void checkAssignedValue() {
-		value = new VariableValue(parser, context.var_value());
-		VariableTypes valueType = value.getValueType();
+		Argument value = new Argument(parser, context.argument());
 
-		if (variable != null && !variable.getType().equals(valueType)) {
-			parser.notifyErrorListeners(token, String.format("Type mismatch. Right operand of variable assignment '%s' has the type '%s'.", variable, valueType), null);
-		}
-	}
+		VariableTypes type = variable.getType();
+		VariableTypes types[] = new VariableTypes[] { type };
+		boolean numAllowed = type.equals(VariableTypes.num);
+		boolean seqDefinitionAllowed = type.equals(VariableTypes.seq);
+		boolean exprAllowed = type.equals(VariableTypes.var);
 
-	public VariableValue getValue() {
-		return value;
-	}
-
-	public Variable getVariable() {
-		return variable;
+		value.checkArgument(types, numAllowed, seqDefinitionAllowed, exprAllowed);
 	}
 
 }

@@ -1,72 +1,51 @@
 package de.prob.ltl.parser.semantic;
 
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
-import de.prob.ltl.parser.symboltable.SymbolTableManager;
+import de.prob.ltl.parser.symboltable.Variable;
 import de.prob.ltl.parser.symboltable.VariableTypes;
 
-public class VariableDefinition implements Node {
-
-	private final LtlParser parser;
-	private final SymbolTableManager symbolTableManager;
+public class VariableDefinition extends AbstractSemanticObject {
 
 	private Var_defContext context;
-	private Token token;
-	private String name;
-	private VariableTypes type;
+
 	private Variable variable;
-	private VariableValue value;
 
 	public VariableDefinition(LtlParser parser, Var_defContext context) {
-		this.parser = parser;
+		super(parser);
+
 		this.context = context;
-
-		symbolTableManager = parser.getSymbolTableManager();
-
 		if (this.context != null) {
 			determineVariableInfo();
 
 			checkInitialValue();
 			// Define variable
-			if (!symbolTableManager.define(variable)) {
-				parser.notifyErrorListeners(token, String.format("The variable '%s' is already defined.", name), null);
-			}
+			defineVariable(variable);
 		}
 	}
 
 	private void determineVariableInfo() {
-		TerminalNode node = context.ID();
-		name = node.getText();
-		token = node.getSymbol();
-		type = VariableTypes.num;
+		VariableTypes type = VariableTypes.num;
 		if (context.VAR() != null) {
 			type = VariableTypes.var;
 		} else if (context.SEQ_VAR() != null) {
 			type = VariableTypes.seq;
 		}
 
-		variable = new Variable(name, type);
-		variable.setToken(token);
+		variable = createVariable(context.ID(), type);
+		token = variable.getToken();
 	}
 
 	private void checkInitialValue() {
-		value = new VariableValue(parser, context.var_value());
-		VariableTypes valueType = value.getValueType();
+		Argument value = new Argument(parser, context.argument());
 
-		if (!type.equals(valueType)) {
-			parser.notifyErrorListeners(token, String.format("Type mismatch. Right operand of variable definition '%s' has the type '%s'.", variable, valueType), null);
-		}
-	}
+		VariableTypes type = variable.getType();
+		VariableTypes types[] = new VariableTypes[] { type };
+		boolean numAllowed = type.equals(VariableTypes.num);
+		boolean seqDefinitionAllowed = type.equals(VariableTypes.seq);
+		boolean exprAllowed = type.equals(VariableTypes.var);
 
-	public Variable getVariable() {
-		return variable;
-	}
-
-	public VariableValue getValue() {
-		return value;
+		value.checkArgument(types, numAllowed, seqDefinitionAllowed, exprAllowed);
 	}
 
 }

@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
 import de.prob.ltl.parser.semantic.PatternDefinition;
-import de.prob.ltl.parser.semantic.Variable;
 
 public class SymbolTableManagerTest extends AbstractParserTest {
 

@@ -5,13 +5,12 @@ import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
 import de.prob.ltl.parser.semantic.PatternDefinition;
-import de.prob.ltl.parser.semantic.Variable;
 
 public class SymbolTableTest extends AbstractParserTest {
 
 	@Test
 	public void testDefineRoot() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = new SymbolTable(null);
 
 		Assert.assertTrue(st.define(new Variable("x", null)));
 		Assert.assertTrue(st.define(new Variable("y", null)));
@@ -30,7 +29,7 @@ public class SymbolTableTest extends AbstractParserTest {
 
 	@Test
 	public void testDefineWithParent() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = new SymbolTable(null);
 		SymbolTable st2 = new SymbolTable(st);
 		SymbolTable st3 = new SymbolTable(st2, true);
 
@@ -45,7 +44,7 @@ public class SymbolTableTest extends AbstractParserTest {
 
 	@Test
 	public void testResolveRoot() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = new SymbolTable(null);
 
 		Variable a = new Variable("a", null);
 		Variable b = new Variable("b", null);
@@ -72,7 +71,7 @@ public class SymbolTableTest extends AbstractParserTest {
 
 	@Test
 	public void testResolveWithParent() {
-		SymbolTable st = new SymbolTable();
+		SymbolTable st = new SymbolTable(null);
 		SymbolTable st2 = new SymbolTable(st);
 		SymbolTable st3 = new SymbolTable(st2, true);
 

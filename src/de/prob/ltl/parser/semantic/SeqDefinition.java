@@ -3,94 +3,71 @@ package de.prob.ltl.parser.semantic;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser;
-import de.prob.ltl.parser.LtlParser.SeqValueDefinitionContext;
-import de.prob.ltl.parser.LtlParser.SeqValueIDContext;
-import de.prob.ltl.parser.LtlParser.Seq_valueContext;
-import de.prob.ltl.parser.LtlParser.Var_valueContext;
-import de.prob.ltl.parser.symboltable.SymbolTableManager;
+import de.prob.ltl.parser.LtlParser.SeqDefinitionContext;
+import de.prob.ltl.parser.LtlParser.SeqVarExtensionContext;
+import de.prob.ltl.parser.LtlParser.Seq_defContext;
+import de.prob.ltl.parser.symboltable.Variable;
 import de.prob.ltl.parser.symboltable.VariableTypes;
 
-public class SeqDefinition {
+public class SeqDefinition extends AbstractSemanticObject {
 
-	private final LtlParser parser;
-	private final SymbolTableManager symbolTableManager;
+	private Seq_defContext context;
 
-	private Seq_valueContext context;
-	private Token token;
-	private boolean isDefinition;
-	private List<Variable> parameters = new LinkedList<Variable>();
+	private Variable variable;
+	private List<Argument> arguments = new LinkedList<Argument>();
+	private Argument withoutArgument;
 
-	public SeqDefinition(LtlParser parser, Seq_valueContext context) {
-		this.parser = parser;
+	public SeqDefinition(LtlParser parser, Seq_defContext context) {
+		super(parser);
+
 		this.context = context;
-
-		symbolTableManager = parser.getSymbolTableManager();
-
 		if (this.context != null) {
-			determineTokenAndType();
-			// TODO check arguments
 			checkArguments();
 		}
 	}
-	/*
-	seq_value
-	 : LEFT_PAREN var_value (',' var_value)+ (SEQ_WITHOUT var_value)? RIGHT_PAREN	# seqValueDefinition
-	 | ID SEQ_WITHOUT var_value														# seqValueID
-	 ;
-	 */
-	private void determineTokenAndType() {
-		TerminalNode node = null;
-		if (context instanceof SeqValueDefinitionContext) {
-			isDefinition = true;
-			// TODO create token from starttoken and stoptoken
-			node = ((SeqValueDefinitionContext) context).LEFT_PAREN();
-
-		} else {
-			isDefinition = false;
-			// TODO create token from starttoken and stoptoken
-			node = ((SeqValueIDContext) context).ID();
-		}
-		token = node.getSymbol();
-	}
 
 	private void checkArguments() {
-		if (isDefinition) {
-			SeqValueDefinitionContext ctx = (SeqValueDefinitionContext) context;
-			for (Var_valueContext var_value : ctx.var_value()) {
-				VariableValue value = new VariableValue(parser, var_value);
-				if (value.getValueType().equals(VariableTypes.num)){
-					parser.notifyErrorListeners(token, String.format("Type mismatch. Type '%s' is not allowed here.", VariableTypes.num), null);
+		if(context instanceof SeqVarExtensionContext) {
+			TerminalNode node = ((SeqVarExtensionContext) context).ID();
+			token = node.getSymbol();
+
+			// check ID
+			variable = resolveVariable(node);
+			if (variable != null) {
+				if (!variable.getType().equals(VariableTypes.seq)) {
+					notifyErrorListeners("The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.seq);
 				}
 			}
-		} else {
-			SeqValueIDContext ctx = (SeqValueIDContext) context;
-			TerminalNode node = ctx.ID();
-			String name = node.getText();
 
-			Variable variable = symbolTableManager.resolveVariable(name);
-			if (variable == null) {
-				parser.notifyErrorListeners(token, String.format("Variable '%s' cannot be resolved.", name), null);
-			} else if (!variable.getType().equals(VariableTypes.seq)){
-				parser.notifyErrorListeners(token, String.format("Type mismatch. Expected variable type '%s'. Found variable '%s'.", VariableTypes.seq, variable), null);
+			// Check without argument
+			withoutArgument = new Argument(parser, ((SeqVarExtensionContext) context).argument());
+
+			VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
+			withoutArgument.checkArgument(types, false, true, true);
+		} else {
+			SeqDefinitionContext ctx = (SeqDefinitionContext) context;
+			token = ctx.LEFT_PAREN().getSymbol();	// TODO create token from starttoken and stoptoken
+
+			int size = ctx.argument().size();
+			if (ctx.SEQ_WITHOUT() != null) {
+				size -= 1;
+				// Check without argument
+				withoutArgument = new Argument(parser, ctx.argument(size));
+
+				VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
+				withoutArgument.checkArgument(types, false, true, true);
+			}
+			for (int i = 0; i < size; i++) {
+				Argument argument = new Argument(parser, ctx.argument(i));
+				arguments.add(argument);
+
+				VariableTypes types[] = new VariableTypes[] { VariableTypes.var };
+				argument.checkArgument(types, false, false, true);
 			}
 		}
-	}
-
-	// Getters
-	public Seq_valueContext getContext() {
-		return context;
-	}
-
-	public Token getToken() {
-		return token;
-	}
-
-	public List<Variable> getParameters() {
-		return parameters;
 	}
 
 }
