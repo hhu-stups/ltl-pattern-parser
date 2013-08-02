@@ -109,6 +109,9 @@ public class SeqPrologTermGeneratorTest extends AbstractParserTest {
 		// arg count > 2
 		assertEquals("true & XF(false & XF(deadlock))", "seq s: (true, false, deadlock) seq(s)");
 		assertEquals("true & !sink & X(!sink U (false & !sink & X(!sink U deadlock)))", "seq s: (true, false, deadlock without sink) seq(s)");
+
+		// 2 withouts
+		assertEquals("true & (!sink & !deadlock) & X((!sink & !deadlock) U false)", "seq s: (true, false without sink) seq(s without deadlock)");
 	}
 
 }

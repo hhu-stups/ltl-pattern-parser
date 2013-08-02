@@ -48,6 +48,7 @@ public class BasePrologTermGeneratorTest extends AbstractParserTest {
 		Assert.assertEquals("once(true)", parseToString("O true"));
 		Assert.assertEquals("yesterday(true)", parseToString("Y true"));
 		Assert.assertEquals("globally(finally(true))", parseToString("GF true"));
+		Assert.assertEquals("historically(once(true))", parseToString("HO true"));
 
 		Assert.assertEquals("until(true,false)", parseToString("true U false"));
 		Assert.assertEquals("weakuntil(true,false)", parseToString("true W false"));

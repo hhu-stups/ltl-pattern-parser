@@ -74,7 +74,7 @@ public abstract class AbstractParserTest {
 		StructuredPrologOutput pto = new StructuredPrologOutput();
 		LtlPrologTermGenerator generator = new LtlPrologTermGenerator(parser, "current", parserBase);
 
-		generator.generatePrologTerm(pto, check.getBody());
+		generator.generatePrologTerm(check.getBody(), pto);
 		pto.fullstop();
 		return pto;
 	}

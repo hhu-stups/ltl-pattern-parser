@@ -10,7 +10,6 @@ import de.prob.ltl.parser.LtlParser.ArgumentContext;
 import de.prob.ltl.parser.LtlParser.LoopContext;
 import de.prob.ltl.parser.LtlParser.Var_assignContext;
 import de.prob.ltl.parser.LtlParser.Var_defContext;
-import de.prob.ltl.parser.symboltable.LoopTypes;
 import de.prob.ltl.parser.symboltable.SymbolTable;
 import de.prob.ltl.parser.symboltable.Variable;
 import de.prob.ltl.parser.symboltable.VariableTypes;
@@ -21,7 +20,7 @@ public class Loop extends AbstractSemanticObject {
 
 	private LoopContext context;
 
-	private LoopTypes type;
+	private boolean isUp;
 	private Variable counterVariable;
 	private List<Argument> arguments = new LinkedList<Argument>();
 
@@ -47,7 +46,7 @@ public class Loop extends AbstractSemanticObject {
 
 	private void determineLoopInfo() {
 		token = context.LOOP_BEGIN().getSymbol();
-		type = (context.UP() != null ? LoopTypes.up : LoopTypes.down);
+		isUp = (context.UP() != null);
 		if (context.ID() != null) {
 			counterVariable = createVariable(context.ID(), VariableTypes.num);
 			defineVariable(counterVariable);
@@ -78,8 +77,8 @@ public class Loop extends AbstractSemanticObject {
 		return symbolTable;
 	}
 
-	public LoopTypes getType() {
-		return type;
+	public boolean isUp() {
+		return isUp;
 	}
 
 	public Variable getCounterVariable() {

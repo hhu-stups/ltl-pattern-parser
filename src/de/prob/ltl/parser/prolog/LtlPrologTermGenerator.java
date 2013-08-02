@@ -20,7 +20,6 @@ import de.prob.ltl.parser.semantic.SeqCall;
 import de.prob.ltl.parser.semantic.SeqDefinition;
 import de.prob.ltl.parser.semantic.VariableAssignment;
 import de.prob.ltl.parser.semantic.VariableDefinition;
-import de.prob.ltl.parser.symboltable.LoopTypes;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
 import de.prob.ltl.parser.symboltable.Variable;
 import de.prob.ltl.parser.symboltable.VariableTypes;
@@ -47,49 +46,42 @@ public class LtlPrologTermGenerator {
 		symbolTableManager = parser.getSymbolTableManager();
 	}
 
-	public void generatePrologTerm(IPrologTermOutput pto, Body body) {
+	public void generatePrologTerm(Body body, IPrologTermOutput pto) {
 		for (AbstractSemanticObject object : body.getChildren()) {
 			if (object instanceof VariableDefinition) {
-				generateVariableDefinition((VariableDefinition) object, pto);
+				generateVariableDefinition((VariableDefinition) object);
 			} else if (object instanceof VariableAssignment) {
-				generateVariableAssignment((VariableAssignment) object, pto);
+				generateVariableAssignment((VariableAssignment) object);
 			} else if (object instanceof Loop) {
-				generateLoop((Loop) object, pto);
+				generateLoop((Loop) object);
 			} else if (object instanceof Expr) {
 				generateExpr((Expr) object, pto);
 			}
 		}
 	}
 
-	private void generateVariableDefinition(VariableDefinition definition, IPrologTermOutput pto) {
-		Variable variable = definition.getVariable();
+	private void generateVariableDefinition(VariableDefinition definition) {
+		generateVariableArgument(definition.getVariable(), definition.getValue());
+	}
+
+	private void generateVariableAssignment(VariableAssignment assignment) {
+		generateVariableArgument(assignment.getVariable(), assignment.getValue());
+	}
+
+	private void generateVariableArgument(Variable variable, Argument argument) {
 		if (variable.getType().equals(VariableTypes.seq)) {
-			variable.setSeqValue(definition.getValue().getSeq());
+			variable.setSeqValue(argument.getSeq());
 		}
-		variable.setValue(generateArgument(definition.getValue()));
-		if (definition.getValue().getVariable() != null) {
-			variable.setSeqValue(definition.getValue().getVariable().getSeqValue());
+		variable.setValue(generateArgument(argument));
+		if (argument.getVariable() != null) {
+			variable.setSeqValue(argument.getVariable().getSeqValue());
 		}
 		if (variable.getSeqValue() != null) {
 			variable.getSeqValue().createCopyOfArguments();
 		}
 	}
 
-	private void generateVariableAssignment(VariableAssignment assignment, IPrologTermOutput pto) {
-		Variable variable = assignment.getVariable();
-		if (variable.getType().equals(VariableTypes.seq)) {
-			variable.setSeqValue(assignment.getValue().getSeq());
-		}
-		variable.setValue(generateArgument(assignment.getValue()));
-		if (assignment.getValue().getVariable() != null) {
-			variable.setSeqValue(assignment.getValue().getVariable().getSeqValue());
-		}
-		if (variable.getSeqValue() != null) {
-			variable.getSeqValue().createCopyOfArguments();
-		}
-	}
-
-	private void generateLoop(Loop loop, IPrologTermOutput pto) {
+	private void generateLoop(Loop loop) {
 		symbolTableManager.pushScope(loop.getSymbolTable());
 
 		Variable variable = loop.getCounterVariable();
@@ -103,12 +95,11 @@ public class LtlPrologTermGenerator {
 				parser.notifyErrorListeners(loop.getToken(), "End value of the loop is not a number.", null);
 			}
 		} else {
-			BigInteger start = ((IntegerPrologTerm) startTerm).getValue();
-			BigInteger end = ((IntegerPrologTerm) endTerm).getValue();
-			BigInteger count = new BigInteger(start.toByteArray());
+			int compare = (loop.isUp() ? -1 : 1);
 
-			boolean isUp = loop.getType().equals(LoopTypes.up);
-			int compare = (isUp ? -1 : 1);
+			BigInteger inc = BigInteger.valueOf(-compare);
+			BigInteger count = ((IntegerPrologTerm) startTerm).getValue();
+			BigInteger end = ((IntegerPrologTerm) endTerm).getValue();
 			while (count.compareTo(end) == compare) {
 				if (variable != null) {
 					variable.setValue(new IntegerPrologTerm(count));
@@ -116,17 +107,13 @@ public class LtlPrologTermGenerator {
 
 				for (AbstractSemanticObject object : loop.getChildren()) {
 					if (object instanceof VariableDefinition) {
-						generateVariableDefinition((VariableDefinition) object, pto);
+						generateVariableDefinition((VariableDefinition) object);
 					} else if (object instanceof VariableAssignment) {
-						generateVariableAssignment((VariableAssignment) object, pto);
+						generateVariableAssignment((VariableAssignment) object);
 					}
 				}
 
-				if (isUp) {
-					count = count.add(BigInteger.ONE);
-				}else {
-					count = count.subtract(BigInteger.ONE);
-				}
+				count = count.add(inc);
 			}
 		}
 		symbolTableManager.popScope();
@@ -142,14 +129,14 @@ public class LtlPrologTermGenerator {
 			value = argument.getVariable().getValue();
 		} else if (argument.getNum() != null) {
 			value = new IntegerPrologTerm(argument.getNum());
-		} else if (argument.getExpr() != null) {
-			StructuredPrologOutput epto = new StructuredPrologOutput();
-			generateExpr(argument.getExpr(), epto);
-			epto.fullstop();
-			value = epto.getSentences().get(0);
 		} else if (argument.getSeq() != null) {
 			StructuredPrologOutput epto = new StructuredPrologOutput();
 			generateSeqDefinition(argument.getSeq(), epto);
+			epto.fullstop();
+			value = epto.getSentences().get(0);
+		} else if (argument.getExpr() != null) {
+			StructuredPrologOutput epto = new StructuredPrologOutput();
+			generateExpr(argument.getExpr(), epto);
 			epto.fullstop();
 			value = epto.getSentences().get(0);
 		}
@@ -165,16 +152,17 @@ public class LtlPrologTermGenerator {
 		for (int i = 0; i < parameters.size(); i++) {
 			Variable parameter = parameters.get(i);
 			Argument argument = arguments.get(i);
+
+			parameter.setValue(generateArgument(argument));
 			if (parameter.getType().equals(VariableTypes.seq)) {
 				parameter.setSeqValue(argument.getSeq());
 			}
-			parameter.setValue(generateArgument(argument));
 			if (argument.getVariable() != null) {
 				parameter.setSeqValue(argument.getVariable().getSeqValue());
 			}
 		}
 
-		generatePrologTerm(pto, definition.getBody());
+		generatePrologTerm(definition.getBody(), pto);
 		symbolTableManager.popScope();
 	}
 
@@ -201,6 +189,7 @@ public class LtlPrologTermGenerator {
 		List<PrologTerm> arguments = new LinkedList<PrologTerm>();
 		List<PrologTerm> withoutArguments = new LinkedList<PrologTerm>();
 
+		// Generate arguments
 		if (definition.getVariable() != null) {
 			Variable variable = definition.getVariable();
 			SeqDefinition seq = variable.getSeqValue();
@@ -221,11 +210,12 @@ public class LtlPrologTermGenerator {
 			withoutArguments.add(generateArgument(definition.getWithoutArgument()));
 		}
 
+		// Generate sequence term
 		PrologTerm withoutTerm = null;
 		if (withoutArguments.size() > 0) {
 			withoutTerm = new CompoundPrologTerm("not", withoutArguments.get(0));
 			for (int i = 1; i < withoutArguments.size(); i++) {
-				withoutTerm =new CompoundPrologTerm("and", withoutTerm, new CompoundPrologTerm("not", withoutArguments.get(i)));
+				withoutTerm = new CompoundPrologTerm("and", withoutTerm, new CompoundPrologTerm("not", withoutArguments.get(i)));
 			}
 		}
 
