@@ -63,8 +63,8 @@ public class SequenceTest extends AbstractParserTest {
 	public void testCall() throws Exception {
 		parseCall("seq(s)");
 		parseCall("seq(s without x)");
-		parseCall("seq(a, b)");
-		parseCall("seq(a, b without x)");
+		throwsExceptionCall("seq(a, b)");
+		throwsExceptionCall("seq(a, b without x)");
 		parseCall("seq((a, b))");
 		parseCall("seq((a, b without x))");
 

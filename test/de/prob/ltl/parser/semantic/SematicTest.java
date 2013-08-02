@@ -353,30 +353,23 @@ public class SematicTest extends AbstractParserTest {
 		throwsException("num s: 1 seq(s)");
 		throwsException("num s: 1 seq(s without sink)");
 
-		parse("seq(true, false)");
-		parse("seq(true, false without sink)");
-		throwsException("seq(1, false)");
-		throwsException("seq(true, false without 1)");
-		throwsException("num s: 1 seq(s, false without sink)");
-		throwsException("num s: 1 seq(true, false without s)");
-
 		parse("seq((true, false))");
 		parse("seq((true, false without sink))");
 		throwsException("seq((true, false) without sink)");
 
-		parse("true or seq(true, false)");
-		parse("GF seq(true, false)");
-		parse("def p(): seq(true, false) p()");
+		parse("true or seq((true, false))");
+		parse("GF seq((true, false))");
+		parse("def p(): seq((true, false)) p()");
 		parse("def p(s:seq): seq(s) p((true, false))");
-		parse("before(true, seq(true, false))");
+		parse("before(true, seq((true, false)))");
 
-		parse("var s: seq(true, false) s");
-		throwsException("num s: seq(true, false) true");
-		throwsException("seq s: seq(true, false) true");
-		parse("seq s: (true, seq(true, false)) true");
+		parse("var s: seq((true, false)) s");
+		throwsException("num s: seq((true, false)) true");
+		throwsException("seq s: seq((true, false)) true");
+		parse("seq s: (true, seq((true, false))) true");
 
-		throwsException("loop seq(true, false) up to 5: var v: true end true");
-		throwsException("loop 1 up to seq(true, false): var v: true end true");
+		throwsException("loop seq((true, false)) up to 5: var v: true end true");
+		throwsException("loop 1 up to seq((true, false)): var v: true end true");
 	}
 
 	/*@Test

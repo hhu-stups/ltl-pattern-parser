@@ -7,7 +7,6 @@ import java.util.List;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import de.prob.ltl.parser.LtlParser;
-import de.prob.ltl.parser.LtlParser.SeqCallSimpleContext;
 import de.prob.ltl.parser.prolog.scope.ScopeReplacer;
 import de.prob.ltl.parser.semantic.AbstractSemanticObject;
 import de.prob.ltl.parser.semantic.Argument;
@@ -66,18 +65,16 @@ public class LtlPrologTermGenerator {
 		Variable variable = definition.getVariable();
 		if (variable.getType().equals(VariableTypes.seq)) {
 			variable.setSeqValue(definition.getValue().getSeq());
-		} else {
-			variable.setValue(generateArgument(definition.getValue()));
 		}
+		variable.setValue(generateArgument(definition.getValue()));
 	}
 
 	private void generateVariableAssignment(VariableAssignment assignment, IPrologTermOutput pto) {
 		Variable variable = assignment.getVariable();
 		if (variable.getType().equals(VariableTypes.seq)) {
 			variable.setSeqValue(assignment.getValue().getSeq());
-		} else {
-			variable.setValue(generateArgument(assignment.getValue()));
 		}
+		variable.setValue(generateArgument(assignment.getValue()));
 	}
 
 	private void generateLoop(Loop loop, IPrologTermOutput pto) {
@@ -138,6 +135,11 @@ public class LtlPrologTermGenerator {
 			generateExpr(argument.getExpr(), epto);
 			epto.fullstop();
 			value = epto.getSentences().get(0);
+		} else if (argument.getSeq() != null) {
+			StructuredPrologOutput epto = new StructuredPrologOutput();
+			generateSeqDefinition(argument.getSeq(), epto);
+			epto.fullstop();
+			value = epto.getSentences().get(0);
 		}
 		return value;
 	}
@@ -153,9 +155,8 @@ public class LtlPrologTermGenerator {
 			Argument argument = arguments.get(i);
 			if (parameter.getType().equals(VariableTypes.seq)) {
 				parameter.setSeqValue(argument.getSeq());
-			} else {
-				parameter.setValue(generateArgument(argument));
 			}
+			parameter.setValue(generateArgument(argument));
 		}
 
 		generatePrologTerm(pto, definition.getBody());
@@ -178,24 +179,7 @@ public class LtlPrologTermGenerator {
 	}
 
 	public void generateSeqCall(SeqCall call, IPrologTermOutput pto) {
-		List<Argument> arguments = call.getArguments();
-
-		SeqDefinition seq = null;
-		if(call.getContext() instanceof SeqCallSimpleContext) {
-			Argument argument = arguments.get(0);
-			if (argument.getVariable() != null) {
-				Variable variable = argument.getVariable();
-				seq = variable.getSeqValue();
-			} else if (argument.getSeq() != null) {
-				seq = argument.getSeq();
-			}
-		} else {
-			seq = new SeqDefinition(parser, null);
-			seq.setArguments(arguments);
-			seq.setWithoutArgument(call.getWithoutArgument());
-		}
-
-		generateSeqDefinition(seq, pto);
+		pto.printTerm(generateArgument(call.getArgument()));
 	}
 
 	public void generateSeqDefinition(SeqDefinition definition, IPrologTermOutput pto)  {

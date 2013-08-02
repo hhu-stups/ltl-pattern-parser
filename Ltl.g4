@@ -72,8 +72,7 @@ seq_def
  ;
  
 seq_call
- : SEQ_VAR LEFT_PAREN argument RIGHT_PAREN											# seqCallSimple
- | SEQ_VAR LEFT_PAREN argument (',' argument)+ (SEQ_WITHOUT argument)? RIGHT_PAREN	# seqCallDefinition
+ : SEQ_VAR LEFT_PAREN argument RIGHT_PAREN
  ;
  
 /* --- Loop rules --- */
