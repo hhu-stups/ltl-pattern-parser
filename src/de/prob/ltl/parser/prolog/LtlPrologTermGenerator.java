@@ -7,6 +7,7 @@ import java.util.List;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import de.prob.ltl.parser.LtlParser;
+import de.prob.ltl.parser.LtlParser.SeqCallSimpleContext;
 import de.prob.ltl.parser.prolog.scope.ScopeReplacer;
 import de.prob.ltl.parser.semantic.AbstractSemanticObject;
 import de.prob.ltl.parser.semantic.Argument;
@@ -27,6 +28,7 @@ import de.prob.ltl.parser.symboltable.VariableTypes;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
+import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
 
@@ -176,8 +178,73 @@ public class LtlPrologTermGenerator {
 	}
 
 	public void generateSeqCall(SeqCall call, IPrologTermOutput pto) {
-		SeqDefinition seq = call.getSeq();
-		seq.collectArguments();
+		List<Argument> arguments = call.getArguments();
+
+		SeqDefinition seq = null;
+		if(call.getContext() instanceof SeqCallSimpleContext) {
+			Argument argument = arguments.get(0);
+			if (argument.getVariable() != null) {
+				Variable variable = argument.getVariable();
+				seq = variable.getSeqValue();
+			} else if (argument.getSeq() != null) {
+				seq = argument.getSeq();
+			}
+		} else {
+			seq = new SeqDefinition(parser, null);
+			seq.setArguments(arguments);
+			seq.setWithoutArgument(call.getWithoutArgument());
+		}
+
+		generateSeqDefinition(seq, pto);
+	}
+
+	public void generateSeqDefinition(SeqDefinition definition, IPrologTermOutput pto)  {
+		List<PrologTerm> arguments = new LinkedList<PrologTerm>();
+		List<PrologTerm> withoutArguments = new LinkedList<PrologTerm>();
+
+		if (definition.getVariable() != null) {
+			Variable variable = definition.getVariable();
+			SeqDefinition seq = variable.getSeqValue();
+
+			for (Argument arg : seq.getArguments()) {
+				arguments.add(generateArgument(arg));
+			}
+
+			if (seq.getWithoutArgument() != null) {
+				withoutArguments.add(generateArgument(seq.getWithoutArgument()));
+			}
+		} else {
+			for (Argument arg : definition.getArguments()) {
+				arguments.add(generateArgument(arg));
+			}
+		}
+		if (definition.getWithoutArgument() != null) {
+			withoutArguments.add(generateArgument(definition.getWithoutArgument()));
+		}
+
+		PrologTerm withoutTerm = null;
+		if (withoutArguments.size() > 0) {
+			withoutTerm = new CompoundPrologTerm("not", withoutArguments.get(0));
+			for (int i = 1; i < withoutArguments.size(); i++) {
+				withoutTerm =new CompoundPrologTerm("and", withoutTerm, new CompoundPrologTerm("not", withoutArguments.get(i)));
+			}
+		}
+
+		int size = arguments.size();
+		PrologTerm term = singleSeq(arguments.get(size - 2), arguments.get(size - 1), withoutTerm);
+		for (int i = size - 3; i >= 0; i--) {
+			term = singleSeq(arguments.get(i), term, withoutTerm);
+		}
+
+		pto.printTerm(term);
+	}
+
+	private PrologTerm singleSeq(PrologTerm a, PrologTerm b, PrologTerm w) {
+		if (w == null) {
+			return new CompoundPrologTerm("and", a, new CompoundPrologTerm("next", new CompoundPrologTerm("finally", b)));
+		}
+		PrologTerm next = new CompoundPrologTerm("next", new CompoundPrologTerm("until", w, b));
+		return new CompoundPrologTerm("and", new CompoundPrologTerm("and", a, w), next);
 	}
 
 }

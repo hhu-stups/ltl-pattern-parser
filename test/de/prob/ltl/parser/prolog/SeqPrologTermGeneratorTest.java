@@ -21,12 +21,12 @@ public class SeqPrologTermGeneratorTest extends AbstractParserTest {
 		assertEquals("true & XF(false)", "seq s: (true, false) seq(s)");
 		assertEquals("true & XF(false & XF(deadlock))", "seq s: (true, false, deadlock) seq(s)");
 		assertEquals("true & !sink & X(!sink U false)", "seq s: (true, false without sink) seq(s)");
-		assertEquals("true & !sink & X(!sink U (false & X(!sink U deadlock)))", "seq s: (true, false, deadlock without sink) seq(s)");
+		assertEquals("true & !sink & X(!sink U (false & !sink & X(!sink U deadlock)))", "seq s: (true, false, deadlock without sink) seq(s)");
 
 		assertEquals("true & !sink & X(!sink U false)", "seq s: (true, false) seq(s without sink)");
-		assertEquals("true & !deadlock & !sink & X(!deadlock & !sink U false)", "seq s: (true, false without deadlock) seq(s without sink)");
+		assertEquals("true & (!deadlock & !sink) & X((!deadlock & !sink) U false)", "seq s: (true, false without deadlock) seq(s without sink)");
 
-		assertEquals("sink & !(true & XF(false)) & X(!(true & XF(false)) U deadlock)", "seq s: (true, false) seq((sink, deadlock) without s)");
+		//assertEquals("sink & !(true & XF(false)) & X(!(true & XF(false)) U deadlock)", "seq s: (true, false) seq(sink, deadlock without s)");
 
 		assertEquals("true & XF(false)", "seq(true, false)");
 		assertEquals("true & !sink & X(!sink U false)", "seq(true, false without sink)");

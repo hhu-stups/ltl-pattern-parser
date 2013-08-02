@@ -18,7 +18,7 @@ public class SeqDefinition extends AbstractSemanticObject {
 
 	private Variable variable;
 	private List<Argument> arguments = new LinkedList<Argument>();
-	private List<Argument> withoutArguments = new LinkedList<Argument>();
+	private Argument withoutArgument;
 
 	public SeqDefinition(LtlParser parser, Seq_defContext context) {
 		super(parser);
@@ -43,8 +43,7 @@ public class SeqDefinition extends AbstractSemanticObject {
 			}
 
 			// Check without argument
-			Argument withoutArgument = new Argument(parser, ((SeqVarExtensionContext) context).argument());
-			withoutArguments.add(withoutArgument);
+			withoutArgument = new Argument(parser, ((SeqVarExtensionContext) context).argument());
 
 			VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
 			withoutArgument.checkArgument(types, false, true, true);
@@ -56,8 +55,7 @@ public class SeqDefinition extends AbstractSemanticObject {
 			if (ctx.SEQ_WITHOUT() != null) {
 				size -= 1;
 				// Check without argument
-				Argument withoutArgument = new Argument(parser, ctx.argument(size));
-				withoutArguments.add(withoutArgument);
+				withoutArgument = new Argument(parser, ctx.argument(size));
 
 				VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
 				withoutArgument.checkArgument(types, false, true, true);
@@ -72,29 +70,24 @@ public class SeqDefinition extends AbstractSemanticObject {
 		}
 	}
 
-	public void collectArguments() {
-		if (variable != null) {
-			// Add arguments from variable
-			SeqDefinition vDefinition = variable.getSeqValue();
-			arguments.addAll(vDefinition.getArguments());
-			withoutArguments.addAll(vDefinition.getWithoutArguments());
-		}
-	}
-
-	public void addArgument(Argument argument) {
-		arguments.add(argument);
-	}
-
-	public void addWithoutArgument(Argument argument) {
-		withoutArguments.add(argument);
+	public Variable getVariable() {
+		return variable;
 	}
 
 	public List<Argument> getArguments() {
 		return arguments;
 	}
 
-	public List<Argument> getWithoutArguments() {
-		return withoutArguments;
+	public void setArguments(List<Argument> arguments) {
+		this.arguments = arguments;
+	}
+
+	public Argument getWithoutArgument() {
+		return withoutArgument;
+	}
+
+	public void setWithoutArgument(Argument withoutArgument) {
+		this.withoutArgument = withoutArgument;
 	}
 
 }
