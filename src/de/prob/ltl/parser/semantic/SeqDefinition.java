@@ -70,6 +70,22 @@ public class SeqDefinition extends AbstractSemanticObject {
 		}
 	}
 
+	public void createCopyOfArguments() {
+		for (Argument argument : arguments) {
+			createCopy(argument);
+		}
+		if (withoutArgument != null) {
+			createCopy(withoutArgument);
+		}
+	}
+
+	private void createCopy(Argument argument) {
+		Variable var = argument.getVariable();
+		if (var != null) {
+			argument.setVariable(var.copy());
+		}
+	}
+
 	public Variable getVariable() {
 		return variable;
 	}

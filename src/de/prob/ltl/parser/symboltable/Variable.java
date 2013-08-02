@@ -53,6 +53,14 @@ public class Variable {
 		this.seqValue = seqValue;
 	}
 
+	public Variable copy() {
+		Variable copy = new Variable(getName(), getType());
+		copy.seqValue = seqValue;
+		copy.token = token;
+		copy.value = value;
+		return copy;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("%s:%s", name, type);

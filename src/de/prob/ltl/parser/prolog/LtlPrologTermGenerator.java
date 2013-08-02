@@ -67,6 +67,12 @@ public class LtlPrologTermGenerator {
 			variable.setSeqValue(definition.getValue().getSeq());
 		}
 		variable.setValue(generateArgument(definition.getValue()));
+		if (definition.getValue().getVariable() != null) {
+			variable.setSeqValue(definition.getValue().getVariable().getSeqValue());
+		}
+		if (variable.getSeqValue() != null) {
+			variable.getSeqValue().createCopyOfArguments();
+		}
 	}
 
 	private void generateVariableAssignment(VariableAssignment assignment, IPrologTermOutput pto) {
@@ -75,6 +81,12 @@ public class LtlPrologTermGenerator {
 			variable.setSeqValue(assignment.getValue().getSeq());
 		}
 		variable.setValue(generateArgument(assignment.getValue()));
+		if (assignment.getValue().getVariable() != null) {
+			variable.setSeqValue(assignment.getValue().getVariable().getSeqValue());
+		}
+		if (variable.getSeqValue() != null) {
+			variable.getSeqValue().createCopyOfArguments();
+		}
 	}
 
 	private void generateLoop(Loop loop, IPrologTermOutput pto) {
@@ -157,6 +169,9 @@ public class LtlPrologTermGenerator {
 				parameter.setSeqValue(argument.getSeq());
 			}
 			parameter.setValue(generateArgument(argument));
+			if (argument.getVariable() != null) {
+				parameter.setSeqValue(argument.getVariable().getSeqValue());
+			}
 		}
 
 		generatePrologTerm(pto, definition.getBody());

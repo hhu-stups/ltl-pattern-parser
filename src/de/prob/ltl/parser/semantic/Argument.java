@@ -110,6 +110,10 @@ public class Argument extends AbstractSemanticObject {
 		return type;
 	}
 
+	public void setVariable(Variable variable) {
+		this.variable = variable;
+	}
+
 	public Variable getVariable() {
 		return variable;
 	}
