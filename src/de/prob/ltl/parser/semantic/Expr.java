@@ -58,4 +58,8 @@ public class Expr extends AbstractSemanticObject {
 		}, context);
 	}
 
+	public ExprContext getContext() {
+		return context;
+	}
+
 }

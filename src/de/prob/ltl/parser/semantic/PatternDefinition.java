@@ -23,6 +23,7 @@ public class PatternDefinition extends AbstractSemanticObject {
 
 	private String name;
 	private List<Variable> parameters = new LinkedList<Variable>();
+	private Body body;
 
 	public PatternDefinition(LtlParser parser, Pattern_defContext context) {
 		super(parser);
@@ -66,7 +67,7 @@ public class PatternDefinition extends AbstractSemanticObject {
 
 	public void checkBody() {
 		symbolTableManager.pushScope(symbolTable);
-		/*Body body = */new Body(parser, context.body());
+		body = new Body(parser, context.body());
 		symbolTableManager.popScope();
 	}
 
@@ -76,6 +77,14 @@ public class PatternDefinition extends AbstractSemanticObject {
 
 	public List<Variable> getParameters() {
 		return parameters;
+	}
+
+	public SymbolTable getSymbolTable() {
+		return symbolTable;
+	}
+
+	public Body getBody() {
+		return body;
 	}
 
 	private static void printParam(StringBuilder sb, VariableTypes type, int count) {

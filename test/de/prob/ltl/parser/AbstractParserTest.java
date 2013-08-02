@@ -9,11 +9,11 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
 import de.prob.ltl.parser.LtlParser.StartContext;
+import de.prob.ltl.parser.prolog.LtlPrologTermGenerator;
 import de.prob.ltl.parser.semantic.SemanticCheck;
 import de.prob.parserbase.UnparsedParserBase;
 import de.prob.prolog.output.StructuredPrologOutput;
@@ -43,9 +43,11 @@ public abstract class AbstractParserTest {
 		return parser;
 	}
 
-	protected void semanticCheck(StartContext ast, LtlParser parser) {
+	protected SemanticCheck semanticCheck(StartContext ast, LtlParser parser) {
 		SemanticCheck sc = new SemanticCheck(parser);
 		sc.check(ast.body());
+
+		return sc;
 	}
 
 	protected boolean hasErrors(LtlParser parser) {
@@ -68,11 +70,11 @@ public abstract class AbstractParserTest {
 		return Collections.emptyList();
 	}
 
-	protected StructuredPrologOutput generatePrologTerm(ParseTree ast, LtlParser parser) {
+	protected StructuredPrologOutput generatePrologTerm(SemanticCheck check, LtlParser parser) {
 		StructuredPrologOutput pto = new StructuredPrologOutput();
-		// TODO LtlPrologTermGenerator generator = new LtlPrologTermGenerator(parser, "current", parserBase);
+		LtlPrologTermGenerator generator = new LtlPrologTermGenerator(parser, "current", parserBase);
 
-		//generator.generatePrologTerm(pto);
+		generator.generatePrologTerm(pto, check.getBody());
 		pto.fullstop();
 		return pto;
 	}
@@ -93,12 +95,12 @@ public abstract class AbstractParserTest {
 
 		StartContext ast = parser.start();
 
-		semanticCheck(ast, parser);
+		SemanticCheck sc = semanticCheck(ast, parser);
 		if (hasErrors(parser)) {
 			throw getExceptions(parser).get(0);
 		}
 
-		return generatePrologTerm(ast, parser).getSentences().get(0).toString();
+		return generatePrologTerm(sc, parser).getSentences().get(0).toString();
 	}
 
 	protected void throwsException(String input, String msg) {

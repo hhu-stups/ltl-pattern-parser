@@ -76,4 +76,12 @@ public class PatternCall extends AbstractSemanticObject {
 		}
 	}
 
+	public PatternDefinition getDefinition() {
+		return definition;
+	}
+
+	public List<Argument> getArguments() {
+		return arguments;
+	}
+
 }

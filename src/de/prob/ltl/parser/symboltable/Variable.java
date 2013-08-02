@@ -2,11 +2,17 @@ package de.prob.ltl.parser.symboltable;
 
 import org.antlr.v4.runtime.Token;
 
+import de.prob.ltl.parser.semantic.SeqDefinition;
+import de.prob.prolog.term.PrologTerm;
+
 
 public class Variable {
 
 	private String name;
 	private VariableTypes type;
+
+	private PrologTerm value;
+	private SeqDefinition seqValue;
 
 	private Token token;
 
@@ -29,6 +35,22 @@ public class Variable {
 
 	public void setToken(Token token) {
 		this.token = token;
+	}
+
+	public PrologTerm getValue() {
+		return value;
+	}
+
+	public void setValue(PrologTerm value) {
+		this.value = value;
+	}
+
+	public SeqDefinition getSeqValue() {
+		return seqValue;
+	}
+
+	public void setSeqValue(SeqDefinition seqValue) {
+		this.seqValue = seqValue;
 	}
 
 	@Override

@@ -12,6 +12,7 @@ public class VariableAssignment extends AbstractSemanticObject {
 	private Var_assignContext context;
 
 	private Variable variable;
+	private Argument value;
 
 	public VariableAssignment(LtlParser parser, Var_assignContext context) {
 		super(parser);
@@ -32,7 +33,7 @@ public class VariableAssignment extends AbstractSemanticObject {
 	}
 
 	private void checkAssignedValue() {
-		Argument value = new Argument(parser, context.argument());
+		value = new Argument(parser, context.argument());
 
 		VariableTypes type = variable.getType();
 		VariableTypes types[] = new VariableTypes[] { type };
@@ -41,6 +42,14 @@ public class VariableAssignment extends AbstractSemanticObject {
 		boolean exprAllowed = type.equals(VariableTypes.var);
 
 		value.checkArgument(types, numAllowed, seqDefinitionAllowed, exprAllowed);
+	}
+
+	public Variable getVariable() {
+		return variable;
+	}
+
+	public Argument getValue() {
+		return value;
 	}
 
 }

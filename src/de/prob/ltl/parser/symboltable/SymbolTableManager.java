@@ -1,6 +1,5 @@
 package de.prob.ltl.parser.symboltable;
 
-import java.util.List;
 import java.util.Stack;
 
 import de.prob.ltl.parser.semantic.PatternDefinition;
@@ -93,14 +92,6 @@ public class SymbolTableManager {
 	 */
 	public boolean isDefinedPattern(String name) {
 		return getCurrentScope().isDefinedPattern(name);
-	}
-
-	public void addSubTable(SymbolTable st) {
-		getCurrentScope().addSubTable(st);
-	}
-
-	public List<SymbolTable> getSubTables() {
-		return getCurrentScope().getSubTables();
 	}
 
 }

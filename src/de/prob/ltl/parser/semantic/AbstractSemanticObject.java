@@ -1,5 +1,8 @@
 package de.prob.ltl.parser.semantic;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -14,6 +17,7 @@ public abstract class AbstractSemanticObject {
 	protected SymbolTableManager symbolTableManager;
 
 	protected Token token;
+	private List<AbstractSemanticObject> children = new LinkedList<AbstractSemanticObject>();
 
 	public AbstractSemanticObject(LtlParser parser) {
 		this.parser = parser;
@@ -56,6 +60,10 @@ public abstract class AbstractSemanticObject {
 		}
 	}
 
+	public void addChild(AbstractSemanticObject child) {
+		children.add(child);
+	}
+
 	public LtlParser getParser() {
 		return parser;
 	}
@@ -66,6 +74,10 @@ public abstract class AbstractSemanticObject {
 
 	public Token getToken() {
 		return token;
+	}
+
+	public List<AbstractSemanticObject> getChildren() {
+		return children;
 	}
 
 }

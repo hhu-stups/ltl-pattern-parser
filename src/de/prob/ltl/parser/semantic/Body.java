@@ -30,15 +30,15 @@ public class Body extends AbstractSemanticObject {
 					notifyErrorListeners(((Pattern_defContext) child).ID().getSymbol(), "Pattern definition in wrong scope. Definitions are only allowed in global scope.");
 				}
 			} else if (child instanceof Var_defContext) {
-				new VariableDefinition(parser, (Var_defContext) child);
+				addChild(new VariableDefinition(parser, (Var_defContext) child));
 			} else if (child instanceof Var_assignContext) {
-				new VariableAssignment(parser, (Var_assignContext) child);
+				addChild(new VariableAssignment(parser, (Var_assignContext) child));
 			} else if (child instanceof LoopContext) {
-				new Loop(parser, (LoopContext) child);
+				addChild(new Loop(parser, (LoopContext) child));
 			}
 		}
 		// Check final expr
-		new Expr(parser, context.expr());
+		addChild(new Expr(parser, context.expr()));
 	}
 
 }

@@ -33,6 +33,8 @@ public class SeqPrologTermGeneratorTest extends AbstractParserTest {
 
 		assertEquals("true & XF(false)", "seq((true, false))");
 		assertEquals("true & !sink & X(!sink U false)", "seq((true, false without sink))");
+
+		assertEquals("true & XF(false)", "seq s: (true, false) seq t: s s: (sink, deadlock) seq(t)");
 	}
 
 	@Test

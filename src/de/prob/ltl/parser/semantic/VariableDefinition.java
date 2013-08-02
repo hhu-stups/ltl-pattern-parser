@@ -10,6 +10,7 @@ public class VariableDefinition extends AbstractSemanticObject {
 	private Var_defContext context;
 
 	private Variable variable;
+	private Argument value;
 
 	public VariableDefinition(LtlParser parser, Var_defContext context) {
 		super(parser);
@@ -37,7 +38,7 @@ public class VariableDefinition extends AbstractSemanticObject {
 	}
 
 	private void checkInitialValue() {
-		Argument value = new Argument(parser, context.argument());
+		value = new Argument(parser, context.argument());
 
 		VariableTypes type = variable.getType();
 		VariableTypes types[] = new VariableTypes[] { type };
@@ -46,6 +47,14 @@ public class VariableDefinition extends AbstractSemanticObject {
 		boolean exprAllowed = type.equals(VariableTypes.var);
 
 		value.checkArgument(types, numAllowed, seqDefinitionAllowed, exprAllowed);
+	}
+
+	public Variable getVariable() {
+		return variable;
+	}
+
+	public Argument getValue() {
+		return value;
 	}
 
 }

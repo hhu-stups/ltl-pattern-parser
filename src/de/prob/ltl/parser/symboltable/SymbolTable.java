@@ -1,8 +1,6 @@
 package de.prob.ltl.parser.symboltable;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import de.prob.ltl.parser.semantic.PatternDefinition;
@@ -13,8 +11,6 @@ public class SymbolTable {
 	private boolean parentLookup;
 	private Map<String, Variable> variables = new HashMap<String, Variable>();
 	private Map<String, PatternDefinition> patternDefinitions;
-
-	private List<SymbolTable> subTables = new LinkedList<SymbolTable>();
 
 	/**
 	 * Creates a symbol table with a parent, so that patterns are defined in the root parent
@@ -118,14 +114,6 @@ public class SymbolTable {
 	 */
 	public boolean isDefinedPattern(String name) {
 		return resolvePattern(name) != null;
-	}
-
-	public void addSubTable(SymbolTable st) {
-		subTables.add(st);
-	}
-
-	public List<SymbolTable> getSubTables() {
-		return subTables;
 	}
 
 }

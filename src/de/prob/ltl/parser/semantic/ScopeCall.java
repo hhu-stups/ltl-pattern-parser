@@ -64,4 +64,12 @@ public class ScopeCall extends AbstractSemanticObject {
 		}
 	}
 
+	public ScopeTypes getType() {
+		return type;
+	}
+
+	public List<Argument> getArguments() {
+		return arguments;
+	}
+
 }

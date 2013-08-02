@@ -1,5 +1,8 @@
 package de.prob.ltl.parser.semantic;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import de.prob.ltl.parser.LtlParser;
@@ -20,6 +23,7 @@ public class Loop extends AbstractSemanticObject {
 
 	private LoopTypes type;
 	private Variable counterVariable;
+	private List<Argument> arguments = new LinkedList<Argument>();
 
 	public Loop(LtlParser parser, LoopContext context) {
 		super(parser);
@@ -53,6 +57,7 @@ public class Loop extends AbstractSemanticObject {
 	private void checkArguments() {
 		for (ArgumentContext arg : context.argument()) {
 			Argument value = new Argument(parser, arg);
+			arguments.add(value);
 
 			VariableTypes types[] = new VariableTypes[] { VariableTypes.num };
 			value.checkArgument(types, true, false, false);
@@ -62,11 +67,27 @@ public class Loop extends AbstractSemanticObject {
 	private void checkLoopBody() {
 		for (ParseTree child : context.loop_body().children) {
 			if (child instanceof Var_defContext) {
-				new VariableDefinition(parser, (Var_defContext) child);
+				addChild(new VariableDefinition(parser, (Var_defContext) child));
 			} else if (child instanceof Var_assignContext) {
-				new VariableAssignment(parser, (Var_assignContext) child);
+				addChild(new VariableAssignment(parser, (Var_assignContext) child));
 			}
 		}
+	}
+
+	public SymbolTable getSymbolTable() {
+		return symbolTable;
+	}
+
+	public LoopTypes getType() {
+		return type;
+	}
+
+	public Variable getCounterVariable() {
+		return counterVariable;
+	}
+
+	public List<Argument> getArguments() {
+		return arguments;
 	}
 
 }

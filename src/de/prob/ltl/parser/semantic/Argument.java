@@ -1,6 +1,9 @@
 package de.prob.ltl.parser.semantic;
 
+import java.math.BigInteger;
 import java.util.Arrays;
+
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.ArgumentContext;
@@ -16,6 +19,11 @@ public class Argument extends AbstractSemanticObject {
 
 	private ArgumentContext context;
 
+	private Variable variable;
+	private BigInteger num;
+	private SeqDefinition seq;
+	private Expr expr;
+
 	public Argument(LtlParser parser, ArgumentContext context) {
 		super(parser);
 
@@ -29,7 +37,7 @@ public class Argument extends AbstractSemanticObject {
 				// Variable arguments are not allowed
 				notifyErrorListeners("A variable argument is not allowed.");
 			} else {
-				Variable variable = resolveVariable(((VarArgumentContext) context).ID());
+				variable = resolveVariable(((VarArgumentContext) context).ID());
 				if (variable != null) {
 					boolean typeFound = false;
 					// Check if type is allowed
@@ -41,38 +49,43 @@ public class Argument extends AbstractSemanticObject {
 					}
 					if (!typeFound) {
 						notifyErrorListeners("The type of the variable argument '%s' is not allowed. Expected type(s): %s", variable, Arrays.toString(allowedVariableTypes));
-					} else {
-						// TODO get value
 					}
 				}
 			}
 		} else if (context instanceof NumArgumentContext) {
-			token = ((NumArgumentContext) context).NUM().getSymbol();
+			TerminalNode node = ((NumArgumentContext) context).NUM();
+			token = node.getSymbol();
 			if (!numAllowed) {
 				// Num arguments are not allowed
 				notifyErrorListeners("A num argument is not allowed.");
 			} else {
-				// TODO get value
+				// Set value
+				num = new BigInteger(node.getText());
 			}
 		} else if (context instanceof SeqArgumentContext) {
 			if (!seqDefinitionAllowed) {
 				// Seq definition arguments are not allowed
 				notifyErrorListeners("A sequence definition argument is not allowed.");
 			} else {
-				new SeqDefinition(parser, ((SeqArgumentContext) context).seq_def());
-				// TODO get value
+				// Set value
+				seq = new SeqDefinition(parser, ((SeqArgumentContext) context).seq_def());
 			}
 		} else if (context instanceof ParArgumentContext) {
 			// Check sub argument
 			Argument argument = new Argument(parser, ((ParArgumentContext) context).argument());
 			argument.checkArgument(allowedVariableTypes, numAllowed, seqDefinitionAllowed, exprAllowed);
+
+			variable = argument.getVariable();
+			num = argument.getNum();
+			seq = argument.getSeq();
+			expr = argument.getExpr();
 		} else {
 			if (!exprAllowed) {
 				// Expr arguments are not allowed
 				notifyErrorListeners("An expression argument is not allowed.");
 			} else {
-				new Expr(parser, ((ExprArgumentContext) context).expr());
-				// TODO get value
+				// Set value
+				expr = new Expr(parser, ((ExprArgumentContext) context).expr());
 			}
 		}
 	}
@@ -95,6 +108,22 @@ public class Argument extends AbstractSemanticObject {
 			type = argument.determineType();
 		}
 		return type;
+	}
+
+	public Variable getVariable() {
+		return variable;
+	}
+
+	public BigInteger getNum() {
+		return num;
+	}
+
+	public SeqDefinition getSeq() {
+		return seq;
+	}
+
+	public Expr getExpr() {
+		return expr;
 	}
 
 }

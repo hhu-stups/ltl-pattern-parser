@@ -1,5 +1,8 @@
 package de.prob.ltl.parser.prolog.scope;
 
+import java.util.List;
+
+import de.prob.ltl.parser.symboltable.ScopeTypes;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.term.CompoundPrologTerm;
 import de.prob.prolog.term.PrologTerm;
@@ -10,31 +13,31 @@ public abstract class ScopeReplacer {
 	private PrologTerm r;
 	private PrologTerm p;
 
-	/*public static ScopeReplacer createReplacer(ScopeCall call) {
+	public static ScopeReplacer createReplacer(ScopeTypes type, List<PrologTerm> arguments) {
 		ScopeReplacer replacer = null;
 
 		// Determine call and starting (q) and ending (r) state/event
-		if (call.getType().equals(ScopeTypes.BEFORE)) {
+		if (type.equals(ScopeTypes.BEFORE)) {
 			replacer = new BeforeScopeReplacer();
-			replacer.r = call.getValue(0);
-			replacer.p = call.getValue(1);
-		} else if (call.getType().equals(ScopeTypes.AFTER)) {
+			replacer.r = arguments.get(0);
+			replacer.p = arguments.get(1);
+		} else if (type.equals(ScopeTypes.AFTER)) {
 			replacer = new AfterScopeReplacer();
-			replacer.q = call.getValue(0);
-			replacer.p = call.getValue(1);
+			replacer.q = arguments.get(0);
+			replacer.p = arguments.get(1);
 		} else {
-			if (call.getType().equals(ScopeTypes.BETWEEN)) {
+			if (type.equals(ScopeTypes.BETWEEN)) {
 				replacer = new BetweenScopeReplacer();
 			} else {
 				replacer = new AfterUntilScopeReplacer();
 			}
-			replacer.q = call.getValue(0);
-			replacer.r = call.getValue(1);
-			replacer.p = call.getValue(2);
+			replacer.q = arguments.get(0);
+			replacer.r = arguments.get(1);
+			replacer.p = arguments.get(2);
 		}
 
 		return replacer;
-	}*/
+	}
 
 	public void generatePrologTerm(IPrologTermOutput pto) {
 		pto.printTerm(scopeFormula(replace(p)));
