@@ -40,6 +40,7 @@ public class Loop extends AbstractSemanticObject {
 			determineLoopInfo();
 
 			checkLoopBody();
+			checkUnusedVariables();
 			symbolTableManager.popScope();
 		}
 	}

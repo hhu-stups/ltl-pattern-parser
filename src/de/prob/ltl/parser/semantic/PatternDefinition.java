@@ -68,6 +68,7 @@ public class PatternDefinition extends AbstractSemanticObject {
 	public void checkBody() {
 		symbolTableManager.pushScope(symbolTable);
 		body = new Body(parser, context.body());
+		checkUnusedVariables();
 		symbolTableManager.popScope();
 	}
 

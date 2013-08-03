@@ -60,6 +60,20 @@ public abstract class AbstractSemanticObject {
 		}
 	}
 
+	public void notifyWarningListeners(String format, Object ... args) {
+		notifyWarningListeners(token, format, args);
+	}
+
+	public void notifyWarningListeners(Token t, String format, Object ... args) {
+		parser.notifyWarningListeners(t, String.format(format, args));
+	}
+
+	public void checkUnusedVariables() {
+		for (Variable var : symbolTableManager.getUnusedVariables()) {
+			notifyWarningListeners(var.getToken(), "Unused variable '%s'.", var);
+		}
+	}
+
 	public static Token createToken(Token start, Token stop) {
 		CommonToken newToken = new CommonToken(start);
 		newToken.setStopIndex(stop.getStopIndex());

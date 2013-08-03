@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Token;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
@@ -28,10 +29,10 @@ public abstract class AbstractParserTest {
 	}
 
 	protected LtlParser createParser(String input) {
-		return createParser(input, new TestErrorListener());
+		return createParser(input, new TestErrorListener(), new TestWarningListener());
 	}
 
-	protected LtlParser createParser(String input, TestErrorListener errorListener) {
+	protected LtlParser createParser(String input, TestErrorListener errorListener, TestWarningListener warningListener) {
 		LtlLexer lexer = new LtlLexer(new ANTLRInputStream(input));
 		LtlParser parser = new LtlParser(new CommonTokenStream(lexer));
 
@@ -39,6 +40,7 @@ public abstract class AbstractParserTest {
 		parser.removeErrorListeners();
 		lexer.addErrorListener(errorListener);
 		parser.addErrorListener(errorListener);
+		parser.addWarningListener(warningListener);
 
 		return parser;
 	}
@@ -48,6 +50,14 @@ public abstract class AbstractParserTest {
 		sc.check(ast.body());
 
 		return sc;
+	}
+
+	protected int getWarningCount(LtlParser parser) {
+		if (parser.getWarningListeners().size() > 0 && parser.getWarningListeners().get(0) instanceof TestWarningListener) {
+			TestWarningListener listener = (TestWarningListener) parser.getWarningListeners().get(0);
+			return listener.getCount();
+		}
+		return -1;
 	}
 
 	protected boolean hasErrors(LtlParser parser) {
@@ -79,7 +89,7 @@ public abstract class AbstractParserTest {
 		return pto;
 	}
 
-	protected void parse(String input) {
+	protected int parse(String input) {
 		LtlParser parser = createParser(input);
 
 		StartContext ast = parser.start();
@@ -88,6 +98,8 @@ public abstract class AbstractParserTest {
 		if (hasErrors(parser)) {
 			throw getExceptions(parser).get(0);
 		}
+
+		return getWarningCount(parser);
 	}
 
 	protected String parseToString(String input) {
@@ -137,6 +149,21 @@ public abstract class AbstractParserTest {
 
 		public List<RuntimeException> getExceptions() {
 			return exceptions;
+		}
+
+	}
+
+	public class TestWarningListener implements WarningListener {
+
+		private int count;
+
+		@Override
+		public void warning(Token token, String message) {
+			count++;
+		}
+
+		public int getCount() {
+			return count;
 		}
 
 	}

@@ -1,5 +1,7 @@
 package de.prob.ltl.parser.semantic;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
@@ -372,21 +374,45 @@ public class SematicTest extends AbstractParserTest {
 		throwsException("loop 1 up to seq((true, false)): var v: true end true");
 	}
 
-	/*@Test
+	/* TODO @Test
 	public void testRecursiveDefinitionCall() throws Exception {
 		throwsException("def f(a): f(a) or false f(true)");
 	}*/
 
-	/* TODO warning listener
-	@Test
-	TODO public void testUnusedVarWarning() throws Exception {
-		WarningListenerTester listener = new WarningListenerTester();
-		parse("def absence(a): true absence(true)", listener);
-		Assert.assertEquals(1, listener.warningCount);
 
-		listener.warningCount = 0;
-		parse("def absence(a, b): true absence(true, false)", listener);
-		Assert.assertEquals(2, listener.warningCount);
-	}*/
+	@Test
+	public void testUnusedVarWarning() throws Exception {
+		Assert.assertEquals(1, parse("var x: true true"));
+		Assert.assertEquals(1, parse("var x: true x: x true"));
+		Assert.assertEquals(1, parse("var x: true x: x or false true"));
+		Assert.assertEquals(0, parse("var x: true x"));
+		Assert.assertEquals(0, parse("var x: true x: x x"));
+		Assert.assertEquals(0, parse("var x: true x: x or false x"));
+
+		Assert.assertEquals(2, parse("var x: true var y: false true"));
+		Assert.assertEquals(1, parse("var x: true var y: x true"));
+		Assert.assertEquals(0, parse("var x: true var y: x y"));
+
+		Assert.assertEquals(1, parse("num x: 1 true"));
+
+		Assert.assertEquals(1, parse("seq x: (true, false) true"));
+		Assert.assertEquals(0, parse("seq x: (true, false) seq(x)"));
+		Assert.assertEquals(0, parse("var v: true seq x: (v, false) seq(x)"));
+		Assert.assertEquals(1, parse("var v: true seq x: (v, false) true"));
+		Assert.assertEquals(1, parse("var v: true v: before(true, v) true"));
+		Assert.assertEquals(1, parse("var v: true v: seq((true, v)) true"));
+		Assert.assertEquals(1, parse("def p(x): x var v: true v: p(v) true"));
+
+		Assert.assertEquals(1, parse("def p(): var x: true false p()"));
+		Assert.assertEquals(1, parse("def p(x): true p(false)"));
+		Assert.assertEquals(1, parse("def p(x:num): true num n: 1 p(n)"));
+		Assert.assertEquals(1, parse("def p(x:num): x: 3 true p(1)"));
+
+		Assert.assertEquals(2, parse("count i: 1 up to 3: var x: true end true"));
+		Assert.assertEquals(2, parse("var x: false count i: 1 up to 3: x: true end true"));
+		Assert.assertEquals(1, parse("var x: false count i: 1 up to 3: x: true end x"));
+		Assert.assertEquals(1, parse("def p(n: num): true var x: false count i: 1 up to 3: x: p(i) end x"));
+
+	}
 
 }

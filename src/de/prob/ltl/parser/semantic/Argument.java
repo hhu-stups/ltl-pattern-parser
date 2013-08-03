@@ -39,6 +39,8 @@ public class Argument extends AbstractSemanticObject {
 			} else {
 				variable = resolveVariable(((VarArgumentContext) context).ID());
 				if (variable != null) {
+					variable.setWasCalled(true);
+
 					boolean typeFound = false;
 					// Check if type is allowed
 					for (VariableTypes type : allowedVariableTypes) {

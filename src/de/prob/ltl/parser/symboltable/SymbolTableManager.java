@@ -1,5 +1,6 @@
 package de.prob.ltl.parser.symboltable;
 
+import java.util.List;
 import java.util.Stack;
 
 import de.prob.ltl.parser.semantic.PatternDefinition;
@@ -21,6 +22,10 @@ public class SymbolTableManager {
 		if (scopeStack.size() > 1) {
 			scopeStack.pop();
 		}
+	}
+
+	public List<Variable> getUnusedVariables() {
+		return getCurrentScope().getUnusedVariables();
 	}
 
 	public SymbolTable getCurrentScope() {

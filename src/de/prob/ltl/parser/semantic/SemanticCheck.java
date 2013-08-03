@@ -9,13 +9,12 @@ import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.BodyContext;
 import de.prob.ltl.parser.LtlParser.Pattern_defContext;
 
-public class SemanticCheck {
+public class SemanticCheck extends AbstractSemanticObject {
 
-	private final LtlParser parser;
 	private Body body;
 
 	public SemanticCheck(LtlParser parser) {
-		this.parser = parser;
+		super(parser);
 	}
 
 	public void check(BodyContext ast) {
@@ -24,6 +23,7 @@ public class SemanticCheck {
 
 		// Check body
 		body = new Body(parser, ast);
+		checkUnusedVariables();
 	}
 
 	private void collectAndCheckPatternDefinitions(BodyContext ast) {

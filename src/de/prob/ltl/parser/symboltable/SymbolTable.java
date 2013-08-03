@@ -1,6 +1,8 @@
 package de.prob.ltl.parser.symboltable;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import de.prob.ltl.parser.semantic.PatternDefinition;
@@ -114,6 +116,18 @@ public class SymbolTable {
 	 */
 	public boolean isDefinedPattern(String name) {
 		return resolvePattern(name) != null;
+	}
+
+	public List<Variable> getUnusedVariables() {
+		List<Variable> unused = new LinkedList<Variable>();
+
+		for (Variable var : variables.values()) {
+			if (!var.wasCalled()) {
+				unused.add(var);
+			}
+		}
+
+		return unused;
 	}
 
 }

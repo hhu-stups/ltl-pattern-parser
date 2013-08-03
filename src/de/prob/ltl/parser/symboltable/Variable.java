@@ -10,6 +10,7 @@ public class Variable {
 
 	private String name;
 	private VariableTypes type;
+	private boolean wasCalled;
 
 	private PrologTerm value;
 	private SeqDefinition seqValue;
@@ -51,6 +52,14 @@ public class Variable {
 
 	public void setSeqValue(SeqDefinition seqValue) {
 		this.seqValue = seqValue;
+	}
+
+	public void setWasCalled(boolean wasCalled) {
+		this.wasCalled = wasCalled;
+	}
+
+	public boolean wasCalled() {
+		return wasCalled;
 	}
 
 	public Variable copy() {

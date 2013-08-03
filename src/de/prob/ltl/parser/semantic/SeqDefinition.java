@@ -37,6 +37,7 @@ public class SeqDefinition extends AbstractSemanticObject {
 			// check ID
 			variable = resolveVariable(node);
 			if (variable != null) {
+				variable.setWasCalled(true);
 				if (!variable.getType().equals(VariableTypes.seq)) {
 					notifyErrorListeners(node.getSymbol(), "The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.seq);
 				}

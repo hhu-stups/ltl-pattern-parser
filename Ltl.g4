@@ -12,9 +12,32 @@ import de.prob.ltl.parser.symboltable.SymbolTableManager;
 
 @parser::members {
 private SymbolTableManager symbolTableManager = new SymbolTableManager();
+private List<WarningListener> warningListeners = new ArrayList<WarningListener>();
 
 public SymbolTableManager getSymbolTableManager() {
 	return symbolTableManager;
+}
+
+public void addWarningListener(WarningListener listener) {
+	warningListeners.add(listener);
+}
+
+public List<WarningListener> getWarningListeners() {
+	return warningListeners;
+}
+
+public void removeWarningListener(WarningListener listener) {
+	warningListeners.remove(listener);
+}
+
+public void removeAllWarningListeners() {
+	warningListeners.clear();
+}
+
+public void notifyWarningListeners(Token token, String message) {
+	for (WarningListener listener : warningListeners) {
+		listener.warning(token, message);
+	}
 }
 }
 
