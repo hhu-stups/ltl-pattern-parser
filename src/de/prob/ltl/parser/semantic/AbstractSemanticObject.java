@@ -3,6 +3,7 @@ package de.prob.ltl.parser.semantic;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -33,7 +34,7 @@ public abstract class AbstractSemanticObject {
 
 	public boolean defineVariable(Variable var) {
 		if (!symbolTableManager.define(var)) {
-			notifyErrorListeners("The variable '%s' is already defined in this scope.", var);
+			notifyErrorListeners(var.getToken(), "The variable '%s' is already defined in this scope.", var);
 			return false;
 		}
 		return true;
@@ -52,12 +53,18 @@ public abstract class AbstractSemanticObject {
 	}
 
 	public void notifyErrorListeners(Token t, String format, Object ... args) {
-		// TODO check token for null
 		if (t != null) {
 			parser.notifyErrorListeners(t, String.format(format, args), null);
 		} else {
 			parser.notifyErrorListeners(String.format(format, args));
 		}
+	}
+
+	public static Token createToken(Token start, Token stop) {
+		CommonToken newToken = new CommonToken(start);
+		newToken.setStopIndex(stop.getStopIndex());
+
+		return newToken;
 	}
 
 	public void addChild(AbstractSemanticObject child) {

@@ -352,8 +352,7 @@ public class ExprPrologTermGenerator extends LtlBaseListener {
 	public void enterPredicateAtom(PredicateAtomContext ctx) {
 		openTerm("ap");
 		String text = ctx.getText();
-		// TODO create token for errors
-		parsePredicate(text.substring(1, text.length() - 1), ctx.start);
+		parsePredicate(text.substring(1, text.length() - 1), ctx.PREDICATE().getSymbol());
 		closeTerm();
 	}
 
@@ -361,8 +360,7 @@ public class ExprPrologTermGenerator extends LtlBaseListener {
 	public void enterActionAtom(ActionAtomContext ctx) {
 		openTerm("action");
 		String text = ctx.getText();
-		// TODO create token for errors
-		parseTransitionPredicate(text.substring(1, text.length() - 1), ctx.start);
+		parseTransitionPredicate(text.substring(1, text.length() - 1), ctx.ACTION().getSymbol());
 		closeTerm();
 	}
 
@@ -371,8 +369,7 @@ public class ExprPrologTermGenerator extends LtlBaseListener {
 		openTerm("ap");
 		openTerm("enabled");
 		String text = ctx.getText();
-		// TODO create token for errors
-		parseTransitionPredicate(text.substring(2, text.length() - 1), ctx.start);
+		parseTransitionPredicate(text.substring(2, text.length() - 1), ctx.ENABLED().getSymbol());
 		closeTerm();
 		closeTerm();
 	}

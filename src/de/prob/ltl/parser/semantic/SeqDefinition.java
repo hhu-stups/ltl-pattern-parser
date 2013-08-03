@@ -32,13 +32,13 @@ public class SeqDefinition extends AbstractSemanticObject {
 	private void checkArguments() {
 		if(context instanceof SeqVarExtensionContext) {
 			TerminalNode node = ((SeqVarExtensionContext) context).ID();
-			token = node.getSymbol();
+			token = createToken(node.getSymbol(), context.stop);
 
 			// check ID
 			variable = resolveVariable(node);
 			if (variable != null) {
 				if (!variable.getType().equals(VariableTypes.seq)) {
-					notifyErrorListeners("The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.seq);
+					notifyErrorListeners(node.getSymbol(), "The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.seq);
 				}
 			}
 
@@ -49,7 +49,7 @@ public class SeqDefinition extends AbstractSemanticObject {
 			withoutArgument.checkArgument(types, false, true, true);
 		} else {
 			SeqDefinitionContext ctx = (SeqDefinitionContext) context;
-			token = ctx.LEFT_PAREN().getSymbol();	// TODO create token from starttoken and stoptoken
+			token = createToken(ctx.LEFT_PAREN().getSymbol(), ctx.RIGHT_PAREN().getSymbol());
 
 			int size = ctx.argument().size();
 			if (ctx.SEQ_WITHOUT() != null) {

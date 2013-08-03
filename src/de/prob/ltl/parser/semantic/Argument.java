@@ -63,29 +63,30 @@ public class Argument extends AbstractSemanticObject {
 				num = new BigInteger(node.getText());
 			}
 		} else if (context instanceof SeqArgumentContext) {
+			// Set value
+			seq = new SeqDefinition(parser, ((SeqArgumentContext) context).seq_def());
+			token = seq.getToken();
 			if (!seqDefinitionAllowed) {
 				// Seq definition arguments are not allowed
 				notifyErrorListeners("A sequence definition argument is not allowed.");
-			} else {
-				// Set value
-				seq = new SeqDefinition(parser, ((SeqArgumentContext) context).seq_def());
 			}
 		} else if (context instanceof ParArgumentContext) {
 			// Check sub argument
 			Argument argument = new Argument(parser, ((ParArgumentContext) context).argument());
 			argument.checkArgument(allowedVariableTypes, numAllowed, seqDefinitionAllowed, exprAllowed);
 
+			token = argument.getToken();
 			variable = argument.getVariable();
 			num = argument.getNum();
 			seq = argument.getSeq();
 			expr = argument.getExpr();
 		} else {
+			// Set value
+			expr = new Expr(parser, ((ExprArgumentContext) context).expr());
+			token = expr.getToken();
 			if (!exprAllowed) {
 				// Expr arguments are not allowed
 				notifyErrorListeners("An expression argument is not allowed.");
-			} else {
-				// Set value
-				expr = new Expr(parser, ((ExprArgumentContext) context).expr());
 			}
 		}
 	}
@@ -93,8 +94,6 @@ public class Argument extends AbstractSemanticObject {
 	public VariableTypes determineType() {
 		VariableTypes type = VariableTypes.var;
 		if (context instanceof VarArgumentContext) {
-			token = ((VarArgumentContext) context).ID().getSymbol();
-
 			Variable variable = resolveVariable(((VarArgumentContext) context).ID());
 			if (variable != null) {
 				type = variable.getType();
