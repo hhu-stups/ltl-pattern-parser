@@ -9,6 +9,7 @@ public class SymbolTableManager {
 
 	private final SymbolTable globalScope = new SymbolTable(null);
 	private final Stack<SymbolTable> scopeStack = new Stack<SymbolTable>();
+	private Stack<String> callStack;
 
 	public SymbolTableManager() {
 		scopeStack.push(globalScope);
@@ -21,6 +22,34 @@ public class SymbolTableManager {
 	public void popScope() {
 		if (scopeStack.size() > 1) {
 			scopeStack.pop();
+		}
+	}
+
+	public void startCallStack(String name) {
+		callStack = new Stack<String>();
+		pushCall(name);
+	}
+
+	public void stopCallStack() {
+		callStack = null;
+	}
+
+	public void pushCall(String name) {
+		if (callStack != null) {
+			callStack.push(name);
+		}
+	}
+
+	public boolean onCallStack(String name) {
+		if (callStack != null) {
+			return callStack.contains(name);
+		}
+		return false;
+	}
+
+	public void popCall() {
+		if (callStack != null) {
+			callStack.pop();
 		}
 	}
 

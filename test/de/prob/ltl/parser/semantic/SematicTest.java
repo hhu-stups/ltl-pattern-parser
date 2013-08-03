@@ -125,7 +125,7 @@ public class SematicTest extends AbstractParserTest {
 		parse(var3 + pattern2 + expr);
 		parse(pattern2 + var3 + expr);
 
-		// TODO cycle detection throwsException(var2 + pattern4 + expr);
+		throwsException(var2 + pattern4 + expr);
 		throwsException(pattern4 + var2 + expr);
 
 		parse(var2 + pattern5 + expr);
@@ -374,10 +374,18 @@ public class SematicTest extends AbstractParserTest {
 		throwsException("loop 1 up to seq((true, false)): var v: true end true");
 	}
 
-	/* TODO @Test
+	@Test
 	public void testRecursiveDefinitionCall() throws Exception {
-		throwsException("def f(a): f(a) or false f(true)");
-	}*/
+		throwsException("def f(x): f(x) or false f(true)");
+		throwsException("def g(x): x def f(x): g(f(x)) f(true)");
+		throwsException("def f(x): before(true, f(x)) f(true)");
+		throwsException("def f(x): before(f(x), true) f(true)");
+		throwsException("def f(x): seq((f(x), true)) f(true)");
+
+		throwsException("def f(x): seq s: (f(x), true) seq(s) f(true)");
+		throwsException("def f(x): seq s: (false, true) s: s without f(x) seq(s) f(true)");
+		throwsException("def f(x): seq s: (false, true) seq(s without f(x)) f(true)");
+	}
 
 
 	@Test

@@ -44,6 +44,7 @@ public class Expr extends AbstractSemanticObject {
 			@Override
 			public void enterPattern_call(Pattern_callContext ctx) {
 				new PatternCall(parser, ctx);
+				symbolTableManager.popCall();
 			}
 
 			@Override
