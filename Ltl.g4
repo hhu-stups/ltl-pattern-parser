@@ -1,5 +1,6 @@
 grammar Ltl;
 
+/* -- Additional code -- */
 @lexer::header {
 package de.prob.ltl.parser;
 }
@@ -7,15 +8,71 @@ package de.prob.ltl.parser;
 @parser::header {
 package de.prob.ltl.parser;
 
+import de.prob.ltl.parser.prolog.LtlPrologTermGenerator;
+import de.prob.ltl.parser.semantic.SemanticCheck;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
+import de.prob.parserbase.ProBParserBase;
+import de.prob.prolog.output.StructuredPrologOutput;
+import de.prob.prolog.term.PrologTerm;
 }
 
 @parser::members {
 private SymbolTableManager symbolTableManager = new SymbolTableManager();
 private List<WarningListener> warningListeners = new ArrayList<WarningListener>();
+private LtlLexer lexer;
+private SemanticCheck semanticCheck;
+
+public LtlParser(String input) {
+	this(new CommonTokenStream(new LtlLexer(new ANTLRInputStream(input))));
+	if (getTokenStream().getTokenSource() instanceof LtlLexer) {
+		lexer = (LtlLexer) getTokenStream().getTokenSource();
+	}
+}
+
+public void parse() {
+	StartContext ast = start();
+
+	semanticCheck = new SemanticCheck(this);
+	semanticCheck.check(ast.body());
+}
+
+public void parsePatternDefinition() {
+	// TODO
+}
+
+public PrologTerm generatePrologTerm(String currentState, ProBParserBase parserBase) {
+	StructuredPrologOutput pto = new StructuredPrologOutput();
+	LtlPrologTermGenerator generator = new LtlPrologTermGenerator(this, currentState, parserBase);
+
+	generator.generatePrologTerm(semanticCheck.getBody(), pto);
+	pto.fullstop();
+	return pto.getSentences().get(0);
+}
 
 public SymbolTableManager getSymbolTableManager() {
 	return symbolTableManager;
+}
+
+public LtlLexer getLexer() {
+	return lexer;
+}
+
+@Override
+public void addErrorListener(@NotNull ANTLRErrorListener listener) {
+	super.addErrorListener(listener);
+	lexer.addErrorListener(listener);
+}
+
+@Override
+public void removeErrorListener(@NotNull ANTLRErrorListener listener) {
+	super.removeErrorListener(listener);
+	lexer.removeErrorListener(listener);
+}
+
+@Override
+public void removeErrorListeners() {
+	super.removeErrorListeners();
+	lexer.removeErrorListeners();
 }
 
 public void addWarningListener(WarningListener listener) {
