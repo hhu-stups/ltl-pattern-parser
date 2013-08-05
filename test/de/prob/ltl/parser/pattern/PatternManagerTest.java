@@ -121,6 +121,86 @@ public class PatternManagerTest extends AbstractParserTest {
 		throwsException("pattern(true)", patternManager);
 	}
 
+	@Test
+	public void testUpdatePattern() throws Exception {
+		PatternManager patternManager = new PatternManager();
+		TestErrorListener errorListener = new TestErrorListener();
+		TestWarningListener warningListener = new TestWarningListener();
+		TestUpdateListener updateListener = new TestUpdateListener();
+
+		Pattern pattern = createPattern("def pattern(): true", errorListener, warningListener);
+		pattern.addUpdateListener(updateListener);
+		patternManager.addPattern(pattern);
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+		Assert.assertEquals(0, updateListener.getCount());
+
+		parse("pattern()", patternManager);
+
+		pattern.setCode("def pattern(x): x");
+		Assert.assertEquals(1, updateListener.getCount());
+
+		parse("pattern(true)", patternManager);
+		throwsException("pattern()", patternManager);
+
+		pattern.setCode(pattern.getCode() + " def pattern(): true");
+		Assert.assertEquals(2, updateListener.getCount());
+
+		parse("pattern(true)", patternManager);
+		parse("pattern()", patternManager);
+	}
+
+	@Test
+	public void testUpdatePatternManager() throws Exception {
+		PatternManager patternManager = new PatternManager();
+		TestErrorListener errorListener = new TestErrorListener();
+		TestWarningListener warningListener = new TestWarningListener();
+		TestUpdateListener updateListener = new TestUpdateListener();
+
+		patternManager.addUpdateListener(updateListener);
+
+		Pattern pattern = createPattern("def pattern(): true", errorListener, warningListener);
+		patternManager.addPattern(pattern);
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+		Assert.assertEquals(1, updateListener.getCount());
+
+		parse("pattern()", patternManager);
+
+		pattern.setCode("def pattern(x): x");
+		Assert.assertEquals(2, updateListener.getCount());
+
+		parse("pattern(true)", patternManager);
+		throwsException("pattern()", patternManager);
+
+		pattern.setCode(pattern.getCode() + " def pattern(): true");
+		Assert.assertEquals(3, updateListener.getCount());
+
+		parse("pattern(true)", patternManager);
+		parse("pattern()", patternManager);
+
+		patternManager.removePattern(pattern);
+		Assert.assertEquals(4, updateListener.getCount());
+	}
+
+	// Helper
+	public class TestUpdateListener implements PatternUpdateListener {
+
+		private int count;
+
+		@Override
+		public void patternUpdated(Pattern pattern,
+				PatternManager patternManager) {
+			count++;
+		}
+
+		public int getCount() {
+			return count;
+		}
+
+	}
 
 
 }

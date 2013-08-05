@@ -17,6 +17,7 @@ public class Pattern {
 	private List<PatternDefinition> definitions;
 	private List<BaseErrorListener> errorListeners = new LinkedList<BaseErrorListener>();
 	private List<WarningListener> warningListeners = new LinkedList<WarningListener>();
+	private List<PatternUpdateListener> updateListeners = new LinkedList<PatternUpdateListener>();
 
 	public void updateDefinitions(PatternManager patternManager) {
 		if (code != null) {
@@ -53,6 +54,7 @@ public class Pattern {
 	public void setCode(String code) {
 		this.code = code;
 		definitions = null;
+		notifyUpdateListeners();
 	}
 
 	public List<PatternDefinition> getDefinitions() {
@@ -81,6 +83,24 @@ public class Pattern {
 
 	public void removeWarningListeners() {
 		warningListeners.clear();
+	}
+
+	public void addUpdateListener(PatternUpdateListener listener) {
+		updateListeners.add(listener);
+	}
+
+	public void removeUpdateListener(PatternUpdateListener listener) {
+		updateListeners.remove(listener);
+	}
+
+	public void removeUpdateListeners() {
+		updateListeners.clear();
+	}
+
+	public void notifyUpdateListeners() {
+		for (PatternUpdateListener listener: updateListeners) {
+			listener.patternUpdated(this, null);
+		}
 	}
 
 }
