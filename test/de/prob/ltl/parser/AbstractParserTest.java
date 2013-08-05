@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.Token;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import de.prob.ltl.parser.pattern.PatternManager;
 import de.prob.parserbase.UnparsedParserBase;
 
 public abstract class AbstractParserTest {
@@ -65,7 +66,16 @@ public abstract class AbstractParserTest {
 	}
 
 	protected int parse(String input) {
+		return parse(input, null);
+	}
+
+	protected String parseToString(String input) {
+		return parseToString(input, null);
+	}
+
+	protected int parse(String input, PatternManager patternManager) {
 		LtlParser parser = createParser(input);
+		parser.setPatternManager(patternManager);
 		parser.parse();
 		if (hasErrors(parser)) {
 			throw getExceptions(parser).get(0);
@@ -74,8 +84,9 @@ public abstract class AbstractParserTest {
 		return getWarningCount(parser);
 	}
 
-	protected String parseToString(String input) {
+	protected String parseToString(String input, PatternManager patternManager) {
 		LtlParser parser = createParser(input);
+		parser.setPatternManager(patternManager);
 		parser.parse();
 		if (hasErrors(parser)) {
 			throw getExceptions(parser).get(0);

@@ -128,4 +128,8 @@ public class SymbolTableManager {
 		return getCurrentScope().isDefinedPattern(name);
 	}
 
+	public List<PatternDefinition> getPatternDefinitions() {
+		return globalScope.getPatternDefinitions();
+	}
+
 }

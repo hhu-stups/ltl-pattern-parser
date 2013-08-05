@@ -9,6 +9,7 @@ package de.prob.ltl.parser;
 package de.prob.ltl.parser;
 
 import de.prob.ltl.parser.prolog.LtlPrologTermGenerator;
+import de.prob.ltl.parser.pattern.PatternManager;
 import de.prob.ltl.parser.semantic.SemanticCheck;
 import de.prob.ltl.parser.symboltable.SymbolTableManager;
 import de.prob.parserbase.ProBParserBase;
@@ -18,6 +19,7 @@ import de.prob.prolog.term.PrologTerm;
 
 @parser::members {
 private SymbolTableManager symbolTableManager = new SymbolTableManager();
+private PatternManager patternManager;
 private List<WarningListener> warningListeners = new ArrayList<WarningListener>();
 private LtlLexer lexer;
 private SemanticCheck semanticCheck;
@@ -30,6 +32,9 @@ public LtlParser(String input) {
 }
 
 public void parse() {
+	if (patternManager != null) {
+		patternManager.updatePatterns(symbolTableManager);
+	}
 	StartContext ast = start();
 
 	semanticCheck = new SemanticCheck(this);
@@ -37,7 +42,13 @@ public void parse() {
 }
 
 public void parsePatternDefinition() {
-	// TODO
+	if (patternManager != null) {
+		patternManager.updatePatterns(symbolTableManager);
+	}
+	Start_pattern_defContext ast = start_pattern_def();
+
+	semanticCheck = new SemanticCheck(this);
+	semanticCheck.check(ast);
 }
 
 public PrologTerm generatePrologTerm(String currentState, ProBParserBase parserBase) {
@@ -51,6 +62,18 @@ public PrologTerm generatePrologTerm(String currentState, ProBParserBase parserB
 
 public SymbolTableManager getSymbolTableManager() {
 	return symbolTableManager;
+}
+
+public void setSymbolTableManager(SymbolTableManager symbolTableManager) {
+	this.symbolTableManager = symbolTableManager;
+}
+
+public PatternManager getPatternManager() {
+	return patternManager;
+}
+
+public void setPatternManager(PatternManager patternManager) {
+	this.patternManager = patternManager;
 }
 
 public LtlLexer getLexer() {
@@ -101,6 +124,10 @@ public void notifyWarningListeners(Token token, String message) {
 /* -- Starting rule -- */
 start
  : body EOF
+ ;
+ 
+start_pattern_def
+ : (pattern_def)* EOF
  ;
 
 /* --- Common rules --- */

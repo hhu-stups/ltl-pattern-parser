@@ -130,4 +130,8 @@ public class SymbolTable {
 		return unused;
 	}
 
+	public List<PatternDefinition> getPatternDefinitions() {
+		return new LinkedList<PatternDefinition>(patternDefinitions.values());
+	}
+
 }
