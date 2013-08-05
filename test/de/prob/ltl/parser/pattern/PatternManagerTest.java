@@ -220,6 +220,23 @@ public class PatternManagerTest extends AbstractParserTest {
 	}
 
 	@Test
+	public void testDifferentNames2() throws Exception {
+		PatternManager patternManager = new PatternManager();
+		TestErrorListener errorListener = new TestErrorListener();
+		TestWarningListener warningListener = new TestWarningListener();
+
+		patternManager.addPattern(createPattern("def a(): true", errorListener, warningListener));
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+
+		patternManager.addPattern(createPattern("def b(): true", errorListener, warningListener));
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+	}
+
+	@Test
 	public void testSaveAndLoadPatterns() throws Exception {
 		PatternManager save = new PatternManager();
 		TestErrorListener errorListener = new TestErrorListener();
@@ -284,6 +301,13 @@ public class PatternManagerTest extends AbstractParserTest {
 		Assert.assertEquals(2, warningListener.getCount());
 
 		file.delete();
+	}
+
+	@Test
+	public void testBuiltins() throws Exception {
+		PatternManager patternManager = new PatternManager();
+
+		Assert.assertEquals(parseToString("G!{p}"), parseToString("absence({p})", patternManager));
 	}
 
 	// Helper

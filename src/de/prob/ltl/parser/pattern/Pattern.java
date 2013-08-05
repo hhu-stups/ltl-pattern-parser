@@ -13,6 +13,7 @@ import de.prob.ltl.parser.semantic.PatternDefinition;
 public class Pattern {
 
 	private String name;
+	private boolean builtin;
 	private String description;
 	private String code;
 	private List<PatternDefinition> definitions;
@@ -65,6 +66,14 @@ public class Pattern {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isBuiltin() {
+		return builtin;
+	}
+
+	public void setBuiltin(boolean builtin) {
+		this.builtin = builtin;
 	}
 
 	public String getDescription() {

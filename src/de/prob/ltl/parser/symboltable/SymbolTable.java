@@ -131,7 +131,13 @@ public class SymbolTable {
 	}
 
 	public List<PatternDefinition> getPatternDefinitions() {
-		return new LinkedList<PatternDefinition>(patternDefinitions.values());
+		List<PatternDefinition> result = new LinkedList<PatternDefinition>();
+		for (PatternDefinition definition : patternDefinitions.values()) {
+			if (definition.isNewDefinition()) {
+				result.add(definition);
+			}
+		}
+		return result;
 	}
 
 }

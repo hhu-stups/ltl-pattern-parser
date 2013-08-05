@@ -22,6 +22,7 @@ public class PatternDefinition extends AbstractSemanticObject {
 	private Pattern_defContext context;
 
 	private String name;
+	private boolean newDefinition = true;
 	private List<Variable> parameters = new LinkedList<Variable>();
 	private Body body;
 
@@ -80,6 +81,14 @@ public class PatternDefinition extends AbstractSemanticObject {
 
 	public String getSimpleName() {
 		return name;
+	}
+
+	public boolean isNewDefinition() {
+		return newDefinition;
+	}
+
+	public void setNewDefinition(boolean newDefinition) {
+		this.newDefinition = newDefinition;
 	}
 
 	public List<Variable> getParameters() {
