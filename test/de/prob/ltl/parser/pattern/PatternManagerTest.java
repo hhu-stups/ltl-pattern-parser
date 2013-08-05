@@ -185,6 +185,34 @@ public class PatternManagerTest extends AbstractParserTest {
 		Assert.assertEquals(4, updateListener.getCount());
 	}
 
+	@Test
+	public void testDifferentNames() throws Exception {
+		PatternManager patternManager = new PatternManager();
+		TestErrorListener errorListener = new TestErrorListener();
+		TestWarningListener warningListener = new TestWarningListener();
+
+		Pattern pattern = createPattern("def pattern(): true def pattern(x): x", errorListener, warningListener);
+		patternManager.addPattern(pattern);
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+
+		parse("pattern() or pattern(true)", patternManager);
+
+		String code = pattern.getCode();
+		pattern.setCode(code + " def abc(): true");
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(3, warningListener.getCount());
+
+		parse("pattern() or pattern(true) or abc()", patternManager);
+
+		pattern.setCode("def abc(): true " + code);
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(6, warningListener.getCount());
+
+		parse("pattern() or pattern(true) or abc()", patternManager);
+	}
+
 	// Helper
 	public class TestUpdateListener implements PatternUpdateListener {
 

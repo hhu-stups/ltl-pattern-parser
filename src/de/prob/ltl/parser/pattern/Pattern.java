@@ -35,6 +35,25 @@ public class Pattern {
 				parser.parsePatternDefinition();
 
 				definitions = parser.getSymbolTableManager().getPatternDefinitions();
+				checkPatternDefinitionNames(parser);
+			}
+		}
+	}
+
+	private void checkPatternDefinitionNames(LtlParser parser) {
+		if (definitions != null && definitions.size() > 1) {
+			String name = definitions.get(0).getSimpleName();
+			boolean error = false;
+			for (PatternDefinition definition : definitions) {
+				if (!name.equals(definition.getSimpleName())) {
+					error = true;
+					break;
+				}
+			}
+			if (error) {
+				for (PatternDefinition definition : definitions) {
+					parser.notifyWarningListeners(definition.getToken(), "Different pattern names in a single pattern definition.");
+				}
 			}
 		}
 	}

@@ -78,6 +78,10 @@ public class PatternDefinition extends AbstractSemanticObject {
 		return createPatternIdentifier(name, parameters);
 	}
 
+	public String getSimpleName() {
+		return name;
+	}
+
 	public List<Variable> getParameters() {
 		return parameters;
 	}
