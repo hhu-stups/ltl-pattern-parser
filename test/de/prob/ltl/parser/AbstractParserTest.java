@@ -95,16 +95,20 @@ public abstract class AbstractParserTest {
 		return parser.generatePrologTerm("current", parserBase).toString();
 	}
 
-	protected void throwsException(String input, String msg) {
+	protected void throwsException(PatternManager patternManager, String input, String msg) {
 		try {
-			parse(input);
+			parse(input, patternManager);
 			Assert.fail(msg);
 		} catch(RuntimeException e) {
 		}
 	}
 
+	protected void throwsException(String input, PatternManager patternManager) {
+		throwsException(patternManager, input, "Exception should have been thrown. (Input: \""+ input +"\")");
+	}
+
 	protected void throwsException(String input) {
-		throwsException(input, "Exception should have been thrown. (Input: \""+ input +"\")");
+		throwsException(input, null);
 	}
 
 	// Test helper classes

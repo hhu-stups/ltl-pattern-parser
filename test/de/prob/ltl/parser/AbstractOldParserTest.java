@@ -35,7 +35,7 @@ public abstract class AbstractOldParserTest extends AbstractParserTest {
 
 	protected void throwsException(String expected, String input, ExceptionCause cause) {
 		if (cause == ExceptionCause.Deprecated || cause == ExceptionCause.Unsupported) {
-			throwsException(input, "Exception for new parser version should have been thrown. (Input: "+input+")");
+			throwsException(null, input, "Exception for new parser version should have been thrown. (Input: "+input+")");
 		} else {
 			try {
 				parse(input);

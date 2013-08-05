@@ -110,7 +110,7 @@ public void removeWarningListener(WarningListener listener) {
 	warningListeners.remove(listener);
 }
 
-public void removeAllWarningListeners() {
+public void removeWarningListeners() {
 	warningListeners.clear();
 }
 
