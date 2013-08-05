@@ -20,12 +20,14 @@ public class SemanticCheck extends AbstractSemanticObject {
 	}
 
 	public void check(BodyContext ast) {
-		// Collect all pattern definitions and check them
-		collectAndCheckPatternDefinitions(ast);
+		if (ast != null) {
+			// Collect all pattern definitions and check them
+			collectAndCheckPatternDefinitions(ast);
 
-		// Check body
-		body = new Body(parser, ast);
-		checkUnusedVariables();
+			// Check body
+			body = new Body(parser, ast);
+			checkUnusedVariables();
+		}
 	}
 
 	public void check(Start_pattern_defContext ast) {

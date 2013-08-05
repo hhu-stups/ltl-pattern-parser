@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
 
-public class ExtendedSematicTest extends AbstractParserTest {
+public class ExtendedSemanticTest extends AbstractParserTest {
 
 	@Test
 	public void testDefineAndCallVariable() throws Exception {

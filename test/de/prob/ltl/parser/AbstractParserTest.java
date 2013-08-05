@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 
 import de.prob.ltl.parser.pattern.PatternManager;
 import de.prob.parserbase.UnparsedParserBase;
+import de.prob.prolog.term.PrologTerm;
 
 public abstract class AbstractParserTest {
 
@@ -92,7 +93,12 @@ public abstract class AbstractParserTest {
 			throw getExceptions(parser).get(0);
 		}
 
-		return parser.generatePrologTerm("current", parserBase).toString();
+		PrologTerm term = parser.generatePrologTerm("current", parserBase);
+		if (term != null) {
+			return term.toString();
+		} else {
+			return null;
+		}
 	}
 
 	protected void throwsException(PatternManager patternManager, String input, String msg) {

@@ -1,9 +1,34 @@
 package de.prob.ltl.parser;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
+
+import de.prob.ltl.parser.pattern.PatternManager;
 
 
 public class GrammarTest extends AbstractOldParserTest {
+
+	@Test
+	public void testEmptyInput() throws Exception {
+		PatternManager patternManager = new PatternManager();
+		Assert.assertEquals(0, parse(""));
+		Assert.assertEquals(null, parseToString(""));
+		Assert.assertEquals(0, parse("", patternManager));
+		Assert.assertEquals(null, parseToString("", patternManager));
+		Assert.assertEquals(0, parse(" "));
+		Assert.assertEquals(null, parseToString(" "));
+		Assert.assertEquals(0, parse(" ", patternManager));
+		Assert.assertEquals(null, parseToString(" ", patternManager));
+		Assert.assertEquals(0, parse("//"));
+		Assert.assertEquals(null, parseToString("//"));
+		Assert.assertEquals(0, parse("//", patternManager));
+		Assert.assertEquals(null, parseToString("//", patternManager));
+		Assert.assertEquals(0, parse("/* */"));
+		Assert.assertEquals(null, parseToString("/* */"));
+		Assert.assertEquals(0, parse("/* */", patternManager));
+		Assert.assertEquals(null, parseToString("/* */", patternManager));
+	}
 
 	@Test
 	public void testParenthesisExpression() throws Exception {

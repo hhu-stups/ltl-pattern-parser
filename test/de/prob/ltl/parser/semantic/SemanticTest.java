@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
 
-public class SematicTest extends AbstractParserTest {
+public class SemanticTest extends AbstractParserTest {
 
 	@Test
 	public void testDefinitionPatternParameter() throws Exception {

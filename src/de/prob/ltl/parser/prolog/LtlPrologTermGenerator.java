@@ -47,15 +47,17 @@ public class LtlPrologTermGenerator {
 	}
 
 	public void generatePrologTerm(Body body, IPrologTermOutput pto) {
-		for (AbstractSemanticObject object : body.getChildren()) {
-			if (object instanceof VariableDefinition) {
-				generateVariableDefinition((VariableDefinition) object);
-			} else if (object instanceof VariableAssignment) {
-				generateVariableAssignment((VariableAssignment) object);
-			} else if (object instanceof Loop) {
-				generateLoop((Loop) object);
-			} else if (object instanceof Expr) {
-				generateExpr((Expr) object, pto);
+		if (body != null) {
+			for (AbstractSemanticObject object : body.getChildren()) {
+				if (object instanceof VariableDefinition) {
+					generateVariableDefinition((VariableDefinition) object);
+				} else if (object instanceof VariableAssignment) {
+					generateVariableAssignment((VariableAssignment) object);
+				} else if (object instanceof Loop) {
+					generateLoop((Loop) object);
+				} else if (object instanceof Expr) {
+					generateExpr((Expr) object, pto);
+				}
 			}
 		}
 	}

@@ -55,9 +55,13 @@ public PrologTerm generatePrologTerm(String currentState, ProBParserBase parserB
 	StructuredPrologOutput pto = new StructuredPrologOutput();
 	LtlPrologTermGenerator generator = new LtlPrologTermGenerator(this, currentState, parserBase);
 
-	generator.generatePrologTerm(semanticCheck.getBody(), pto);
-	pto.fullstop();
-	return pto.getSentences().get(0);
+	if (semanticCheck.getBody() != null) {
+		generator.generatePrologTerm(semanticCheck.getBody(), pto);
+		pto.fullstop();
+		return pto.getSentences().get(0);
+	} else {
+		return null;
+	}
 }
 
 public SymbolTableManager getSymbolTableManager() {
@@ -123,7 +127,7 @@ public void notifyWarningListeners(Token token, String message) {
 
 /* -- Starting rule -- */
 start
- : body EOF
+ : body? EOF
  ;
  
 start_pattern_def

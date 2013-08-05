@@ -24,6 +24,33 @@ public class PatternManagerTest extends AbstractParserTest {
 	}
 
 	@Test
+	public void testEmptyInput() throws Exception {
+		PatternManager patternManager = new PatternManager();
+		TestErrorListener errorListener = new TestErrorListener();
+		TestWarningListener warningListener = new TestWarningListener();
+
+		patternManager.addPattern(createPattern("", errorListener, warningListener));
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+
+		patternManager.addPattern(createPattern(" ", errorListener, warningListener));
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+
+		patternManager.addPattern(createPattern("//", errorListener, warningListener));
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+
+		patternManager.addPattern(createPattern("/* */", errorListener, warningListener));
+
+		Assert.assertEquals(0, errorListener.getErrors());
+		Assert.assertEquals(0, warningListener.getCount());
+	}
+
+	@Test
 	public void testAddPattern() throws Exception {
 		PatternManager patternManager = new PatternManager();
 		TestErrorListener errorListener = new TestErrorListener();
