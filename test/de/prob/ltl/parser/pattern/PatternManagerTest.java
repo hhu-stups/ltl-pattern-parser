@@ -1,5 +1,7 @@
 package de.prob.ltl.parser.pattern;
 
+import java.io.File;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -10,8 +12,12 @@ public class PatternManagerTest extends AbstractParserTest {
 
 	private Pattern createPattern(String code, TestErrorListener errorListener, TestWarningListener warningListener) {
 		Pattern pattern = new Pattern();
-		pattern.addErrorListener(errorListener);
-		pattern.addWarningListener(warningListener);
+		if (errorListener != null) {
+			pattern.addErrorListener(errorListener);
+		}
+		if (warningListener != null) {
+			pattern.addWarningListener(warningListener);
+		}
 		pattern.setCode(code);
 
 		return pattern;
@@ -211,6 +217,73 @@ public class PatternManagerTest extends AbstractParserTest {
 		Assert.assertEquals(6, warningListener.getCount());
 
 		parse("pattern() or pattern(true) or abc()", patternManager);
+	}
+
+	@Test
+	public void testSaveAndLoadPatterns() throws Exception {
+		PatternManager save = new PatternManager();
+		TestErrorListener errorListener = new TestErrorListener();
+		TestWarningListener warningListener = new TestWarningListener();
+		File file = new File("patternManagerTest.txt");
+
+		Pattern pattern = createPattern("def pattern(): true", errorListener, warningListener);
+		save.addPattern(pattern);
+		save.addPattern(createPattern("def pattern2(): \ntrue \ndef abc(x:seq): \n \n\t seq(x)", errorListener, warningListener));
+		save.savePatternsToFile(file);
+
+		PatternManager load = new PatternManager();
+		load.loadPatternsFromFile(file);
+		load.savePatternsToFile(file);
+
+		parse("pattern() or pattern2() or abc((true, false))", load);
+
+		file.delete();
+	}
+
+	@Test
+	public void testSaveAndLoadMultipleTimes() throws Exception {
+		PatternManager patternManager = new PatternManager();
+		TestErrorListener errorListener = new TestErrorListener();
+		TestWarningListener warningListener = new TestWarningListener();
+		File file = new File("patternManagerTest.txt");
+
+		Pattern pattern = createPattern("def pattern(): true", errorListener, warningListener);
+		pattern.setName("test");
+		patternManager.addPattern(pattern);
+		patternManager.addPattern(createPattern("def pattern2(): \ntrue \ndef abc(x:seq): \n \n\t seq(x)", errorListener, warningListener));
+
+		patternManager.savePatternsToFile(file);
+		patternManager.loadPatternsFromFile(file);
+		patternManager.savePatternsToFile(file);
+		patternManager.loadPatternsFromFile(file);
+		patternManager.savePatternsToFile(file);
+
+		file.delete();
+	}
+
+	@Test
+	public void testLoadErrors() throws Exception {
+		PatternManager patternManager = new PatternManager();
+		TestErrorListener errorListener = new TestErrorListener();
+		TestWarningListener warningListener = new TestWarningListener();
+		File file = new File("patternManagerTest.txt");
+
+		patternManager.addErrorListener(errorListener);
+		patternManager.addWarningListener(warningListener);
+
+		patternManager.addPattern(createPattern("def pattern(): true", null, null));
+		patternManager.addPattern(createPattern("def pattern(): true def pattern(x): true", null, null));
+
+		Assert.assertEquals(1, errorListener.getErrors());
+		Assert.assertEquals(1, warningListener.getCount());
+
+		patternManager.savePatternsToFile(file);
+		patternManager.loadPatternsFromFile(file);
+
+		Assert.assertEquals(2, errorListener.getErrors());
+		Assert.assertEquals(2, warningListener.getCount());
+
+		file.delete();
 	}
 
 	// Helper

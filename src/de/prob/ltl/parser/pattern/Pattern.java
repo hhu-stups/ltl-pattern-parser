@@ -12,6 +12,7 @@ import de.prob.ltl.parser.semantic.PatternDefinition;
 
 public class Pattern {
 
+	private String name;
 	private String description;
 	private String code;
 	private List<PatternDefinition> definitions;
@@ -56,6 +57,14 @@ public class Pattern {
 				}
 			}
 		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
