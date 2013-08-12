@@ -6,6 +6,8 @@
  
     <path id="classpath">
         <pathelement location="lib/antlr-4.0-complete.jar" />
+        <pathelement location="lib/parserbase-2.4.11-SNAPSHOT.jar" />
+        <pathelement location="lib/prologlib-2.4.11-SNAPSHOT.jar" />
         <pathelement location="bin" />
     </path>
  
