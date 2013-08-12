@@ -2,7 +2,7 @@ package de.prob.ltl.parser.semantic;
 
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import de.prob.ltl.parser.LtlBaseListener;
+import de.prob.ltl.parser.LtlBlockingListener;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.ExprContext;
 import de.prob.ltl.parser.LtlParser.Pattern_callContext;
@@ -27,34 +27,42 @@ public class Expr extends AbstractSemanticObject {
 
 	private void checkContext() {
 		token = createToken(context.start, context.stop);
-		ParseTreeWalker.DEFAULT.walk(new LtlBaseListener() {
+		ParseTreeWalker.DEFAULT.walk(new LtlBlockingListener() {
 
 			@Override
 			public void enterVariableCallAtom(VariableCallAtomContext ctx) {
-				Variable variable = resolveVariable(ctx.ID());
-				if (variable != null) {
-					variable.setWasCalled(true);
-					// Only type 'var' is allowed here , because it is the variable call for exprs
-					if (!variable.getType().equals(VariableTypes.var)) {
-						notifyErrorListeners(variable.getToken(), "The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.var);
+				if (enterContext(ctx)) {
+					Variable variable = resolveVariable(ctx.ID());
+					if (variable != null) {
+						variable.setWasCalled(true);
+						// Only type 'var' is allowed here , because it is the variable call for exprs
+						if (!variable.getType().equals(VariableTypes.var)) {
+							notifyErrorListeners(variable.getToken(), "The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.var);
+						}
 					}
 				}
 			}
 
 			@Override
 			public void enterPattern_call(Pattern_callContext ctx) {
-				new PatternCall(parser, ctx);
-				symbolTableManager.popCall();
+				if (enterContext(ctx)) {
+					new PatternCall(parser, ctx);
+					symbolTableManager.popCall();
+				}
 			}
 
 			@Override
 			public void enterScope_call(Scope_callContext ctx) {
-				new ScopeCall(parser, ctx);
+				if (enterContext(ctx)) {
+					new ScopeCall(parser, ctx);
+				}
 			}
 
 			@Override
 			public void enterSeqCallAtom(SeqCallAtomContext ctx) {
-				new SeqCall(parser, ctx.seq_call());
+				if (enterContext(ctx)) {
+					new SeqCall(parser, ctx.seq_call());
+				}
 			}
 
 		}, context);

@@ -1,5 +1,7 @@
 package de.prob.ltl.parser.semantic;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
@@ -131,6 +133,13 @@ public class ExtendedSemanticTest extends AbstractParserTest {
 		throwsException("num x: 1 before(x, true)");
 		throwsException("num x: 1 before(true, x)");
 		throwsException("before(1, true)");
+	}
+
+	@Test
+	public void testPreventDoubleCheckOfExpr() throws Exception {
+		Assert.assertEquals(1, parseAndGetErrors("var a: true before({r}, x S a)").size());
+		Assert.assertEquals(1, parseAndGetErrors("def pattern(x): x pattern(a or true)").size());
+		Assert.assertEquals(1, parseAndGetErrors("var a: true seq((a, a or b))").size());
 	}
 
 }

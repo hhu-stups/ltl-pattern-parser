@@ -1,11 +1,10 @@
 package de.prob.ltl.parser.prolog;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import de.prob.ltl.parser.LtlBaseListener;
+import de.prob.ltl.parser.LtlBlockingListener;
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.LtlParser.ActionAtomContext;
 import de.prob.ltl.parser.LtlParser.AndExprContext;
@@ -39,7 +38,7 @@ import de.prob.parserbase.ProBParseException;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.prolog.output.IPrologTermOutput;
 
-public class ExprPrologTermGenerator extends LtlBaseListener {
+public class ExprPrologTermGenerator extends LtlBlockingListener {
 
 	private final LtlParser parser;
 	private final LtlPrologTermGenerator generator;
@@ -49,7 +48,6 @@ public class ExprPrologTermGenerator extends LtlBaseListener {
 	private final ProBParserBase specParser;
 
 	protected ParseTreeProperty<Integer> numberOfTerms = new ParseTreeProperty<Integer>();
-	protected ParserRuleContext blockingContext = null;
 
 	public ExprPrologTermGenerator(LtlParser parser, LtlPrologTermGenerator generator, IPrologTermOutput pto, String currentState, ProBParserBase parserBase) {
 		this.parser = parser;
@@ -88,21 +86,6 @@ public class ExprPrologTermGenerator extends LtlBaseListener {
 			SeqCall call = new SeqCall(parser, ctx.seq_call());
 			generator.generateSeqCall(call, pto);
 		}
-	}
-
-	@Override
-	public void exitEveryRule(ParserRuleContext ctx) {
-		if (blockingContext != null && ctx.equals(blockingContext)) {
-			blockingContext = null;
-		}
-	}
-
-	protected boolean enterContext(ParserRuleContext ctx) {
-		if (blockingContext == null) {
-			blockingContext = ctx;
-			return true;
-		}
-		return false;
 	}
 
 	protected void openTerm(String functor) {

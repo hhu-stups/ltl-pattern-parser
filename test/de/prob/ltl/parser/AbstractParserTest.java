@@ -70,6 +70,10 @@ public abstract class AbstractParserTest {
 		return parse(input, null);
 	}
 
+	protected List<RuntimeException> parseAndGetErrors(String input) {
+		return parseAndGetErrors(input, null);
+	}
+
 	protected String parseToString(String input) {
 		return parseToString(input, null);
 	}
@@ -84,6 +88,16 @@ public abstract class AbstractParserTest {
 
 		return getWarningCount(parser);
 	}
+
+	protected List<RuntimeException> parseAndGetErrors(String input, PatternManager patternManager) {
+		LtlParser parser = createParser(input);
+		parser.setPatternManager(patternManager);
+		parser.parse();
+
+		return getExceptions(parser);
+	}
+
+
 
 	protected String parseToString(String input, PatternManager patternManager) {
 		LtlParser parser = createParser(input);
