@@ -132,4 +132,8 @@ public class SymbolTableManager {
 		return globalScope.getPatternDefinitions();
 	}
 
+	public List<PatternDefinition> getAllPatternDefinitions() {
+		return globalScope.getAllPatternDefinitions();
+	}
+
 }

@@ -3,9 +3,11 @@ package de.prob.ltl.parser.pattern;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 	private final String PATTERN_ID = 		"%% PATTERN";
 	private final String DESCRIPTION_ID = 	"%% DESCRIPTION";
 	private final String CODE_ID = 			"%% CODE";
-	private final String BUILTIN_FILE =		"builtins.ltlp";
+	private final String BUILTIN_FILE =		"/builtins.ltlp";
 
 	private List<Pattern> builtins = new LinkedList<Pattern>();
 	private List<Pattern> patterns = new LinkedList<Pattern>();
@@ -33,7 +35,7 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 
 	public PatternManager() {
 		try {
-			loadPatternsFromFile(new File(BUILTIN_FILE), builtins);
+			loadPatternsFromFile(BUILTIN_FILE, builtins);
 			for (Pattern pattern : builtins) {
 				pattern.setBuiltin(true);
 			}
@@ -82,50 +84,56 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 		}
 	}
 
-	public void loadPatternsFromFile(File file) throws IOException {
+	public void loadPatternsFromFile(String filename) throws IOException {
 		patterns.clear();
-		loadPatternsFromFile(file, patterns);
+		loadPatternsFromFile(filename, patterns);
 	}
 
-	private void loadPatternsFromFile(File file, List<Pattern> patternList) throws IOException {
+	private void loadPatternsFromFile(String filename, List<Pattern> patternList) throws IOException {
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new FileReader(file));
+			InputStream stream = getClass().getResourceAsStream(filename);
+			if (stream == null) {
+				stream = new FileInputStream(filename);
+			}
+			if (stream != null) {
+				reader = new BufferedReader(new InputStreamReader(stream));
 
-			String line = null;
-			StringBuilder nameBuilder = null;
-			StringBuilder descriptionBuilder = null;
-			StringBuilder codeBuilder = null;
-			while ((line = reader.readLine()) != null) {
-				if (line.startsWith(PATTERN_ID)) {
-					if (nameBuilder != null) {
-						// Add last pattern
-						addPattern(patternList, nameBuilder, descriptionBuilder, codeBuilder);
-						nameBuilder = null;
-						descriptionBuilder = null;
-						codeBuilder = null;
-					}
-					nameBuilder = new StringBuilder();
-				} else if (line.startsWith(DESCRIPTION_ID)) {
-					descriptionBuilder = new StringBuilder();
-				} else if (line.startsWith(CODE_ID)) {
-					codeBuilder = new StringBuilder();
-				} else {
-					if (codeBuilder != null) {
-						codeBuilder.append(line);
-						codeBuilder.append('\n');
-					} else if (descriptionBuilder != null) {
-						descriptionBuilder.append(line);
-						descriptionBuilder.append('\n');
-					} else if (nameBuilder != null) {
-						nameBuilder.append(line);
-						nameBuilder.append('\n');
+				String line = null;
+				StringBuilder nameBuilder = null;
+				StringBuilder descriptionBuilder = null;
+				StringBuilder codeBuilder = null;
+				while ((line = reader.readLine()) != null) {
+					if (line.startsWith(PATTERN_ID)) {
+						if (nameBuilder != null) {
+							// Add last pattern
+							addPattern(patternList, nameBuilder, descriptionBuilder, codeBuilder);
+							nameBuilder = null;
+							descriptionBuilder = null;
+							codeBuilder = null;
+						}
+						nameBuilder = new StringBuilder();
+					} else if (line.startsWith(DESCRIPTION_ID)) {
+						descriptionBuilder = new StringBuilder();
+					} else if (line.startsWith(CODE_ID)) {
+						codeBuilder = new StringBuilder();
 					} else {
-						// IGNORE
+						if (codeBuilder != null) {
+							codeBuilder.append(line);
+							codeBuilder.append('\n');
+						} else if (descriptionBuilder != null) {
+							descriptionBuilder.append(line);
+							descriptionBuilder.append('\n');
+						} else if (nameBuilder != null) {
+							nameBuilder.append(line);
+							nameBuilder.append('\n');
+						} else {
+							// IGNORE
+						}
 					}
 				}
+				addPattern(patternList, nameBuilder, descriptionBuilder, codeBuilder);
 			}
-			addPattern(patternList, nameBuilder, descriptionBuilder, codeBuilder);
 		} finally {
 			if (reader != null) {
 				reader.close();
@@ -154,10 +162,10 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 		addPattern(patternList, pattern);
 	}
 
-	public void savePatternsToFile(File file) throws IOException {
+	public void savePatternsToFile(String filename) throws IOException {
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter(file));
+			writer = new BufferedWriter(new FileWriter(new File(filename)));
 			for (Pattern pattern : patterns) {
 				writer.write(PATTERN_ID);
 				writer.newLine();

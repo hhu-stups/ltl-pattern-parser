@@ -48,7 +48,7 @@ public class SeqDefinition extends AbstractSemanticObject {
 
 			VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
 			withoutArgument.checkArgument(types, false, true, true);
-		} else {
+		} else if (context instanceof SeqDefinitionContext) {
 			SeqDefinitionContext ctx = (SeqDefinitionContext) context;
 			token = createToken(ctx.LEFT_PAREN().getSymbol(), ctx.RIGHT_PAREN().getSymbol());
 
@@ -68,6 +68,8 @@ public class SeqDefinition extends AbstractSemanticObject {
 				VariableTypes types[] = new VariableTypes[] { VariableTypes.var };
 				argument.checkArgument(types, false, false, true);
 			}
+		} else {
+			// TODO error ?
 		}
 	}
 

@@ -57,8 +57,10 @@ public class PatternDefinition extends AbstractSemanticObject {
 				parameter = createVariable(((NumVarParamContext) ctx).ID(), VariableTypes.num);
 			} else if (ctx instanceof SeqVarParamContext) {
 				parameter = createVariable(((SeqVarParamContext) ctx).ID(), VariableTypes.seq);
-			} else {
+			} else if (ctx instanceof VarParamContext) {
 				parameter = createVariable(((VarParamContext) ctx).ID(), VariableTypes.var);
+			} else {
+				// TODO error ?
 			}
 
 			defineVariable(parameter);

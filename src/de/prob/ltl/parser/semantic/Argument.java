@@ -82,7 +82,7 @@ public class Argument extends AbstractSemanticObject {
 			num = argument.getNum();
 			seq = argument.getSeq();
 			expr = argument.getExpr();
-		} else {
+		} else if (context instanceof ExprArgumentContext) {
 			// Set value
 			expr = new Expr(parser, ((ExprArgumentContext) context).expr());
 			token = expr.getToken();
@@ -90,6 +90,8 @@ public class Argument extends AbstractSemanticObject {
 				// Expr arguments are not allowed
 				notifyErrorListeners("An expression argument is not allowed.");
 			}
+		} else {
+			// TODO error?
 		}
 	}
 

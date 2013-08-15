@@ -23,6 +23,7 @@ private PatternManager patternManager;
 private List<WarningListener> warningListeners = new ArrayList<WarningListener>();
 private LtlLexer lexer;
 private SemanticCheck semanticCheck;
+private ParseTree lastAst;
 
 public LtlParser(String input) {
 	this(new CommonTokenStream(new LtlLexer(new ANTLRInputStream(input))));
@@ -36,7 +37,8 @@ public void parse() {
 		patternManager.updatePatterns(symbolTableManager);
 	}
 	StartContext ast = start();
-
+	lastAst = ast;
+	
 	semanticCheck = new SemanticCheck(this);
 	semanticCheck.check(ast.body());
 }
@@ -46,6 +48,7 @@ public void parsePatternDefinition() {
 		patternManager.updatePatterns(symbolTableManager);
 	}
 	Start_pattern_defContext ast = start_pattern_def();
+	lastAst = ast;
 
 	semanticCheck = new SemanticCheck(this);
 	semanticCheck.check(ast);
@@ -82,6 +85,10 @@ public void setPatternManager(PatternManager patternManager) {
 
 public LtlLexer getLexer() {
 	return lexer;
+}
+
+public ParseTree getAst() {
+	return lastAst;
 }
 
 @Override

@@ -268,7 +268,7 @@ public class PatternManagerTest extends AbstractParserTest {
 		PatternManager save = new PatternManager();
 		TestErrorListener errorListener = new TestErrorListener();
 		TestWarningListener warningListener = new TestWarningListener();
-		File file = new File("patternManagerTest.txt");
+		String file = "patternManagerTest.txt";
 
 		Pattern pattern = createPattern("def pattern(): true", errorListener, warningListener);
 		save.addPattern(pattern);
@@ -280,8 +280,7 @@ public class PatternManagerTest extends AbstractParserTest {
 		load.savePatternsToFile(file);
 
 		parse("pattern() or pattern2() or abc((true, false))", load);
-
-		file.delete();
+		new File(file).delete();
 	}
 
 	@Test
@@ -289,7 +288,7 @@ public class PatternManagerTest extends AbstractParserTest {
 		PatternManager patternManager = new PatternManager();
 		TestErrorListener errorListener = new TestErrorListener();
 		TestWarningListener warningListener = new TestWarningListener();
-		File file = new File("patternManagerTest.txt");
+		String file = "patternManagerTest.txt";
 
 		Pattern pattern = createPattern("def pattern(): true", errorListener, warningListener);
 		pattern.setName("test");
@@ -301,8 +300,7 @@ public class PatternManagerTest extends AbstractParserTest {
 		patternManager.savePatternsToFile(file);
 		patternManager.loadPatternsFromFile(file);
 		patternManager.savePatternsToFile(file);
-
-		file.delete();
+		new File(file).delete();
 	}
 
 	@Test
@@ -310,7 +308,7 @@ public class PatternManagerTest extends AbstractParserTest {
 		PatternManager patternManager = new PatternManager();
 		TestErrorListener errorListener = new TestErrorListener();
 		TestWarningListener warningListener = new TestWarningListener();
-		File file = new File("patternManagerTest.txt");
+		String file = "patternManagerTest.txt";
 
 		patternManager.addErrorListener(errorListener);
 		patternManager.addWarningListener(warningListener);
@@ -326,8 +324,7 @@ public class PatternManagerTest extends AbstractParserTest {
 
 		Assert.assertEquals(2, errorListener.getErrors());
 		Assert.assertEquals(2, warningListener.getCount());
-
-		file.delete();
+		new File(file).delete();
 	}
 
 	@Test
