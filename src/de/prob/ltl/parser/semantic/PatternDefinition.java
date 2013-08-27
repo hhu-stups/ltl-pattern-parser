@@ -105,6 +105,10 @@ public class PatternDefinition extends AbstractSemanticObject {
 		return body;
 	}
 
+	public Pattern_defContext getContext() {
+		return context;
+	}
+
 	private static void printParam(StringBuilder sb, VariableTypes type, int count) {
 		sb.append(type);
 		if (count > 1) {

@@ -29,6 +29,7 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 
 	private List<Pattern> builtins = new LinkedList<Pattern>();
 	private List<Pattern> patterns = new LinkedList<Pattern>();
+	private List<String> ignorePatterns = new LinkedList<String>();
 	private List<BaseErrorListener> errorListeners = new LinkedList<BaseErrorListener>();
 	private List<WarningListener> warningListeners = new LinkedList<WarningListener>();
 	private List<PatternUpdateListener> updateListeners = new LinkedList<PatternUpdateListener>();
@@ -67,7 +68,7 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 
 	public void updatePatterns(SymbolTableManager symbolTableManager) {
 		for (Pattern pattern : builtins) {
-			if (pattern.getDefinitions() != null) {
+			if (!ignorePatterns.contains(pattern.getName()) && pattern.getDefinitions() != null) {
 				for (PatternDefinition definition : pattern.getDefinitions()) {
 					definition.setNewDefinition(false);
 					symbolTableManager.define(definition);
@@ -75,7 +76,7 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 			}
 		}
 		for (Pattern pattern : patterns) {
-			if (pattern.getDefinitions() != null) {
+			if (!ignorePatterns.contains(pattern.getName()) && pattern.getDefinitions() != null) {
 				for (PatternDefinition definition : pattern.getDefinitions()) {
 					definition.setNewDefinition(false);
 					symbolTableManager.define(definition);
@@ -193,6 +194,29 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 		}
 	}
 
+	public Pattern getUserPattern(String name) {
+		for (Pattern pattern : patterns) {
+			if (pattern.getName().equals(name)) {
+				return pattern;
+			}
+		}
+		return null;
+	}
+
+	public boolean patternExists(String name) {
+		for (Pattern pattern : patterns) {
+			if (pattern.getName().equals(name)) {
+				return true;
+			}
+		}
+		for (Pattern pattern : builtins) {
+			if (pattern.getName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void addErrorListener(BaseErrorListener listener) {
 		errorListeners.add(listener);
 	}
@@ -227,6 +251,26 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 
 	public void removeUpdateListeners() {
 		updateListeners.clear();
+	}
+
+	public List<Pattern> getBuiltins() {
+		return builtins;
+	}
+
+	public List<Pattern> getPatterns() {
+		return patterns;
+	}
+
+	public List<String> getIgnorePatterns() {
+		return ignorePatterns;
+	}
+
+	public void addIgnorePattern(String ignorePattern) {
+		ignorePatterns.add(ignorePattern);
+	}
+
+	public void clearIgnorePatterns() {
+		ignorePatterns.clear();
 	}
 
 	@Override
