@@ -4,12 +4,3 @@ absence
 %% CODE
 def absence(p):
 	G!p
-%% PATTERN
-test
-%% DESCRIPTION
-A 
-description
- text
-%% CODE
-def bla(p):
-	G!p

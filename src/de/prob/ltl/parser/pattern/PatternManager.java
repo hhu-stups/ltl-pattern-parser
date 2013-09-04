@@ -35,14 +35,11 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 	private List<PatternUpdateListener> updateListeners = new LinkedList<PatternUpdateListener>();
 
 	public PatternManager() {
-		try {
-			loadPatternsFromFile(BUILTIN_FILE, builtins);
-			for (Pattern pattern : builtins) {
-				pattern.setBuiltin(true);
-			}
+		/*try {
+			loadBuiltinPatternsFromFile(BUILTIN_FILE);
 		} catch (IOException e) {
 			// IGNORE
-		}
+		}*/
 	}
 
 	public void addPattern(Pattern pattern) {
@@ -88,6 +85,14 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 	public void loadPatternsFromFile(String filename) throws IOException {
 		patterns.clear();
 		loadPatternsFromFile(filename, patterns);
+	}
+
+	public void loadBuiltinPatternsFromFile(String filename) throws IOException {
+		builtins.clear();
+		loadPatternsFromFile(filename, builtins);
+		for (Pattern pattern : builtins) {
+			pattern.setBuiltin(true);
+		}
 	}
 
 	private void loadPatternsFromFile(String filename, List<Pattern> patternList) throws IOException {
