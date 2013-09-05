@@ -330,6 +330,7 @@ public class PatternManagerTest extends AbstractParserTest {
 	@Test
 	public void testBuiltins() throws Exception {
 		PatternManager patternManager = new PatternManager();
+		patternManager.loadBuiltinPatternsFromFile("/builtins.ltlp");
 
 		Assert.assertEquals(parseToString("G!{p}"), parseToString("absence({p})", patternManager));
 	}
