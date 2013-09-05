@@ -3,6 +3,7 @@
     <property name="gen" location="gen" />
     <property name="package-path" value="de/prob/ltl/parser/" />
     <property name="package" value="de.prob.ltl.parser" />
+    <property name="build" location="build" />
  
     <path id="classpath">
         <pathelement location="lib/antlr-4.0-complete.jar" />
@@ -10,7 +11,7 @@
         <pathelement location="lib/prologlib-2.4.11-SNAPSHOT.jar" />
         <pathelement location="bin" />
     </path>
- 
+	 
     <target name="generate" depends="clean">
         <mkdir dir="${gen}/${package-path}" />
         <java classname="org.antlr.v4.Tool" classpathref="classpath" fork="true">
@@ -21,6 +22,23 @@
             <arg value="-visitor" />
         </java>
     </target>
+	 
+   	<target name="compile" depends="generate">
+   		<mkdir dir="${build}" />
+   		<javac srcdir="${src}:${gen}" destdir="${build}">
+   			<classpath refid="classpath" />
+  		</javac>
+   		<copy todir="${build}">
+   			<fileset dir="${gen}">
+   		    	<include name="**/*.tokens"/>
+   		    </fileset>
+   		  </copy>
+   	</target>
+	 
+   	<target name="jar" depends="compile">
+   		<jar destfile="ltl-dsl.jar"
+   			basedir="${build}"/>
+   	</target>
  
     <target name="showtree" depends="generate">
     	<condition property="test.content.default" value="">
@@ -41,5 +59,6 @@
  
     <target name="clean">
         <delete file="${gen}/*" includeemptydirs="true" />
+        <delete file="build/*" includeemptydirs="true" />
     </target>
 </project>
