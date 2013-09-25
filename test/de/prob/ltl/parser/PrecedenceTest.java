@@ -246,6 +246,16 @@ public class PrecedenceTest extends AbstractOldParserTest {
 				"true U false U sink U deadlock",
 				"(((true U false) U sink) U deadlock)");
 
+		assertEquals("until(release(true,false),ap(sink))",
+				"true R false U sink",
+				"(true R false) U sink");
+		assertEquals("release(until(true,false),ap(sink))",
+				"true U false R sink",
+				"((true U false) R sink)");
+		assertEquals("until(release(since(false,true),false),ap(sink))",
+				"false S true R false U sink",
+				"((false S true) R false) U sink");
+
 		// or
 		assertEquals("or(trigger(true,false),ap(sink))",
 				"true T false or sink",

@@ -212,11 +212,12 @@ expr
  | ONCE expr					# onceExpr
  | YESTERDAY expr				# yesterdayExpr
  | UNARY_COMBINED expr			# unaryCombinedExpr
- | expr UNTIL expr				# untilExpr
- | expr WEAKUNTIL expr			# weakuntilExpr
- | expr RELEASE expr			# releaseExpr
- | expr SINCE expr				# sinceExpr
- | expr TRIGGER expr			# triggerExpr
+ | expr (UNTIL 
+		| WEAKUNTIL
+		| RELEASE
+		| SINCE
+		| TRIGGER
+		)expr					# unaryLtlExpr
  | expr AND expr				# andExpr
  | expr OR expr					# orExpr
  | expr IMPLIES expr			# impliesExpr

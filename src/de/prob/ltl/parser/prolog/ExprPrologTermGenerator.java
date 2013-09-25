@@ -20,16 +20,12 @@ import de.prob.ltl.parser.LtlParser.OnceExprContext;
 import de.prob.ltl.parser.LtlParser.OrExprContext;
 import de.prob.ltl.parser.LtlParser.PatternCallAtomContext;
 import de.prob.ltl.parser.LtlParser.PredicateAtomContext;
-import de.prob.ltl.parser.LtlParser.ReleaseExprContext;
 import de.prob.ltl.parser.LtlParser.ScopeCallAtomContext;
 import de.prob.ltl.parser.LtlParser.SeqCallAtomContext;
-import de.prob.ltl.parser.LtlParser.SinceExprContext;
 import de.prob.ltl.parser.LtlParser.StateAtomContext;
-import de.prob.ltl.parser.LtlParser.TriggerExprContext;
 import de.prob.ltl.parser.LtlParser.UnaryCombinedExprContext;
-import de.prob.ltl.parser.LtlParser.UntilExprContext;
+import de.prob.ltl.parser.LtlParser.UnaryLtlExprContext;
 import de.prob.ltl.parser.LtlParser.VariableCallAtomContext;
-import de.prob.ltl.parser.LtlParser.WeakuntilExprContext;
 import de.prob.ltl.parser.LtlParser.YesterdayExprContext;
 import de.prob.ltl.parser.semantic.PatternCall;
 import de.prob.ltl.parser.semantic.ScopeCall;
@@ -252,52 +248,24 @@ public class ExprPrologTermGenerator extends LtlBlockingListener {
 	}
 
 	@Override
-	public void enterUntilExpr(UntilExprContext ctx) {
-		openTerm("until");
+	public void enterUnaryLtlExpr(UnaryLtlExprContext ctx) {
+		if (ctx.UNTIL() != null) {
+			openTerm("until");
+		} else if (ctx.WEAKUNTIL() != null) {
+			openTerm("weakuntil");
+		} else if (ctx.RELEASE() != null) {
+			openTerm("release");
+		} else if (ctx.SINCE() != null) {
+			openTerm("since");
+		} else if (ctx.TRIGGER() != null) {
+			openTerm("trigger");
+		} else {
+			// Error
+		}
 	}
 
 	@Override
-	public void exitUntilExpr(UntilExprContext ctx) {
-		closeTerm();
-	}
-
-	@Override
-	public void enterTriggerExpr(TriggerExprContext ctx) {
-		openTerm("trigger");
-	}
-
-	@Override
-	public void exitTriggerExpr(TriggerExprContext ctx) {
-		closeTerm();
-	}
-
-	@Override
-	public void enterSinceExpr(SinceExprContext ctx) {
-		openTerm("since");
-	}
-
-	@Override
-	public void exitSinceExpr(SinceExprContext ctx) {
-		closeTerm();
-	}
-
-	@Override
-	public void enterWeakuntilExpr(WeakuntilExprContext ctx) {
-		openTerm("weakuntil");
-	}
-
-	@Override
-	public void exitWeakuntilExpr(WeakuntilExprContext ctx) {
-		closeTerm();
-	}
-
-	@Override
-	public void enterReleaseExpr(ReleaseExprContext ctx) {
-		openTerm("release");
-	}
-
-	@Override
-	public void exitReleaseExpr(ReleaseExprContext ctx) {
+	public void exitUnaryLtlExpr(UnaryLtlExprContext ctx) {
 		closeTerm();
 	}
 
