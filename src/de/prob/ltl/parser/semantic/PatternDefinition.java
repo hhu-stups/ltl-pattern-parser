@@ -25,6 +25,7 @@ public class PatternDefinition extends AbstractSemanticObject {
 	private boolean newDefinition = true;
 	private List<Variable> parameters = new LinkedList<Variable>();
 	private Body body;
+	private boolean checked = false;
 
 	public PatternDefinition(LtlParser parser, Pattern_defContext context) {
 		super(parser);
@@ -69,12 +70,15 @@ public class PatternDefinition extends AbstractSemanticObject {
 	}
 
 	public void checkBody() {
-		symbolTableManager.pushScope(symbolTable);
-		symbolTableManager.startCallStack(getName());
-		body = new Body(parser, context.body());
-		checkUnusedVariables();
-		symbolTableManager.stopCallStack();
-		symbolTableManager.popScope();
+		if (!checked) {
+			checked = true;
+			symbolTableManager.pushScope(symbolTable);
+			symbolTableManager.pushCall(getName());
+			body = new Body(parser, context.body());
+			checkUnusedVariables();
+			symbolTableManager.popCall();
+			symbolTableManager.popScope();
+		}
 	}
 
 	public String getName() {

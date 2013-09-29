@@ -33,11 +33,12 @@ public class PatternCall extends AbstractSemanticObject {
 			if (definition == null) {
 				notifyErrorListeners("Pattern '%s' cannot be resolved.", identifier);
 			} else {
+				checkArguments();
 				if (symbolTableManager.onCallStack(identifier)) {
 					notifyErrorListeners(definition.getToken(), "Cycle detected in pattern '%s'.", identifier);
+				} else {
+					definition.checkBody();
 				}
-				symbolTableManager.pushCall(identifier);
-				checkArguments();
 			}
 		}
 	}

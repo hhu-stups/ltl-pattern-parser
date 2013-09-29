@@ -387,6 +387,13 @@ public class SemanticTest extends AbstractParserTest {
 		throwsException("def f(x): seq s: (false, true) seq(s without f(x)) f(true)");
 	}
 
+	@Test
+	public void testRecursiveDefinitionCall2() throws Exception {
+		throwsException("def a(): b() def b(): a() a()");
+		throwsException("def a(): b() def b(): a() true");
+		throwsException("def a(): a() true");
+		throwsException("def s(): a() def a(): b() def b(): a() s()");
+	}
 
 	@Test
 	public void testUnusedVarWarning() throws Exception {

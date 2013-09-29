@@ -47,7 +47,6 @@ public class Expr extends AbstractSemanticObject {
 			public void enterPattern_call(Pattern_callContext ctx) {
 				if (enterContext(ctx)) {
 					new PatternCall(parser, ctx);
-					symbolTableManager.popCall();
 				}
 			}
 
