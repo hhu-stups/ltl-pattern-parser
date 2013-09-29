@@ -42,12 +42,9 @@ public class VariableDefinition extends AbstractSemanticObject {
 
 		VariableTypes type = variable.getType();
 		VariableTypes types[] = new VariableTypes[] { type };
-		boolean numAllowed = type.equals(VariableTypes.num);
-		boolean seqDefinitionAllowed = type.equals(VariableTypes.seq);
-		boolean exprAllowed = type.equals(VariableTypes.var);
 
 		boolean temp = variable.wasCalled();
-		value.checkArgument(types, numAllowed, seqDefinitionAllowed, exprAllowed);
+		value.checkArgument(types);
 		variable.setWasCalled(temp);
 	}
 

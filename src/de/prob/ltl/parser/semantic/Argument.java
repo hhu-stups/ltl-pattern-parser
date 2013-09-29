@@ -2,6 +2,7 @@ package de.prob.ltl.parser.semantic;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.List;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -30,7 +31,12 @@ public class Argument extends AbstractSemanticObject {
 		this.context = context;
 	}
 
-	public void checkArgument(VariableTypes[] allowedVariableTypes, boolean numAllowed, boolean seqDefinitionAllowed, boolean exprAllowed) {
+	public void checkArgument(VariableTypes[] allowedVariableTypes) {
+		List<VariableTypes> types = Arrays.asList(allowedVariableTypes);
+		boolean numAllowed = types.contains(VariableTypes.num);
+		boolean seqDefinitionAllowed = types.contains(VariableTypes.seq);
+		boolean exprAllowed = types.contains(VariableTypes.var);
+
 		if (context instanceof VarArgumentContext) {
 			token = ((VarArgumentContext) context).ID().getSymbol();
 			if (allowedVariableTypes == null) {
@@ -75,7 +81,7 @@ public class Argument extends AbstractSemanticObject {
 		} else if (context instanceof ParArgumentContext) {
 			// Check sub argument
 			Argument argument = new Argument(parser, ((ParArgumentContext) context).argument());
-			argument.checkArgument(allowedVariableTypes, numAllowed, seqDefinitionAllowed, exprAllowed);
+			argument.checkArgument(allowedVariableTypes);
 
 			token = argument.getToken();
 			variable = argument.getVariable();

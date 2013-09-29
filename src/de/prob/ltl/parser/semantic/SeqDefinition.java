@@ -47,7 +47,7 @@ public class SeqDefinition extends AbstractSemanticObject {
 			withoutArgument = new Argument(parser, ((SeqVarExtensionContext) context).argument());
 
 			VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
-			withoutArgument.checkArgument(types, false, true, true);
+			withoutArgument.checkArgument(types);
 		} else if (context instanceof SeqDefinitionContext) {
 			SeqDefinitionContext ctx = (SeqDefinitionContext) context;
 			token = createToken(ctx.LEFT_PAREN().getSymbol(), ctx.RIGHT_PAREN().getSymbol());
@@ -59,14 +59,14 @@ public class SeqDefinition extends AbstractSemanticObject {
 				withoutArgument = new Argument(parser, ctx.argument(size));
 
 				VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
-				withoutArgument.checkArgument(types, false, true, true);
+				withoutArgument.checkArgument(types);
 			}
 			for (int i = 0; i < size; i++) {
 				Argument argument = new Argument(parser, ctx.argument(i));
 				arguments.add(argument);
 
 				VariableTypes types[] = new VariableTypes[] { VariableTypes.var };
-				argument.checkArgument(types, false, false, true);
+				argument.checkArgument(types);
 			}
 		} else {
 			// TODO error ?

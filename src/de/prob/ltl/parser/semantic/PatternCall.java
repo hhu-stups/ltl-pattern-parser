@@ -73,10 +73,7 @@ public class PatternCall extends AbstractSemanticObject {
 
 			VariableTypes type = parameter.getType();
 			VariableTypes types[] = new VariableTypes[] { type };
-			boolean numAllowed = type.equals(VariableTypes.num);
-			boolean seqDefinitionAllowed = type.equals(VariableTypes.seq);
-			boolean exprAllowed = type.equals(VariableTypes.var);
-			argument.checkArgument(types, numAllowed, seqDefinitionAllowed, exprAllowed);
+			argument.checkArgument(types);
 		}
 	}
 

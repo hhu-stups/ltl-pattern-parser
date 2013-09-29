@@ -42,7 +42,7 @@ public class VariableAssignment extends AbstractSemanticObject {
 		boolean exprAllowed = type.equals(VariableTypes.var);
 
 		boolean temp = variable.wasCalled();
-		value.checkArgument(types, numAllowed, seqDefinitionAllowed, exprAllowed);
+		value.checkArgument(types);
 		variable.setWasCalled(temp);
 	}
 

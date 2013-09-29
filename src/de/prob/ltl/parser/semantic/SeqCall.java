@@ -22,7 +22,7 @@ public class SeqCall extends AbstractSemanticObject {
 	private void checkArguments() {
 		token = context.SEQ_VAR().getSymbol();
 		argument = new Argument(parser, context.argument());
-		argument.checkArgument(new VariableTypes[] { VariableTypes.seq }, false, true, false);
+		argument.checkArgument(new VariableTypes[] { VariableTypes.seq });
 	}
 
 	public Argument getArgument() {

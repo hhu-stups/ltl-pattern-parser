@@ -60,7 +60,7 @@ public class Loop extends AbstractSemanticObject {
 			arguments.add(value);
 
 			VariableTypes types[] = new VariableTypes[] { VariableTypes.num };
-			value.checkArgument(types, true, false, false);
+			value.checkArgument(types);
 		}
 	}
 

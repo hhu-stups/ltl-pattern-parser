@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="lib/prologlib-2.4.11-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/ltlparser-2.4.11-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/parserbase-2.4.11-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/antlr-4.0-complete.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-4.0-complete.jar" sourcepath="D:/development/applications/ANTLR/antlr4-master.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -50,7 +50,7 @@ public class ScopeCall extends AbstractSemanticObject {
 	private void checkArguments() {
 		for (ArgumentContext arg : context.argument()) {
 			Argument argument = new Argument(parser, arg);
-			argument.checkArgument(new VariableTypes[] { VariableTypes.var }, false, false, true);
+			argument.checkArgument(new VariableTypes[] { VariableTypes.var });
 			arguments.add(argument);
 		}
 		if (type.equals(ScopeTypes.BEFORE) || type.equals(ScopeTypes.AFTER) ) {
