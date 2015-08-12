@@ -10,7 +10,6 @@ project.group = 'de.hhu.stups'
 project.version = '1.0.0'
 project.archivesBaseName = "ltl-dsl"
 
-
 repositories {
     mavenCentral()
 }
@@ -22,6 +21,8 @@ dependencies {
     compile "de.hhu.stups:prologlib:2.4.40"
     testCompile 'junit:junit:4.8.2'
 }
+
+generateGrammarSource.outputs.upToDateWhen { false } 
 
 if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
 
