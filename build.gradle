@@ -1,6 +1,15 @@
 apply plugin: 'antlr'
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+project.group = 'de.hhu.stups'
+project.version = '1.0.0'
+project.archivesBaseName = "ltl-dsl"
+
 
 repositories {
     mavenCentral()
@@ -12,4 +21,58 @@ dependencies {
     compile "de.hhu.stups:parserbase:2.4.40"
     compile "de.hhu.stups:prologlib:2.4.40"
     testCompile 'junit:junit:4.8.2'
+}
+
+if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+
+apply plugin: 'signing'
+
+signing {
+    sign configurations.archives
+}
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'LTL Pattern DSL Parser'
+        packaging 'jar'
+        // optionally artifactId can be defined here
+        description 'Parser for a LTL Pattern DSL'
+        url 'https://github.com/bendisposto/ltl-pattern-parser'
+
+        licenses {
+          license {
+            name 'Eclipse Public License, Version 1.0'
+            url 'https://www.eclipse.org/legal/epl-v10.html'
+          }
+        }
+
+        scm {
+          connection 'scm:git:git://github.com/bendisposto/ltl-pattern-parser.git'
+          developerConnection 'scm:git:git@github.com:bendisposto/ltl-pattern-parser.git'
+          url 'https://github.com/bendisposto/ltl-pattern-parser'
+        }
+
+
+        developers {
+          developer {
+            id 'bendisposto'
+            name 'Jens Bendisposto'
+            email 'jens@bendisposto.de'
+          }
+        }
+      }
+    }
+  }
+}
 }
