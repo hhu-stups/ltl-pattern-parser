@@ -1,7 +1,9 @@
 LTL parser for ProB
 =========
 
-This parser was part of Philipp Kantner's [Masterthesis](http://stups.hhu.de/w/Muster_f%C3%BCr_die_Verifikation_von_Formeln_in_Temporaler_Logik). It allows to express typical patterns of LTL formula in a simpler language. The pattern are taken from http://patterns.projects.cis.ksu.edu/. 
+[![Build Status](https://travis-ci.org/bendisposto/ltl-pattern-parser.svg?branch=master)](https://travis-ci.org/bendisposto/ltl-pattern-parser)
+
+This parser was part of Philipp Kantner's [Masterthesis](http://stups.hhu.de/w/Muster_f%C3%BCr_die_Verifikation_von_Formeln_in_Temporaler_Logik). It allows to express typical patterns of LTL formula in a simpler language. The pattern are taken from http://patterns.projects.cis.ksu.edu/.
 
 
 ## Building
