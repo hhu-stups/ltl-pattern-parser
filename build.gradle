@@ -7,7 +7,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 project.group = 'de.hhu.stups'
-project.version = '1.0.0'
+project.version = '0.1.0'
 project.archivesBaseName = "ltl-dsl"
 
 repositories {
@@ -22,7 +22,7 @@ dependencies {
     testCompile 'junit:junit:4.8.2'
 }
 
-generateGrammarSource.outputs.upToDateWhen { false } 
+generateGrammarSource.outputs.upToDateWhen { false }
 
 if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
 
