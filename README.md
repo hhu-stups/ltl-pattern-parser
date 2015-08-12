@@ -1,4 +1,4 @@
-LTL parser for ProB
+LTL-Pattern parser for ProB
 =========
 
 [![Build Status](https://travis-ci.org/bendisposto/ltl-pattern-parser.svg?branch=master)](https://travis-ci.org/bendisposto/ltl-pattern-parser)
