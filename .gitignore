@@ -3,7 +3,11 @@
 # Package Files #
 *.war
 *.ear
-/bin
-/test.script
-/gen
-/.settings
+bin/
+test.script
+gen/
+.settings/
+build/
+.gradle
+.classpath
+.project

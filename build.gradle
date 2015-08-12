@@ -1,0 +1,15 @@
+apply plugin: 'antlr'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    antlr "org.antlr:antlr4:4.5" // use ANTLR version 4
+    compile "de.hhu.stups:ltlparser:2.4.40"
+    compile "de.hhu.stups:parserbase:2.4.40"
+    compile "de.hhu.stups:prologlib:2.4.40"
+    testCompile 'junit:junit:4.8.2'
+}

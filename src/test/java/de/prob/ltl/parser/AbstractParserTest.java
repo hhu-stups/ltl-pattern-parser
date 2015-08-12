@@ -17,12 +17,9 @@ import de.prob.prolog.term.PrologTerm;
 
 public abstract class AbstractParserTest {
 
-	protected static UnparsedParserBase parserBase;
+	protected static UnparsedParserBase parserBase = new UnparsedParserBase("expression", "predicate", "transition_predicate");;
 
-	@BeforeClass
-	public static void setUpBeforeClass() {
-		parserBase = new UnparsedParserBase("expression", "predicate", "transition_predicate");
-	}
+	
 
 	protected LtlParser createParser(String input) {
 		return createParser(input, new TestErrorListener(), new TestWarningListener());
