@@ -32,20 +32,22 @@ public class VariableDefinition extends AbstractSemanticObject {
 		} else if (context.SEQ_VAR() != null) {
 			type = VariableTypes.seq;
 		}
-
-		variable = createVariable(context.ID(), type);
-		token = variable.getToken();
+		if(context.ID() != null) {
+			variable = createVariable(context.ID(), type);
+			token = variable.getToken();
+		}
 	}
 
 	private void checkInitialValue() {
 		value = new Argument(parser, context.argument());
-
-		VariableTypes type = variable.getType();
-		VariableTypes types[] = new VariableTypes[] { type };
-
-		boolean temp = variable.wasCalled();
-		value.checkArgument(types);
-		variable.setWasCalled(temp);
+		if(variable != null) {
+			VariableTypes type = variable.getType();
+			VariableTypes types[] = new VariableTypes[] { type };
+	
+			boolean temp = variable.wasCalled();
+			value.checkArgument(types);
+			variable.setWasCalled(temp);
+		}
 	}
 
 	public Variable getVariable() {

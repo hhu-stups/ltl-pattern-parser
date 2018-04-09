@@ -47,19 +47,27 @@ public class PatternDefinition extends AbstractSemanticObject {
 
 	private void determineTokenAndName() {
 		TerminalNode node = context.ID();
-		token = node.getSymbol();
-		name = node.getText();
+		if(node != null) {
+			token = node.getSymbol();
+			name = node.getText();
+		}
 	}
 
 	private void determineParameters() {
 		for (Pattern_def_paramContext ctx : context.pattern_def_param()) {
 			Variable parameter = null;
 			if (ctx instanceof NumVarParamContext) {
-				parameter = createVariable(((NumVarParamContext) ctx).ID(), VariableTypes.num);
+				if(((NumVarParamContext) ctx).ID() != null) {
+					parameter = createVariable(((NumVarParamContext) ctx).ID(), VariableTypes.num);
+				}
 			} else if (ctx instanceof SeqVarParamContext) {
-				parameter = createVariable(((SeqVarParamContext) ctx).ID(), VariableTypes.seq);
+				if(((SeqVarParamContext) ctx).ID() != null) {
+					parameter = createVariable(((SeqVarParamContext) ctx).ID(), VariableTypes.seq);
+				}
 			} else if (ctx instanceof VarParamContext) {
-				parameter = createVariable(((VarParamContext) ctx).ID(), VariableTypes.var);
+				if(((VarParamContext) ctx).ID() != null) {
+					parameter = createVariable(((VarParamContext) ctx).ID(), VariableTypes.var);
+				}
 			} else {
 				// TODO error ?
 			}
@@ -121,7 +129,7 @@ public class PatternDefinition extends AbstractSemanticObject {
 	}
 
 	public static String createPatternIdentifier(String name, List<Variable> parameters) {
-		StringBuilder sb = new StringBuilder(name);
+		StringBuilder sb = new StringBuilder(name == null? "" : name);
 		sb.append('/');
 		if (parameters.size() == 0) {
 			sb.append(0);

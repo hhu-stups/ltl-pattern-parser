@@ -33,6 +33,9 @@ public abstract class AbstractSemanticObject {
 	}
 
 	public boolean defineVariable(Variable var) {
+		if(var == null) {
+			return false;
+		}
 		if (!symbolTableManager.define(var)) {
 			notifyErrorListeners(var.getToken(), "The variable '%s' is already defined in this scope.", var);
 			return false;

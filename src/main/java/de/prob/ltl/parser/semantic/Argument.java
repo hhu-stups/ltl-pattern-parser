@@ -38,25 +38,27 @@ public class Argument extends AbstractSemanticObject {
 		boolean exprAllowed = types.contains(VariableTypes.var);
 
 		if (context instanceof VarArgumentContext) {
-			token = ((VarArgumentContext) context).ID().getSymbol();
-			if (allowedVariableTypes == null) {
-				// Variable arguments are not allowed
-				notifyErrorListeners("A variable argument is not allowed.");
-			} else {
-				variable = resolveVariable(((VarArgumentContext) context).ID());
-				if (variable != null) {
-					variable.setWasCalled(true);
-
-					boolean typeFound = false;
-					// Check if type is allowed
-					for (VariableTypes type : allowedVariableTypes) {
-						if (type.equals(variable.getType())) {
-							typeFound = true;
-							break;
+			if(((VarArgumentContext) context).ID() != null) {
+				token = ((VarArgumentContext) context).ID().getSymbol();
+				if (allowedVariableTypes == null) {
+					// Variable arguments are not allowed
+					notifyErrorListeners("A variable argument is not allowed.");
+				} else {
+					variable = resolveVariable(((VarArgumentContext) context).ID());
+					if (variable != null) {
+						variable.setWasCalled(true);
+	
+						boolean typeFound = false;
+						// Check if type is allowed
+						for (VariableTypes type : allowedVariableTypes) {
+							if (type.equals(variable.getType())) {
+								typeFound = true;
+								break;
+							}
 						}
-					}
-					if (!typeFound) {
-						notifyErrorListeners("The type of the variable argument '%s' is not allowed. Expected type(s): %s", variable, Arrays.toString(allowedVariableTypes));
+						if (!typeFound) {
+							notifyErrorListeners("The type of the variable argument '%s' is not allowed. Expected type(s): %s", variable, Arrays.toString(allowedVariableTypes));
+						}
 					}
 				}
 			}
@@ -104,9 +106,11 @@ public class Argument extends AbstractSemanticObject {
 	public VariableTypes determineType() {
 		VariableTypes type = VariableTypes.var;
 		if (context instanceof VarArgumentContext) {
-			Variable variable = resolveVariable(((VarArgumentContext) context).ID());
-			if (variable != null) {
-				type = variable.getType();
+			if(((VarArgumentContext) context).ID() != null) {
+				Variable variable = resolveVariable(((VarArgumentContext) context).ID());
+				if (variable != null) {
+					type = variable.getType();
+				}
 			}
 		} else if (context instanceof NumArgumentContext) {
 			type = VariableTypes.num;

@@ -28,8 +28,10 @@ public class VariableAssignment extends AbstractSemanticObject {
 
 	private void determineVariableInfo() {
 		TerminalNode node = context.ID();
-		variable = resolveVariable(node);
-		token = node.getSymbol();
+		if(node != null) {
+			variable = resolveVariable(node);
+			token = node.getSymbol();
+		}
 	}
 
 	private void checkAssignedValue() {

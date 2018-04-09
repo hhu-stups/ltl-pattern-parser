@@ -45,8 +45,10 @@ public class PatternCall extends AbstractSemanticObject {
 
 	private void determineTokenAndName() {
 		TerminalNode node = context.ID();
-		token = node.getSymbol();
-		name = node.getText();
+		if(node != null) {
+			token = node.getSymbol();
+			name = node.getText();
+		}
 	}
 
 	private void determineArguments() {

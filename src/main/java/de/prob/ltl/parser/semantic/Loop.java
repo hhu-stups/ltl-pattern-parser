@@ -65,11 +65,15 @@ public class Loop extends AbstractSemanticObject {
 	}
 
 	private void checkLoopBody() {
-		for (ParseTree child : context.loop_body().children) {
-			if (child instanceof Var_defContext) {
-				addChild(new VariableDefinition(parser, (Var_defContext) child));
-			} else if (child instanceof Var_assignContext) {
-				addChild(new VariableAssignment(parser, (Var_assignContext) child));
+		if(context.loop_body() != null && context.loop_body().children != null) {
+			for (ParseTree child : context.loop_body().children) {
+				if(child != null) {
+					if (child instanceof Var_defContext) {
+						addChild(new VariableDefinition(parser, (Var_defContext) child));
+					} else if (child instanceof Var_assignContext) {
+						addChild(new VariableAssignment(parser, (Var_assignContext) child));
+					}
+				}
 			}
 		}
 	}
