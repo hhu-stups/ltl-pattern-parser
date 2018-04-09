@@ -43,11 +43,9 @@ public class ScopeCall extends AbstractSemanticObject {
 			node = context.UNTIL_SCOPE();
 			type = ScopeTypes.AFTER_UNTIL;
 		}
-		if(node == null) {
-			notifyErrorListeners("LTL Parse Error.");
-			return;
+		if(node != null) {
+			token = node.getSymbol();
 		}
-		token = node.getSymbol();
 	}
 
 	private void checkArguments() {

@@ -32,16 +32,14 @@ public class Expr extends AbstractSemanticObject {
 			@Override
 			public void enterVariableCallAtom(VariableCallAtomContext ctx) {
 				if (enterContext(ctx)) {
-					if(((VariableCallAtomContext) ctx).ID() == null) {
-						notifyErrorListeners("LTL Parse Error.");
-						return;
-					}
-					Variable variable = resolveVariable(ctx.ID());
-					if (variable != null) {
-						variable.setWasCalled(true);
-						// Only type 'var' is allowed here , because it is the variable call for exprs
-						if (!variable.getType().equals(VariableTypes.var)) {
-							notifyErrorListeners(variable.getToken(), "The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.var);
+					if(((VariableCallAtomContext) ctx).ID() != null) {
+						Variable variable = resolveVariable(ctx.ID());
+						if (variable != null) {
+							variable.setWasCalled(true);
+							// Only type 'var' is allowed here , because it is the variable call for exprs
+							if (!variable.getType().equals(VariableTypes.var)) {
+								notifyErrorListeners(variable.getToken(), "The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.var);
+							}
 						}
 					}
 				}

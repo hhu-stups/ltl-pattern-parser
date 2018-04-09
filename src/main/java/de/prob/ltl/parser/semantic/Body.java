@@ -24,21 +24,21 @@ public class Body extends AbstractSemanticObject {
 
 	private void checkContext() {
 		for (ParseTree child : context.children) {
-			if (child instanceof Pattern_defContext) {
-				if(((Pattern_defContext) child).ID() == null) {
-					notifyErrorListeners("LTL Parse Error.");
-					return;
+			if(child != null) {
+				if (child instanceof Pattern_defContext) {
+					if(((Pattern_defContext) child).ID() != null) {
+						if (symbolTableManager.getCurrentScope() != symbolTableManager.getGlobalScope()) {
+							// Pattern definitions in other other scope than the global scope are not allowed
+							notifyErrorListeners(((Pattern_defContext) child).ID().getSymbol(), "Pattern definition in wrong scope. Definitions are only allowed in global scope.");
+						}
+					}
+				} else if (child instanceof Var_defContext) {
+					addChild(new VariableDefinition(parser, (Var_defContext) child));
+				} else if (child instanceof Var_assignContext) {
+					addChild(new VariableAssignment(parser, (Var_assignContext) child));
+				} else if (child instanceof LoopContext) {
+					addChild(new Loop(parser, (LoopContext) child));
 				}
-				if (symbolTableManager.getCurrentScope() != symbolTableManager.getGlobalScope()) {
-					// Pattern definitions in other other scope than the global scope are not allowed
-					notifyErrorListeners(((Pattern_defContext) child).ID().getSymbol(), "Pattern definition in wrong scope. Definitions are only allowed in global scope.");
-				}
-			} else if (child instanceof Var_defContext) {
-				addChild(new VariableDefinition(parser, (Var_defContext) child));
-			} else if (child instanceof Var_assignContext) {
-				addChild(new VariableAssignment(parser, (Var_assignContext) child));
-			} else if (child instanceof LoopContext) {
-				addChild(new Loop(parser, (LoopContext) child));
 			}
 		}
 		// Check final expr

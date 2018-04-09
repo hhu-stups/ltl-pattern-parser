@@ -45,12 +45,10 @@ public class PatternCall extends AbstractSemanticObject {
 
 	private void determineTokenAndName() {
 		TerminalNode node = context.ID();
-		if(node == null) {
-			notifyErrorListeners("LTL Parse Error.");
-			return;
+		if(node != null) {
+			token = node.getSymbol();
+			name = node.getText();
 		}
-		token = node.getSymbol();
-		name = node.getText();
 	}
 
 	private void determineArguments() {

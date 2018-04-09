@@ -28,12 +28,10 @@ public class VariableAssignment extends AbstractSemanticObject {
 
 	private void determineVariableInfo() {
 		TerminalNode node = context.ID();
-		if(node == null) {
-			notifyErrorListeners("LTL Parse Error.");
-			return;
+		if(node != null) {
+			variable = resolveVariable(node);
+			token = node.getSymbol();
 		}
-		variable = resolveVariable(node);
-		token = node.getSymbol();
 	}
 
 	private void checkAssignedValue() {

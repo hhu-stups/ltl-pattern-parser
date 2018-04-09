@@ -32,26 +32,24 @@ public class SeqDefinition extends AbstractSemanticObject {
 	private void checkArguments() {
 		if(context instanceof SeqVarExtensionContext) {
 			TerminalNode node = ((SeqVarExtensionContext) context).ID();
-			if(node == null) {
-				notifyErrorListeners("LTL Parse Error.");
-				return;
-			}
-			token = createToken(node.getSymbol(), context.stop);
-
-			// check ID
-			variable = resolveVariable(node);
-			if (variable != null) {
-				variable.setWasCalled(true);
-				if (!variable.getType().equals(VariableTypes.seq)) {
-					notifyErrorListeners(node.getSymbol(), "The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.seq);
+			if(node != null) {
+				token = createToken(node.getSymbol(), context.stop);
+	
+				// check ID
+				variable = resolveVariable(node);
+				if (variable != null) {
+					variable.setWasCalled(true);
+					if (!variable.getType().equals(VariableTypes.seq)) {
+						notifyErrorListeners(node.getSymbol(), "The type of the variable '%s' is not allowed. Expected type: %s", variable, VariableTypes.seq);
+					}
 				}
+	
+				// Check without argument
+				withoutArgument = new Argument(parser, ((SeqVarExtensionContext) context).argument());
+	
+				VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
+				withoutArgument.checkArgument(types);
 			}
-
-			// Check without argument
-			withoutArgument = new Argument(parser, ((SeqVarExtensionContext) context).argument());
-
-			VariableTypes types[] = new VariableTypes[] { VariableTypes.var, VariableTypes.seq };
-			withoutArgument.checkArgument(types);
 		} else if (context instanceof SeqDefinitionContext) {
 			SeqDefinitionContext ctx = (SeqDefinitionContext) context;
 			token = createToken(ctx.LEFT_PAREN().getSymbol(), ctx.RIGHT_PAREN().getSymbol());
