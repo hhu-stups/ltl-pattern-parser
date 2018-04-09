@@ -25,7 +25,7 @@ public class Body extends AbstractSemanticObject {
 	private void checkContext() {
 		for (ParseTree child : context.children) {
 			if (child instanceof Pattern_defContext) {
-				if((Pattern_defContext) context).ID() == null) {
+				if(((Pattern_defContext) child).ID() == null) {
 					notifyErrorListeners("LTL Parse Error.");
 					return;
 				}

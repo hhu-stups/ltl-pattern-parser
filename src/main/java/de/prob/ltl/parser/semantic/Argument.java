@@ -38,7 +38,7 @@ public class Argument extends AbstractSemanticObject {
 		boolean exprAllowed = types.contains(VariableTypes.var);
 
 		if (context instanceof VarArgumentContext) {
-			if((VarArgumentContext) context).ID() == null) {
+			if(((VarArgumentContext) context).ID() == null) {
 				notifyErrorListeners("LTL Parse Error.");
 				return;
 			}
@@ -108,9 +108,9 @@ public class Argument extends AbstractSemanticObject {
 	public VariableTypes determineType() {
 		VariableTypes type = VariableTypes.var;
 		if (context instanceof VarArgumentContext) {
-			if((VarArgumentContext) context).ID() == null) {
+			if(((VarArgumentContext) context).ID() == null) {
 				notifyErrorListeners("LTL Parse Error.");
-				return;
+				return null;
 			}
 			Variable variable = resolveVariable(((VarArgumentContext) context).ID());
 			if (variable != null) {

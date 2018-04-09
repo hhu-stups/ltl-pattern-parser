@@ -32,7 +32,7 @@ public class Expr extends AbstractSemanticObject {
 			@Override
 			public void enterVariableCallAtom(VariableCallAtomContext ctx) {
 				if (enterContext(ctx)) {
-					if((VariableCallAtomContext) context).ID() == null) {
+					if(((VariableCallAtomContext) ctx).ID() == null) {
 						notifyErrorListeners("LTL Parse Error.");
 						return;
 					}
