@@ -32,7 +32,10 @@ public class VariableDefinition extends AbstractSemanticObject {
 		} else if (context.SEQ_VAR() != null) {
 			type = VariableTypes.seq;
 		}
-
+		if(context.ID() == null) {
+			notifyErrorListeners("LTL Parse Error.");
+			return;
+		}
 		variable = createVariable(context.ID(), type);
 		token = variable.getToken();
 	}

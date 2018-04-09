@@ -65,6 +65,10 @@ public class Loop extends AbstractSemanticObject {
 	}
 
 	private void checkLoopBody() {
+		if(context.loop_body() == null) {
+			notifyErrorListeners("LTL Parse Error.");
+			return;
+		}
 		for (ParseTree child : context.loop_body().children) {
 			if (child instanceof Var_defContext) {
 				addChild(new VariableDefinition(parser, (Var_defContext) child));

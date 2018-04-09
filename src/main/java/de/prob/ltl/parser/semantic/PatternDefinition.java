@@ -47,6 +47,10 @@ public class PatternDefinition extends AbstractSemanticObject {
 
 	private void determineTokenAndName() {
 		TerminalNode node = context.ID();
+		if(node == null) {
+			notifyErrorListeners("LTL Parse Error.");
+			return;
+		}
 		token = node.getSymbol();
 		name = node.getText();
 	}

@@ -25,6 +25,10 @@ public class Body extends AbstractSemanticObject {
 	private void checkContext() {
 		for (ParseTree child : context.children) {
 			if (child instanceof Pattern_defContext) {
+				if((Pattern_defContext) context).ID() == null) {
+					notifyErrorListeners("LTL Parse Error.");
+					return;
+				}
 				if (symbolTableManager.getCurrentScope() != symbolTableManager.getGlobalScope()) {
 					// Pattern definitions in other other scope than the global scope are not allowed
 					notifyErrorListeners(((Pattern_defContext) child).ID().getSymbol(), "Pattern definition in wrong scope. Definitions are only allowed in global scope.");

@@ -32,6 +32,10 @@ public class SeqDefinition extends AbstractSemanticObject {
 	private void checkArguments() {
 		if(context instanceof SeqVarExtensionContext) {
 			TerminalNode node = ((SeqVarExtensionContext) context).ID();
+			if(node == null) {
+				notifyErrorListeners("LTL Parse Error.");
+				return;
+			}
 			token = createToken(node.getSymbol(), context.stop);
 
 			// check ID
