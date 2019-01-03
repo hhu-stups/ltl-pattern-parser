@@ -12,3 +12,7 @@ build/
 .classpath
 .project
 local.*
+.idea/
+*.iml
+*.iws
+*.ipr
