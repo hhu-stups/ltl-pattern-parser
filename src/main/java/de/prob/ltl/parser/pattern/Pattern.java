@@ -25,7 +25,7 @@ public class Pattern {
 	
 	public void updateDefinitions(PatternManager patternManager) {
 		if (code != null) {
-			if (definitions == null) { 
+			if (definitions == null) {
 				LtlParser parser = new LtlParser(code);
 				parser.setPatternManager(patternManager);
 				parser.removeErrorListeners();
