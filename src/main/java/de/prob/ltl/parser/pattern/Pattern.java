@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.WarningListener;
@@ -20,7 +21,8 @@ public class Pattern {
 	private List<BaseErrorListener> errorListeners = new LinkedList<BaseErrorListener>();
 	private List<WarningListener> warningListeners = new LinkedList<WarningListener>();
 	private List<PatternUpdateListener> updateListeners = new LinkedList<PatternUpdateListener>();
-
+	private ParseTree lastAst;
+	
 	public void updateDefinitions(PatternManager patternManager) {
 		if (code != null) {
 			if (definitions == null) {
@@ -35,7 +37,7 @@ public class Pattern {
 				}
 
 				parser.parsePatternDefinition();
-
+				this.lastAst = parser.getAst();
 				definitions = parser.getSymbolTableManager().getPatternDefinitions();
 				checkPatternDefinitionNames(parser);
 			}
@@ -138,6 +140,10 @@ public class Pattern {
 		for (PatternUpdateListener listener: updateListeners) {
 			listener.patternUpdated(this, null);
 		}
+	}
+	
+	public ParseTree getAst() {
+		return lastAst;
 	}
 
 }
