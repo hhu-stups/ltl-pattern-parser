@@ -10,7 +10,7 @@ before_install:
   gradle.properties -d
 sudo: false
 install: ./gradlew --version
-script: ./gradlew -Dorg.gradle.daemon=false -Dorg.gradle.parallel=false --rerun-tasks clean check uploadArchives
+script: ./gradlew --rerun-tasks clean check uploadArchives
 env:
   global:
     secure: LPW6XikrRSPNlYBwmU2V6guJ8B7gPbZeKiEgN9VEzHVCfqxM5p8GcTrVWb9sN6Knwxgso53qSwhHXnEqAUGvFKgTK8TUO2r065ixFQVJnAZ6q0dUC5Il1a4It+mtypOMdzRdT6tZJpf8lxM/U6WEUbHtb+wLVjZsMKnO9GvGFyOf4cUfC1DUihOMIjwJ2Q5/9bbAiA7jqS/i8sgxGQdfSTH/ZWDtRDIwuZHHuUjAjwfd0wY9DWJQHq1zDtuxVSRE2Rd23BCSzOV+XyycdJptxdcOZwp+vzg2A8Bfx7tffUfBBSuc24yW5uTqzoxrnsMeX5N5tOhp67SJ8Nd3l7RkXERVeh31i7QZizO74XqwBiNV0mNIJCDwAk5CNWc4dNYwNHYYrmaYIcb6d6jzhODEAPgbhu0RO81ZNoDWFU8wi3pPVv8alKh0Ktm0uKIT6Ygc/8aJVssLVTXBoItvYh+Oeds4gGSN/WEV6uijbhlG8Tw6umJO/IJNKpLYXz+wLDo8h0zFI29AToZYBL/BsivFnOPUkFBkhF87s0Gdx4YRiJF/BYFUYXY0Qdk4Im9vkWqrxyH9wXSe8F4FKrt9LNZWx01BGwDZGKiNyxFVIriiEOLjR1v+CKcYmP5mOqBEFosh5QRTZaUvKkQpH1ERkWzIJ0qOat8jpdGGwO3FTt1AvHw=
