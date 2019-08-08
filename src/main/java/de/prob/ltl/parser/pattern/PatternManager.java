@@ -25,7 +25,7 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 	private final String PATTERN_ID = 		"%% PATTERN";
 	private final String DESCRIPTION_ID = 	"%% DESCRIPTION";
 	private final String CODE_ID = 			"%% CODE";
-	private final String BUILTIN_FILE =		"/builtins.ltlp";
+	private final String BUILTIN_FILE =		"builtins.ltlp";
 
 	private List<Pattern> builtins = new LinkedList<Pattern>();
 	private List<Pattern> patterns = new LinkedList<Pattern>();
@@ -35,11 +35,11 @@ public class PatternManager extends BaseErrorListener implements WarningListener
 	private List<PatternUpdateListener> updateListeners = new LinkedList<PatternUpdateListener>();
 
 	public PatternManager() {
-		/*try {
+		try {
 			loadBuiltinPatternsFromFile(BUILTIN_FILE);
 		} catch (IOException e) {
 			// IGNORE
-		}*/
+		}
 	}
 
 	public void addPattern(Pattern pattern) {

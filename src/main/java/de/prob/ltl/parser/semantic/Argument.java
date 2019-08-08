@@ -27,7 +27,6 @@ public class Argument extends AbstractSemanticObject {
 
 	public Argument(LtlParser parser, ArgumentContext context) {
 		super(parser);
-
 		this.context = context;
 	}
 
