@@ -100,6 +100,7 @@ public class PatternDefinition extends AbstractSemanticObject {
 	
 	public String getSignature() {
 		StringBuilder builder = new StringBuilder();
+		builder.append(name);
 		builder.append("(");
 		for(int i = 0; i < parameters.size(); i++) {
 			builder.append(parameters.get(i).toString());
