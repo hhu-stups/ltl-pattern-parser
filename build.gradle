@@ -16,8 +16,8 @@ repositories {
 }
 
 dependencies {
-    antlr "org.antlr:antlr4:4.5" // use ANTLR version 4
-    compile "org.antlr:antlr4-runtime:4.5"
+    antlr "org.antlr:antlr4:4.7.2" // use ANTLR version 4
+    compile "org.antlr:antlr4-runtime:4.7.2"
     compile "de.hhu.stups:ltlparser:2.4.40"
     compile "de.hhu.stups:parserbase:2.4.40"
     compile "de.hhu.stups:prologlib:2.4.40"
