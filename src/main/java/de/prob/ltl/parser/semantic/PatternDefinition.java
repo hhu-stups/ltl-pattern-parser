@@ -2,6 +2,7 @@ package de.prob.ltl.parser.semantic;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -95,6 +96,19 @@ public class PatternDefinition extends AbstractSemanticObject {
 
 	public String getSimpleName() {
 		return name;
+	}
+	
+	public String getSignature() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(");
+		for(int i = 0; i < parameters.size(); i++) {
+			builder.append(parameters.get(i).toString());
+			if(i < parameters.size() - 1) {
+				builder.append(", ");
+			}
+		}
+		builder.append(")");
+		return builder.toString();
 	}
 
 	public boolean isNewDefinition() {

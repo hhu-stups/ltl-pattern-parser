@@ -1,5 +1,6 @@
 package de.prob.ltl.parser.pattern;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -68,6 +69,14 @@ public class Pattern {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public List<String> getSignatures() {
+		List<String> signatures = new ArrayList<>();
+		for(PatternDefinition definition : definitions) {
+			signatures.add(definition.getSignature());
+		}
+		return signatures;
 	}
 
 	public boolean isBuiltin() {
