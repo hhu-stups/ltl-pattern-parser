@@ -70,7 +70,8 @@ public class PatternDefinition extends AbstractSemanticObject {
 					parameter = createVariable(((VarParamContext) ctx).ID(), VariableTypes.var);
 				}
 			} else {
-				// TODO error ?
+				notifyErrorListeners("The parameters in the pattern '%s' are not defined correctly.", getName());
+				break;
 			}
 
 			defineVariable(parameter);
