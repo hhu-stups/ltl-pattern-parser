@@ -147,6 +147,9 @@ public class LtlPrologTermGenerator {
 
 	public void generatePatternCall(PatternCall call, IPrologTermOutput pto) {
 		PatternDefinition definition = call.getDefinition();
+		if(definition == null) {
+			return;
+		}
 		symbolTableManager.pushScope(definition.getSymbolTable());
 		// set arguments
 		List<Variable> parameters = definition.getParameters();
