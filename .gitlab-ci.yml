@@ -27,7 +27,7 @@ publish:
     - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in secring.gpg.enc -out secring.gpg
     - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in pubring.gpg.enc -out pubring.gpg
     - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in gradle.properties.enc -out gradle.properties
-    - ./gradlew ${GRADLE_ARGS} publishMavenJavaPublicationToMavenRepository
+    - ./gradlew --rerun-tasks clean check uploadArchives
   only:
     variables:
       - $CI_COMMIT_REF_NAME == "master"
