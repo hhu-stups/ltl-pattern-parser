@@ -1,0 +1,36 @@
+variables:
+  DEBIAN_FRONTEND: noninteractive
+  GRADLE_OPTIONS: --info --stacktrace --warning-mode=all
+
+default:
+  image: openjdk:8-jdk-slim
+  cache:
+    paths:
+      - .gradle/caches
+      - .gradle/native
+      - .gradle/wrapper
+  before_script:
+    - apt-get update
+    - export GRADLE_USER_HOME="${PWD}/.gradle"
+
+tests:
+  stage: test
+  script: ./gradlew ${GRADLE_ARGS} test
+  artifacts:
+    paths:
+      - build/reports/tests/
+    when: on_failure
+
+publish:
+  stage: deploy
+  script:
+    - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in secring.gpg.enc       -out secring.gpg
+    - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in pubring.gpg.enc       -out pubring.gpg
+    - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in gradle.properties.enc -out gradle.properties
+    - ./gradlew ${GRADLE_ARGS} publishMavenJavaPublicationToMavenRepository
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == "master"
+      - $CI_COMMIT_REF_NAME =~ /^release\/\d+\.\d+-stable$/
+  except:
+    - tags
