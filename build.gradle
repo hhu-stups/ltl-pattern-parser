@@ -66,7 +66,7 @@ uploadArchives {
         packaging 'jar'
         // optionally artifactId can be defined here
         description 'Parser for a LTL Pattern DSL'
-        url 'https://github.com/bendisposto/ltl-pattern-parser'
+        url 'https://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser'
 
         licenses {
           license {
@@ -74,11 +74,10 @@ uploadArchives {
             url 'https://www.eclipse.org/legal/epl-v10.html'
           }
         }
-
         scm {
-          connection 'scm:git:git://github.com/bendisposto/ltl-pattern-parser.git'
-          developerConnection 'scm:git:git@github.com:bendisposto/ltl-pattern-parser.git'
-          url 'https://github.com/bendisposto/ltl-pattern-parser'
+          connection 'scm:git:git://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser.git'
+          developerConnection 'scm:git:git@gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser.git'
+          url 'https://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser'
         }
 
 
