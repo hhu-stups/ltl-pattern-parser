@@ -9,7 +9,6 @@ targetCompatibility = 1.7
 
 project.group = 'de.hhu.stups'
 project.version = '0.1.4-SNAPSHOT'
-project.archivesBaseName = "ltl-dsl"
 
 repositories {
     mavenCentral()
