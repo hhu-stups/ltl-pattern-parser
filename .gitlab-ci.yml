@@ -15,7 +15,7 @@ default:
 
 tests:
   stage: test
-  script: ./gradlew ${GRADLE_ARGS} test
+  script: ./gradlew ${GRADLE_ARGS} check
   artifacts:
     paths:
       - build/reports/tests/
@@ -27,7 +27,7 @@ publish:
     - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in secring.gpg.enc       -out secring.gpg 
     - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in pubring.gpg.enc       -out pubring.gpg
     - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in gradle.properties.enc -out gradle.properties
-    - ./gradlew check publish
+    - ./gradlew ${GRADLE_ARGS} publish
   only:
     variables:
       - $CI_COMMIT_REF_NAME == "master"
