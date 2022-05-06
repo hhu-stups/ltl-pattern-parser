@@ -17,14 +17,16 @@ repositories {
 	mavenCentral()
 }
 
-dependencies {
-	antlr "org.antlr:antlr4:4.7.2" // use ANTLR version 4
-	api "org.antlr:antlr4-runtime:4.7.2"
-	api "de.hhu.stups:parserbase:2.4.40"
-	api "de.hhu.stups:prologlib:2.4.40"
+def parserVersion = "2.9.25"
 
-	testImplementation "de.hhu.stups:ltlparser:2.4.40"
-	testImplementation 'junit:junit:4.8.2'
+dependencies {
+	antlr group: "org.antlr", name: "antlr4", version: "4.9.3"
+	api group: "org.antlr", name: "antlr4-runtime", version: "4.9.3"
+	api group: "de.hhu.stups", name: "parserbase", version: parserVersion
+	api group: "de.hhu.stups", name: "prologlib", version: parserVersion
+
+	testImplementation group: "de.hhu.stups", name: "ltlparser", version: parserVersion
+	testImplementation group: "junit", name: "junit", version: "4.13.2"
 }
 
 java {
