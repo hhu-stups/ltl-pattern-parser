@@ -27,7 +27,7 @@ publish:
     - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in secring.gpg.enc       -out secring.gpg 
     - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in pubring.gpg.enc       -out pubring.gpg
     - openssl aes-256-cbc -pass "env:ENCRYPTION_PASSWORD" -d -a -md md5 -in gradle.properties.enc -out gradle.properties
-    - ./gradlew --rerun-tasks clean check publish
+    - ./gradlew check publish
   only:
     variables:
       - $CI_COMMIT_REF_NAME == "master"

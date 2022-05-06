@@ -27,8 +27,6 @@ dependencies {
 	testImplementation 'junit:junit:4.8.2'
 }
 
-generateGrammarSource.outputs.upToDateWhen { false }
-
 java {
 	withSourcesJar()
 	withJavadocJar()
