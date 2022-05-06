@@ -8,7 +8,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 project.group = 'de.hhu.stups'
-project.version = '0.1.3'
+project.version = '0.1.4-SNAPSHOT'
 project.archivesBaseName = "ltl-dsl"
 
 repositories {
