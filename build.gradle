@@ -1,8 +1,9 @@
 apply plugin: 'antlr'
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -10,85 +11,80 @@ targetCompatibility = 1.7
 project.group = 'de.hhu.stups'
 project.version = '0.1.4-SNAPSHOT'
 
+final isSnapshot = project.version.endsWith("-SNAPSHOT")
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
 	antlr "org.antlr:antlr4:4.7.2" // use ANTLR version 4
-	compile "org.antlr:antlr4-runtime:4.7.2"
-	compile "de.hhu.stups:ltlparser:2.4.40"
-	compile "de.hhu.stups:parserbase:2.4.40"
-	compile "de.hhu.stups:prologlib:2.4.40"
-	testCompile 'junit:junit:4.8.2'
+	api "org.antlr:antlr4-runtime:4.7.2"
+	api "de.hhu.stups:parserbase:2.4.40"
+	api "de.hhu.stups:prologlib:2.4.40"
+
+	testImplementation "de.hhu.stups:ltlparser:2.4.40"
+	testImplementation 'junit:junit:4.8.2'
 }
 
 generateGrammarSource.outputs.upToDateWhen { false }
 
-if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
 
-	apply plugin: 'signing'
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
 
-	signing {
-		sign configurations.archives
-	}
+			pom {
+				name = 'LTL Pattern DSL Parser'
+				description = 'Parser for a LTL Pattern DSL'
+				url = 'https://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser'
 
-	task javadocJar(type: Jar) {
-		classifier = 'javadoc'
-		from javadoc
-	}
-
-	task sourcesJar(type: Jar) {
-		classifier = 'sources'
-		from sourceSets.main.allSource
-	}
-
-	artifacts {
-		archives javadocJar, sourcesJar, jar
-	}
-
-	uploadArchives {
-		repositories {
-			mavenDeployer {
-				beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-				repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-					authentication(userName: ossrhUsername, password: ossrhPassword)
+				licenses {
+					license {
+						name = 'Eclipse Public License, Version 1.0'
+						url = 'https://www.eclipse.org/legal/epl-v10.html'
+					}
+				}
+				scm {
+					connection = 'scm:git:git://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser.git'
+					developerConnection = 'scm:git:git@gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser.git'
+					url = 'https://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser'
 				}
 
-				snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-					authentication(userName: ossrhUsername, password: ossrhPassword)
-				}
 
-				pom.project {
-					name 'LTL Pattern DSL Parser'
-					packaging 'jar'
-					// optionally artifactId can be defined here
-					description 'Parser for a LTL Pattern DSL'
-					url 'https://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser'
-
-					licenses {
-						license {
-							name 'Eclipse Public License, Version 1.0'
-							url 'https://www.eclipse.org/legal/epl-v10.html'
-						}
-					}
-					scm {
-						connection 'scm:git:git://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser.git'
-						developerConnection 'scm:git:git@gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser.git'
-						url 'https://gitlab.cs.uni-duesseldorf.de/stups/prob/ltl-pattern-parser'
-					}
-
-
-					developers {
-						developer {
-							id 'bendisposto'
-							name 'Jens Bendisposto'
-							email 'jens@bendisposto.de'
-						}
+				developers {
+					developer {
+						id = 'bendisposto'
+						name = 'Jens Bendisposto'
+						email = 'jens@bendisposto.de'
 					}
 				}
 			}
 		}
 	}
+
+	repositories {
+		maven {
+			final releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+			final snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+			url isSnapshot ? snapshotsRepoUrl : releasesRepoUrl
+			if (project.hasProperty('ossrhUsername') && project.hasProperty('ossrhPassword')) {
+				credentials {
+					username project.ossrhUsername
+					password project.ossrhPassword
+				}
+			}
+		}
+	}
+}
+
+signing {
+	sign publishing.publications.mavenJava
 }
