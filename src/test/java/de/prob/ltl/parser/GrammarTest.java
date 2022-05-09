@@ -96,10 +96,10 @@ public class GrammarTest extends AbstractOldParserTest {
 		assertEquals(expected, "true&false");
 		assertEquals(expected, "(true)& (false)");
 		assertEquals(expected, "(true & false)");
-		throwsException(expected, "true and false", ExceptionCause.DownwardIncompatible);
-		throwsException(expected, "(true) and(false)", ExceptionCause.DownwardIncompatible);
-		throwsException(expected, "(true and false)", ExceptionCause.DownwardIncompatible);
-		throwsException(expected, "true andfalse", ExceptionCause.Unsupported);
+		assertEquals(expected, "true and false");
+		assertEquals(expected, "(true) and(false)");
+		assertEquals(expected, "(true and false)");
+		throwsException(expected, "true andfalse", ExceptionCause.Deprecated);
 
 		expected = "and(ap(predicate(abc)),ap(enabled(transition_predicate(def))))";
 		assertEquals(expected, "{abc} & e(def)");
