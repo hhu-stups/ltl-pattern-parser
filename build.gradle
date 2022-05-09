@@ -12,9 +12,20 @@ final isSnapshot = project.version.endsWith("-SNAPSHOT")
 
 repositories {
 	mavenCentral()
+	if (isSnapshot) {
+		maven {
+			name "snapshots"
+			url "https://oss.sonatype.org/content/repositories/snapshots/"
+		}
+	}
 }
 
-def parserVersion = "2.12.0"
+def parserVersion
+if (isSnapshot) {
+	parserVersion = "2.12.1-SNAPSHOT"
+} else {
+	parserVersion = "2.12.0"
+}
 
 dependencies {
 	antlr group: "org.antlr", name: "antlr4", version: "4.10.1"
