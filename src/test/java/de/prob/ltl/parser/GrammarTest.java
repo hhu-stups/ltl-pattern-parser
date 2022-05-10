@@ -103,12 +103,12 @@ public class GrammarTest extends AbstractOldParserTest {
 
 		expected = "and(ap(predicate(abc)),ap(enabled(transition_predicate(def))))";
 		assertEquals(expected, "{abc} & e(def)");
-		throwsException(expected, "{abc}and e(def)", ExceptionCause.DownwardIncompatible);
-		throwsException(expected, "{abc}ande(def)", ExceptionCause.Unsupported);
+		assertEquals(expected, "{abc}and e(def)");
+		throwsException(expected, "{abc}ande(def)", ExceptionCause.Deprecated);
 
 		expected = "and(ap(predicate(abc)),action(transition_predicate(def)))";
 		assertEquals(expected, "{abc}&[def]");
-		throwsException(expected, "{abc}and[def]", ExceptionCause.DownwardIncompatible);
+		assertEquals(expected, "{abc}and[def]");
 	}
 
 	@Test
