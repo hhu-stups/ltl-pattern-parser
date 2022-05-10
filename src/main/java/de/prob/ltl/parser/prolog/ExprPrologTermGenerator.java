@@ -112,12 +112,12 @@ public class ExprPrologTermGenerator extends LtlBlockingListener {
 		pto.printAtom(content);
 	}
 
-	protected void parseTransitionPredicate(final String text, Token token) {
+	protected void parseTransitionPredicate(final String text, Token token, final int startLine, final int startCharInLine) {
 		if (blockingContext != null) {
 			return;
 		}
 		try {
-			specParser.parseTransitionPredicate(pto, text, true);
+			specParser.parseTransitionPredicate(pto, text, true, startLine, startCharInLine + 1);
 		} catch (ProBParseException e) {
 			parser.notifyErrorListeners(token, e.getMessage(), null);
 		} catch (UnsupportedOperationException e) {
@@ -125,12 +125,12 @@ public class ExprPrologTermGenerator extends LtlBlockingListener {
 		}
 	}
 
-	protected void parsePredicate(final String text, Token token) {
+	protected void parsePredicate(final String text, Token token, final int startLine, final int startCharInLine) {
 		if (blockingContext != null) {
 			return;
 		}
 		try {
-			specParser.parsePredicate(pto, text, true);
+			specParser.parsePredicate(pto, text, true, startLine, startCharInLine + 1);
 		} catch (ProBParseException e) {
 			parser.notifyErrorListeners(token, e.getMessage(), null);
 		} catch (UnsupportedOperationException e) {
@@ -303,7 +303,8 @@ public class ExprPrologTermGenerator extends LtlBlockingListener {
 	public void enterPredicateAtom(PredicateAtomContext ctx) {
 		openTerm("ap");
 		String text = ctx.getText();
-		parsePredicate(text.substring(1, text.length() - 1), ctx.PREDICATE().getSymbol());
+		final Token token = ctx.PREDICATE().getSymbol();
+		parsePredicate(text.substring(1, text.length() - 1), token, token.getLine(), token.getCharPositionInLine() + 1);
 		closeTerm();
 	}
 
@@ -311,7 +312,8 @@ public class ExprPrologTermGenerator extends LtlBlockingListener {
 	public void enterActionAtom(ActionAtomContext ctx) {
 		openTerm("action");
 		String text = ctx.getText();
-		parseTransitionPredicate(text.substring(1, text.length() - 1), ctx.ACTION().getSymbol());
+		final Token token = ctx.ACTION().getSymbol();
+		parseTransitionPredicate(text.substring(1, text.length() - 1), token, token.getLine(), token.getCharPositionInLine() + 1);
 		closeTerm();
 	}
 
@@ -320,7 +322,8 @@ public class ExprPrologTermGenerator extends LtlBlockingListener {
 		openTerm("ap");
 		openTerm("enabled");
 		String text = ctx.getText();
-		parseTransitionPredicate(text.substring(2, text.length() - 1), ctx.ENABLED().getSymbol());
+		final Token token = ctx.ENABLED().getSymbol();
+		parseTransitionPredicate(text.substring(2, text.length() - 1), token, token.getLine(), token.getCharPositionInLine() + 2);
 		closeTerm();
 		closeTerm();
 	}
