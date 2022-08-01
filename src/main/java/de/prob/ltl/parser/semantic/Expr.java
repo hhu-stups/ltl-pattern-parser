@@ -32,7 +32,7 @@ public class Expr extends AbstractSemanticObject {
 			@Override
 			public void enterVariableCallAtom(VariableCallAtomContext ctx) {
 				if (enterContext(ctx)) {
-					if(((VariableCallAtomContext) ctx).ID() != null) {
+					if(ctx.ID() != null) {
 						Variable variable = resolveVariable(ctx.ID());
 						if (variable != null) {
 							variable.setWasCalled(true);
