@@ -26,7 +26,7 @@ private SemanticCheck semanticCheck;
 private ParseTree lastAst;
 
 public LtlParser(String input) {
-	this(new CommonTokenStream(new LtlLexer(new ANTLRInputStream(input))));
+	this(new CommonTokenStream(new LtlLexer(CharStreams.fromString(input))));
 	if (getTokenStream().getTokenSource() instanceof LtlLexer) {
 		lexer = (LtlLexer) getTokenStream().getTokenSource();
 	}
@@ -92,13 +92,13 @@ public ParseTree getAst() {
 }
 
 @Override
-public void addErrorListener(@NotNull ANTLRErrorListener listener) {
+public void addErrorListener(ANTLRErrorListener listener) {
 	super.addErrorListener(listener);
 	lexer.addErrorListener(listener);
 }
 
 @Override
-public void removeErrorListener(@NotNull ANTLRErrorListener listener) {
+public void removeErrorListener(ANTLRErrorListener listener) {
 	super.removeErrorListener(listener);
 	lexer.removeErrorListener(listener);
 }
