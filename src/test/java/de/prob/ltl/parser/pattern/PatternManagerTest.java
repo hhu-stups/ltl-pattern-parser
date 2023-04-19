@@ -2,8 +2,7 @@ package de.prob.ltl.parser.pattern;
 
 import java.io.File;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;

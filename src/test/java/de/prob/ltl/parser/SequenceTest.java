@@ -1,7 +1,6 @@
 package de.prob.ltl.parser;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 public class SequenceTest extends AbstractParserTest {

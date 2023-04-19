@@ -1,7 +1,6 @@
 package de.prob.ltl.parser.semantic;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.prob.ltl.parser.AbstractParserTest;
