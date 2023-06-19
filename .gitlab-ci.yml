@@ -3,7 +3,7 @@ variables:
   GRADLE_OPTIONS: --info --stacktrace --warning-mode=all
 
 default:
-  image: openjdk:11-jdk-slim
+  image: eclipse-temurin:11
   cache:
     paths:
       - .gradle/caches
