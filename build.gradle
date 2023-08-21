@@ -30,7 +30,7 @@ configurations {
 
 dependencies {
 	def antlrVersion = "4.11.1" // With 4.12.0, the build can't find the ANTLR-generated classes for some reason
-	def parserVersion = "2.12.6"
+	def parserVersion = "2.12.7"
 
 	antlr group: "org.antlr", name: "antlr4", version: antlrVersion
 	api group: "org.antlr", name: "antlr4-runtime", version: antlrVersion
