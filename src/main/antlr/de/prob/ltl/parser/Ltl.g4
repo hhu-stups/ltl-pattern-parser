@@ -1,13 +1,8 @@
 grammar Ltl;
 
 /* -- Additional code -- */
-@lexer::header {
-package de.prob.ltl.parser;
-}
 
 @parser::header {
-package de.prob.ltl.parser;
-
 import de.prob.ltl.parser.prolog.LtlPrologTermGenerator;
 import de.prob.ltl.parser.pattern.PatternManager;
 import de.prob.ltl.parser.semantic.SemanticCheck;
