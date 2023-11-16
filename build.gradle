@@ -30,7 +30,7 @@ configurations {
 
 dependencies {
 	def antlrVersion = "4.13.1"
-	def parserVersion = "2.12.7"
+	def parserVersion = "2.12.8-SNAPSHOT"
 
 	antlr group: "org.antlr", name: "antlr4", version: antlrVersion
 	api group: "org.antlr", name: "antlr4-runtime", version: antlrVersion

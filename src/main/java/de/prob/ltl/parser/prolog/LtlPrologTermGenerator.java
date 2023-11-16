@@ -4,8 +4,6 @@ import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
-
 import de.prob.ltl.parser.LtlParser;
 import de.prob.ltl.parser.prolog.scope.ScopeReplacer;
 import de.prob.ltl.parser.semantic.AbstractSemanticObject;
@@ -26,9 +24,11 @@ import de.prob.ltl.parser.symboltable.VariableTypes;
 import de.prob.parserbase.ProBParserBase;
 import de.prob.prolog.output.IPrologTermOutput;
 import de.prob.prolog.output.StructuredPrologOutput;
+import de.prob.prolog.term.AIntegerPrologTerm;
 import de.prob.prolog.term.CompoundPrologTerm;
-import de.prob.prolog.term.IntegerPrologTerm;
 import de.prob.prolog.term.PrologTerm;
+
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class LtlPrologTermGenerator {
 
@@ -100,11 +100,11 @@ public class LtlPrologTermGenerator {
 			int compare = (loop.isUp() ? -1 : 1);
 
 			BigInteger inc = BigInteger.valueOf(-compare);
-			BigInteger count = ((IntegerPrologTerm) startTerm).getValue();
-			BigInteger end = ((IntegerPrologTerm) endTerm).getValue();
+			BigInteger count = ((AIntegerPrologTerm) startTerm).getValue();
+			BigInteger end = ((AIntegerPrologTerm) endTerm).getValue();
 			while (count.compareTo(end) == compare) {
 				if (variable != null) {
-					variable.setValue(new IntegerPrologTerm(count));
+					variable.setValue(AIntegerPrologTerm.create(count));
 				}
 
 				for (AbstractSemanticObject object : loop.getChildren()) {
@@ -130,7 +130,7 @@ public class LtlPrologTermGenerator {
 		if (argument.getVariable() != null) {
 			value = argument.getVariable().getValue();
 		} else if (argument.getNum() != null) {
-			value = new IntegerPrologTerm(argument.getNum());
+			value = AIntegerPrologTerm.create(argument.getNum());
 		} else if (argument.getSeq() != null) {
 			StructuredPrologOutput epto = new StructuredPrologOutput();
 			generateSeqDefinition(argument.getSeq(), epto);
