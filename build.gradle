@@ -53,6 +53,18 @@ java {
 	withJavadocJar()
 }
 
+// Workaround for Gradle's antlr plugin not adding the necessary dependencies to sourcesJar and javadocJar,
+// causing an error with Gradle 8 because of undeclared dependencies.
+// See https://github.com/gradle/gradle/issues/19555 and https://github.com/gradle/gradle/issues/25885
+
+sourcesJar {
+	dependsOn("generateGrammarSource")
+}
+
+javadocJar {
+	dependsOn("generateGrammarSource")
+}
+
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
