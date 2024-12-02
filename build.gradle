@@ -29,7 +29,7 @@ configurations {
 }
 
 dependencies {
-	def antlrVersion = "4.13.1"
+	def antlrVersion = "4.13.2"
 	def parserVersion = "2.13.5"
 
 	antlr group: "org.antlr", name: "antlr4", version: antlrVersion
