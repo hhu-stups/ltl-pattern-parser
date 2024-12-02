@@ -1,7 +1,9 @@
-apply plugin: 'antlr'
-apply plugin: 'java-library'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
+plugins {
+	id("antlr")
+	id("java-library")
+	id("maven-publish")
+	id("signing")
+}
 
 project.group = 'de.hhu.stups'
 project.version = '0.2.2-SNAPSHOT'
